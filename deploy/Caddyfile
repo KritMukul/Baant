@@ -1,0 +1,11 @@
+# DOMAIN=krit.website  -> Caddy gets and renews a certificate by itself (DNS must point at this server, ports 80 and 443 open)
+# DOMAIN=:80           -> plain http, for a first test by IP address (no HTTPS: copy, share and install-to-home-screen need HTTPS)
+{$DOMAIN} {
+	encode gzip
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+	reverse_proxy app:3000
+}

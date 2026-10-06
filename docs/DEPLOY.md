@@ -1,0 +1,141 @@
+# Deploying Dibs to your own server
+
+This gets the app running on a server you control, at an address like `https://krit.website`, so you can test it on real phones.
+
+**What runs:** one Node app (Next.js), one Postgres database, and Caddy in front for automatic HTTPS. Nothing else. No Supabase account is needed (you can still use Supabase's database if you prefer: see Option C).
+
+## Before you start
+
+You need:
+
+- A server you can SSH into (any small VPS is enough) with Docker and the Docker Compose plugin installed.
+- A domain (you have `krit.website`) pointing at the server: an **A record** to its public IPv4 address. Ports **80 and 443** open.
+- One API key for reading photos: Anthropic, OpenAI or Gemini. (Or none, with `BILL_PARSER=stub`, to click through with a built-in sample bill.)
+
+## Option A: Docker Compose (recommended)
+
+```bash
+git clone https://github.com/KritMukul/Baant.git dibs && cd dibs
+git checkout claude/stoic-cray-tzscj3        # or main, once merged
+cp .env.example .env
+nano .env
+```
+
+Set at least these in `.env`:
+
+| Variable | Example | Meaning |
+|---|---|---|
+| `DOMAIN` | `krit.website` | Caddy gets a certificate for this by itself. Use `:80` to test over plain http by IP first |
+| `APP_URL` | `https://krit.website` | The address people open. Used for links, QR codes and secure cookies |
+| `POSTGRES_PASSWORD` | a long random string | The database password (only the app can reach the database) |
+| `GEMINI_API_KEY` (or `ANTHROPIC_API_KEY` / `OPENAI_API_KEY`) | `...` | Reads bills and payment screenshots |
+
+Then:
+
+```bash
+docker compose up -d --build
+docker compose logs -f app          # Ctrl-C to leave
+```
+
+The first start creates the database tables by itself. Check it:
+
+```bash
+curl https://krit.website/api/health     # {"ok":true,"store":"postgres"}
+```
+
+Open `https://krit.website` on your phone. Update later with `git pull && docker compose up -d --build`.
+
+**Backups:** `docker compose exec -T db pg_dump -U dibs dibs > dibs-backup.sql`
+
+**A first test without a domain:** set `DOMAIN=:80` and `APP_URL=http://<server-ip>`. Everything works except what browsers only allow on HTTPS: copying to the clipboard (a fallback exists), the system share sheet, and installing to the home screen.
+
+## Option B: Node directly (no Docker)
+
+You need Node 22 and a Postgres database you can reach.
+
+```bash
+npm ci
+cp .env.example .env     # set DATABASE_URL, APP_URL and a vision key
+npm run db:init          # creates the tables (safe to run twice)
+npm run smoke            # walks a test bill through a whole evening against your database
+npm run build
+npm start                # listens on port 3000
+```
+
+Put Caddy or nginx in front for HTTPS (pass `Host`, `X-Forwarded-Host` and `X-Forwarded-Proto`). With Caddy the whole config is:
+
+```
+krit.website {
+	reverse_proxy localhost:3000
+}
+```
+
+To keep it running, use systemd or `pm2`. A systemd unit:
+
+```ini
+[Unit]
+Description=Dibs
+After=network.target postgresql.service
+
+[Service]
+WorkingDirectory=/opt/dibs
+EnvironmentFile=/opt/dibs/.env
+ExecStart=/usr/bin/npm start
+Restart=always
+User=dibs
+
+[Install]
+WantedBy=multi-user.target
+```
+
+## Option C: Supabase's database instead of your own Postgres
+
+1. In Supabase: **SQL editor**, paste `supabase/schema.sql`, run it. (If you ran the first MVP schema earlier, run `supabase/drop-mvp.sql` first; it deletes the old test bills.)
+2. **Project settings, Database, Connection string, URI**. Use the **Session pooler** string if your server has no IPv6 (the direct connection is IPv6-only on the free plan).
+3. Put it in `.env` as `DATABASE_URL`. TLS is switched on automatically for `supabase.co` and `supabase.com` hosts.
+4. In Docker Compose, delete the `db` service and the `depends_on` block, and keep `DATABASE_URL` from `.env` instead of the built-in line.
+
+## Check that it works
+
+From your machine, with `DATABASE_URL` set to the same database:
+
+```bash
+npm run smoke        # creates a test bill, joins two friends, pays, confirms, settles, deletes it
+```
+
+Then the real test, on two phones:
+
+1. Phone A (host): open the site, photograph a bill, add your name and UPI ID, **Scan the bill**. Fix anything on the check screen, then **Share link**.
+2. Phone B (friend): open the link (or scan the QR on phone A's screen), type a name, tap items.
+3. Phone A: everything claimed, **Lock claims**. Phone B: **Pay** appears with the exact amount.
+
+## The most important test: real UPI payments
+
+Dibs builds a standard `upi://pay?...` link (and a note like `Dibs 7K2 Mukul`). Whether it works depends on the phone and the UPI app, and **I could not test this from here**. Please test before trusting it:
+
+1. Use a small real bill, or just a split of ₹1 to ₹10, and one near ₹1,000.
+2. Try **GPay, PhonePe, Paytm and BHIM**, on **Android and an iPhone** (iOS Safari is the least predictable).
+3. For each, note: does the app open? Is the amount, payee and note filled in? Is the amount editable? Does it refuse (some apps decline a preset amount to a personal UPI ID)?
+4. If nothing opens, Dibs shows a "No UPI app opened" screen with copyable details. Make sure that path is usable.
+5. Also try the host's QR scan (the QR on the Share screen is for joining, not paying).
+
+What you find here decides whether the payment screen needs a different design.
+
+## While you are testing publicly
+
+Anyone who finds the address can scan a bill, and every scan costs a vision API call. Dibs limits scans to 20 per IP per hour (`SCAN_LIMIT_PER_HOUR`), but while it is a test you can also put a password on the host's start page. In `deploy/Caddyfile`, inside the site block, before `reverse_proxy`:
+
+```
+	@start path /
+	basicauth @start {
+		you JDJhJDE0JC4uLg...      # from: docker compose exec caddy caddy hash-password
+	}
+```
+
+Friends' links (`/b/...`) stay open. The start page and its scan request live at `/`, so the password covers both.
+
+## What is and is not verified
+
+Verified here (see `docs/` and the tests): the rules and money maths (103 tests), the same storage contract on memory and on a real Postgres 16, the full flow on phone-sized browsers with a host and three friends, the standalone production server against Postgres, the QR code decoding back to the link.
+
+**Not verified:** a real Supabase project; `docker compose` itself (Docker was not available here, so the Dockerfile and compose file are untested; the standalone server they run was); real phones and real keyboards; real UPI apps; the vision models on real bills and payment screenshots beyond the earlier parse tests; HTTPS-only features (clipboard, share sheet, install to home screen) on a real certificate.
