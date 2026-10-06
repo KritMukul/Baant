@@ -114,6 +114,24 @@ describe("shares match the shared fixture", () => {
   }
 });
 
+describe("a fresh bill", () => {
+  it("shows everyone owing nothing until something is claimed", () => {
+    const data = fixtureData("final");
+    data.claims = [];
+    const r = sharesOf(data);
+    expect(Object.values(r.shares).every((s) => s.total === 0 && s.tax === 0 && s.service === 0 && s.discount === 0)).toBe(true);
+    expect(r.unclaimed).toHaveLength(8);
+    expect(r.allClaimed).toBe(false);
+  });
+  it("one claim makes that person carry the charges, others still owe nothing", () => {
+    const data = fixtureData("final");
+    data.claims = [{ itemId: "mojito", participantId: "D" }];
+    const r = sharesOf(data);
+    expect(r.shares.D.total).toBeGreaterThan(33000);
+    expect(r.shares.K.total).toBe(0);
+  });
+});
+
 describe("payView", () => {
   it("none / unpaid / says / short / confirmed", () => {
     expect(payView(0, []).state).toBe("none");

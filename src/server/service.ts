@@ -66,6 +66,8 @@ export interface BillView {
   me: { id: string; name: string; isHost: boolean } | null;
   items: { id: string; name: string; qty: number; price: Paise; flag: ItemFlag | null }[];
   charges: { id: string; label: string; kind: string; amount: Paise }[];
+  /** Charges printed on the bill (the automatic round-off is not one of them). */
+  chargeCount: number;
   participants: { id: string; name: string; isHost: boolean }[];
   claims: { itemId: string; participantId: string }[];
   shares: Record<string, PersonShare>;
@@ -111,6 +113,7 @@ export function buildView(d: BillData, v: Viewer): BillView | null {
     me: me ? { id: me.id, name: me.name, isHost: me.isHost } : null,
     items: d.items.map((i) => ({ id: i.id, name: i.name, qty: i.qty, price: i.price, flag: i.flag })),
     charges: d.charges.map((c) => ({ id: c.id, label: c.label, kind: c.kind, amount: c.amount })),
+    chargeCount: d.charges.filter((c) => !(c.kind === "discount" && c.label === ROUND_OFF)).length,
     participants: d.participants.map((p) => ({ id: p.id, name: p.name, isHost: p.isHost })),
     claims: member ? d.claims : [],
     shares: member ? shares : {},
@@ -191,6 +194,23 @@ async function loadHost(store: Store, code: string, creds: Creds): Promise<{ d: 
   if (v.role !== "host") return fail("forbidden", "Only the host can do that");
   return { d };
 }
+/**
+ * After the host edits a bill that is already shared, keep the automatic round-off and the
+ * "shared short/over" note true to the new numbers.
+ */
+async function rebalance(store: Store, code: string): Promise<void> {
+  const d = await store.getBillData(code);
+  if (!d || d.bill.status !== "open") return;
+  const want = withRoundOff(d.items, d.charges, d.bill.total).find((c) => c.label === ROUND_OFF && c.kind === "discount");
+  const have = d.charges.filter((c) => c.kind === "discount" && c.label === ROUND_OFF);
+  if (!(have.length === 1 && want && have[0].amount === want.amount) && !(have.length === 0 && !want)) {
+    for (const c of have) await store.removeCharge(code, c.id);
+    if (want) await store.saveCharge(code, want);
+  }
+  const c = checkBill(d.items, d.charges, d.bill.total);
+  await store.patchBill(code, { shortAtShare: c.ok ? 0 : c.diff });
+}
+
 const isFail = (x: unknown): x is Fail => !!x && typeof x === "object" && (x as Fail).ok === false;
 
 const lockedMsg = "Someone has started paying, so the bill can't be changed any more";
@@ -212,6 +232,7 @@ export async function saveItem(
   if (!Number.isFinite(qty) || qty < 1 || qty > 99) return fail("bad_input", "Quantity must be 1 to 99");
   if (input.id && !h.d.items.some((i) => i.id === input.id)) return fail("not_found", "That item is gone");
   const it = await store.saveItem(code, { id: input.id, name, qty, price, flag: null });
+  await rebalance(store, code);
   return { ok: true, id: it.id };
 }
 
@@ -220,6 +241,7 @@ export async function removeItem(store: Store, code: string, creds: Creds, id: s
   if (isFail(h)) return h;
   if (h.d.payments.some((p) => p.status !== "rejected")) return fail("locked", lockedMsg);
   await store.removeItem(code, id);
+  await rebalance(store, code);
   return { ok: true };
 }
 
@@ -239,6 +261,7 @@ export async function saveCharge(
   if (label === ROUND_OFF) return fail("bad_input", "Round-off is added for you");
   if (amount === null) return fail("bad_input", "Use numbers, like 51.75");
   const c = await store.saveCharge(code, { label, kind: input.kind, amount });
+  await rebalance(store, code);
   return { ok: true, id: c.id };
 }
 
@@ -247,6 +270,7 @@ export async function removeCharge(store: Store, code: string, creds: Creds, id:
   if (isFail(h)) return h;
   if (h.d.payments.some((p) => p.status !== "rejected")) return fail("locked", lockedMsg);
   await store.removeCharge(code, id);
+  await rebalance(store, code);
   return { ok: true };
 }
 

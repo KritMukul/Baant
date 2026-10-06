@@ -43,7 +43,7 @@ export default function BoardScreen({ code, initial, origin }: { code: string; i
 
   // claims as I see them: the server's, with my own pending taps laid over
   const claims = useMemo(() => {
-    const others = view.claims.filter((c) => !(c.participantId === me.id && c.itemId in pend));
+    const others = view.claims.filter((c) => c.participantId !== me.id);
     const mine = view.claims.filter((c) => c.participantId === me.id && !(c.itemId in pend));
     const added = Object.entries(pend).filter(([, on]) => on).map(([itemId]) => ({ itemId, participantId: me.id }));
     return [...others, ...mine, ...added];
@@ -256,6 +256,9 @@ export default function BoardScreen({ code, initial, origin }: { code: string; i
             ) : (
               <div className="hostbox"><div className="t"><b>Everything is claimed.</b> Lock claims to make shares final.</div></div>
             )}
+            {!locked && !view.locked ? (
+              <Link className="link" href={`/b/${code}/check`} style={{ margin: "0 20px 6px", justifySelf: "start", display: "inline-flex" }}>Fix a mistake on the bill</Link>
+            ) : null}
           </div>
         ) : null}
         <div className="items">

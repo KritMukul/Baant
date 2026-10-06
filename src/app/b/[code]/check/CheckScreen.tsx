@@ -9,6 +9,7 @@ import { rupeesText } from "@/lib/rupees";
 import { Back, Check, Pencil, Warn, X } from "@/ui/icons";
 import { Dialog, Sheet } from "@/ui/overlays";
 import { useLive, useToast } from "@/ui/hooks";
+import { ROUND_OFF } from "@/lib/charges";
 import type { BillView } from "@/server/service";
 
 type Item = BillView["items"][number];
@@ -30,6 +31,7 @@ export default function CheckScreen({ code, initial }: { code: string; initial: 
   const ids = useId();
 
   const c = view.check!;
+  const printed = view.charges.filter((x) => !(x.kind === "discount" && x.label === ROUND_OFF));
   const ro = view.total - c.actual; // what Dibs will round off at share time (only when it adds up)
   const flagged = view.items.filter((i) => i.flag).length;
   const dup = c.duplicateId ? view.items.find((i) => i.id === c.duplicateId) : undefined;
@@ -126,7 +128,7 @@ export default function CheckScreen({ code, initial }: { code: string; initial: 
             <div className="pthumb">{view.thumb ? <img src={view.thumb} alt="Your bill" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : null}</div>
             <div>
               <div className="name">{view.merchant}</div>
-              <div className="sub">{view.items.length} items · {view.charges.length} charges</div>
+              <div className="sub">{view.items.length} items · {printed.length} charges</div>
             </div>
           </div>
 
@@ -184,11 +186,11 @@ export default function CheckScreen({ code, initial }: { code: string; initial: 
           </div>
 
           <div className="lh">
-            <span className="sect">Charges · <span>{view.charges.length}</span></span>
+            <span className="sect">Charges · <span>{printed.length}</span></span>
             <button className="link" type="button" onClick={() => setCharge({ kind: "tax", label: "", amount: "" })}>+ Add charge</button>
           </div>
           <div className="lst">
-            {view.charges.map((ch) => (
+            {printed.map((ch) => (
               <div key={ch.id} className="li">
                 <span>
                   <span className="nm">{ch.label}</span>

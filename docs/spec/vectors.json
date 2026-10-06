@@ -165,6 +165,77 @@
       }
     },
     {
+      "name": "nothing claimed yet: nobody owes anything",
+      "items": [
+        {
+          "id": "a",
+          "name": "Paneer",
+          "qty": 1,
+          "price": 30000
+        },
+        {
+          "id": "b",
+          "name": "Naan",
+          "qty": 2,
+          "price": 10000
+        },
+        {
+          "id": "c",
+          "name": "Beer",
+          "qty": 1,
+          "price": 20000
+        }
+      ],
+      "charges": {
+        "tax": 3000,
+        "service": 3000,
+        "discount": 6000
+      },
+      "claims": {},
+      "people": [
+        "x",
+        "y"
+      ],
+      "out": {
+        "shares": {
+          "x": {
+            "subtotal": 0,
+            "tax": 0,
+            "service": 0,
+            "discount": 0,
+            "total": 0
+          },
+          "y": {
+            "subtotal": 0,
+            "tax": 0,
+            "service": 0,
+            "discount": 0,
+            "total": 0
+          }
+        },
+        "unclaimed": [
+          {
+            "id": "a",
+            "name": "Paneer",
+            "qty": 1,
+            "price": 30000
+          },
+          {
+            "id": "b",
+            "name": "Naan",
+            "qty": 2,
+            "price": 10000
+          },
+          {
+            "id": "c",
+            "name": "Beer",
+            "qty": 1,
+            "price": 20000
+          }
+        ]
+      }
+    },
+    {
       "name": "unclaimed item",
       "items": [
         {

@@ -64,3 +64,13 @@ a { color: inherit; }
 .s-claim .av.pop { animation: pop 140ms var(--ease-out); }
 .s-claim .swap { display: inline-block; animation: swap 160ms var(--ease-out); }
 @media (prefers-reduced-motion: reduce) { .s-claim .av.pop, .s-claim .swap { animation: none; } }
+
+/* The arrow on primary buttons is decoration: give it empty alt text so it is not part of the button's accessible name.
+   (The plain content in dibs.css stays as the fallback for browsers that do not support the alt-text syntax.) */
+.page .scr .btn::after { content: "→" / ""; }
+.page .scr .btn.sec::after, .page .scr .btn.dng::after, .page .scr .btn.cam::after { content: none; }
+
+/* Links styled as buttons are not underlined; a big amount never wraps its rupee sign onto its own line */
+.page a.btn, .page a.link { text-decoration: none; }
+.s-claim .amtrow .amt { white-space: nowrap; flex-shrink: 0; }
+.s-claim .amtrow > div:first-child { min-width: 0; }

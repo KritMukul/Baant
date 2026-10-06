@@ -132,6 +132,39 @@ describe("publish", () => {
   });
 });
 
+describe("editing a shared bill keeps the round-off true", () => {
+  it("an edit that moves the difference updates the round-off and the note", async () => {
+    const s = memoryStore();
+    const { code, host } = await open(s);
+    let d = await data(s, code);
+    expect(d.charges.filter((c) => c.label === ROUND_OFF).map((c) => c.amount)).toEqual([13]);
+    const salad = d.items.find((i) => i.name === "Crunchy Salad")!;
+    // price 160.00 -> 159.50: 13 paise over becomes 37 paise short, so the round-off turns negative
+    expect(await svc.saveItem(s, code, host, { id: salad.id, name: salad.name, qty: 1, price: "159.50" })).toMatchObject({ ok: true });
+    d = await data(s, code);
+    expect(d.charges.filter((c) => c.label === ROUND_OFF).map((c) => c.amount)).toEqual([-37]);
+    expect(d.bill.shortAtShare).toBe(0);
+    // an edit that takes it past Rs 1: no round-off, and the bill says how far off it is
+    await svc.saveItem(s, code, host, { id: salad.id, name: salad.name, qty: 1, price: "100" });
+    d = await data(s, code);
+    expect(d.charges.some((c) => c.label === ROUND_OFF)).toBe(false);
+    expect(d.bill.shortAtShare).toBeLessThan(-5000);
+    // and back
+    await svc.saveItem(s, code, host, { id: salad.id, name: salad.name, qty: 1, price: "160" });
+    d = await data(s, code);
+    expect(d.charges.filter((c) => c.label === ROUND_OFF).map((c) => c.amount)).toEqual([13]);
+    expect(d.bill.shortAtShare).toBe(0);
+  });
+  it("the printed charge count leaves the round-off out", async () => {
+    const s = memoryStore();
+    const { code, host } = await open(s);
+    const d = await data(s, code);
+    expect(svc.buildView(d, { role: "host", participantId: d.participants[0].id })!.chargeCount).toBe(4);
+    expect(d.charges).toHaveLength(5);
+    void host;
+  });
+});
+
 describe("views", () => {
   it("a draft is invisible to everyone but the host", async () => {
     const s = memoryStore();

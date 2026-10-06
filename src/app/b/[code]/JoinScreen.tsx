@@ -68,7 +68,7 @@ export default function JoinScreen({ code, view }: { code: string; view: BillVie
               <div>
                 <div className="name" style={{ font: "700 17px/1.15 var(--font-ui)", letterSpacing: "-.02em" }}>{view.merchant}</div>
               </div>
-              <div className="tot">{formatINR(view.total)}<small>{view.items.length} items · {view.charges.length} charges</small></div>
+              <div className="tot">{formatINR(view.total)}<small>{view.items.length} items · {view.chargeCount} charges</small></div>
             </div>
             <div className="rw">
               <i className="av host" style={{ width: 28, height: 28, fontSize: 11 }}>{view.hostName.charAt(0).toUpperCase()}</i>

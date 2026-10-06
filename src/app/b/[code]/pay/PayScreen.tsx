@@ -29,6 +29,7 @@ export default function PayScreen({ code, initial }: { code: string; initial: Bi
   const [busy, setBusy] = useState(false);
   const picker = useRef<HTMLInputElement>(null);
   const left = useRef(false);
+  const fb = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const me = view.me!;
   const mp = view.myPay!;
@@ -54,17 +55,32 @@ export default function PayScreen({ code, initial }: { code: string; initial: Bi
   const extras = mine ? mine.total - mine.subtotal : 0;
 
   /* ---- the hand-off to the UPI app ---- */
+  /** If the page never goes into the background, no UPI app took the link. */
+  const armFallback = useCallback(() => {
+    left.current = false;
+    if (fb.current) clearTimeout(fb.current);
+    fb.current = setTimeout(() => {
+      fb.current = null;
+      // only if they are still on the first view: someone who has moved on must not be pulled back
+      if (!left.current) setPhase((p) => (p === "base" ? "fallback" : p));
+    }, 2000);
+  }, []);
   const launch = useCallback(
     (url: string) => {
-      left.current = false;
+      armFallback();
       window.location.href = url;
-      setTimeout(() => {
-        if (!left.current) setPhase("fallback"); // nothing opened: the page never lost focus
-      }, 2000);
     },
-    [],
+    [armFallback],
   );
   const goUpi = useCallback(() => launch(href), [launch, href]);
+
+  useEffect(() => {
+    if (phase !== "base" && fb.current) {
+      clearTimeout(fb.current);
+      fb.current = null;
+    }
+  }, [phase]);
+  useEffect(() => () => void (fb.current && clearTimeout(fb.current)), []);
 
   useEffect(() => {
     const hide = () => {
@@ -346,7 +362,7 @@ export default function PayScreen({ code, initial }: { code: string; initial: Bi
           </div>
         </div>
         <div className="dock">
-          <button className="btn" type="button" onClick={goUpi}>Pay {formatINR(amount)} with UPI</button>
+          <a className="btn" href={href} onClick={armFallback} data-upi="1">Pay {formatINR(amount)} with UPI</a>
           <button className="link c" type="button" onClick={() => setPhase("proof")}>I already paid</button>
           <p className="fine">Opens GPay, PhonePe, Paytm or any UPI app. No fees.</p>
         </div>
@@ -356,7 +372,7 @@ export default function PayScreen({ code, initial }: { code: string; initial: Bi
 
   return (
     <div className="page s-b">
-      <div className="scr">
+      <div className="scr" data-phase={phase}>
         <input ref={picker} type="file" accept="image/*" hidden onChange={(e) => { void choose(e.target.files?.[0]); e.target.value = ""; }} />
         {body}
       </div>

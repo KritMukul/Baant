@@ -37,9 +37,13 @@ export function splitBill(
   }
 
   const weights = participantIds.map((p) => subtotal[p]);
-  const tax = allocate(charges.tax, weights);
-  const service = allocate(charges.service, weights);
-  const discount = allocate(charges.discount, weights);
+  // Until somebody has claimed something, nobody owes any of the tax, service or discount.
+  // (allocate() would otherwise spread them equally when every weight is zero.)
+  const anyClaimed = weights.some((w) => w > 0);
+  const none = weights.map(() => 0);
+  const tax = anyClaimed ? allocate(charges.tax, weights) : none;
+  const service = anyClaimed ? allocate(charges.service, weights) : none;
+  const discount = anyClaimed ? allocate(charges.discount, weights) : none;
 
   const shares: Record<string, PersonShare> = {};
   participantIds.forEach((p, i) => {

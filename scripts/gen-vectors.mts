@@ -29,6 +29,7 @@ const allocateCases = [
 
 const splitCases = [
   { name: "shared + discount", items, charges: { tax: 3000, service: 3000, discount: 6000 }, claims: { a: ["x", "y"], b: ["x", "y", "z"], c: ["z"] }, people: ["x", "y", "z"] },
+  { name: "nothing claimed yet: nobody owes anything", items, charges: { tax: 3000, service: 3000, discount: 6000 }, claims: {}, people: ["x", "y"] },
   { name: "unclaimed item", items, charges: { tax: 3000, service: 3000, discount: 6000 }, claims: { a: ["x"] }, people: ["x", "y"] },
   { name: "local diners", items: diner, charges: { tax: 28383, service: 25800, discount: 0 }, claims: { mojito: ["d"], long: ["k", "m"], satay: ["a", "d", "m"], surf: ["m"], salad: [] }, people: ["a", "d", "k", "m"] },
 ].map((c) => ({ ...c, out: splitBill(c.items, c.charges, c.claims, c.people) }));
