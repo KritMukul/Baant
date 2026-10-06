@@ -13,6 +13,11 @@ export const parsedBillSchema = z.object({
         qty: z.number().int().positive().nullish().transform((v) => v ?? 1),
         /** Total line price in rupees (qty already multiplied in). */
         price: z.number().nonnegative(),
+        /** Set when the model is unsure it read this row right: which part, and why. */
+        doubt: z
+          .object({ field: z.enum(["name", "qty", "price"]), note: z.string() })
+          .nullish()
+          .transform((v) => v ?? null),
       }),
     )
     .min(1),

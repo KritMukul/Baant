@@ -1,7 +1,5 @@
-import Anthropic from "@anthropic-ai/sdk";
 import { parsedBillSchema, type ParsedBill } from "./bill";
-
-const MODEL = process.env.ANTHROPIC_MODEL ?? "claude-sonnet-5-5";
+import { visionJson, type VisionTask } from "./vision";
 
 const PROMPT = `Extract this restaurant/shop bill. Amounts are in INR rupees (decimals allowed).
 - "price" is the TOTAL for that line (qty already multiplied).
@@ -9,9 +7,12 @@ const PROMPT = `Extract this restaurant/shop bill. Amounts are in INR rupees (de
 - "total" is the final payable amount printed on the bill.
 - Item prices must be BEFORE tax. If the bill prints a "Sub Total", the item prices must add up to that Sub Total. Some bills have a per-line "Total" column that already includes tax (it will be larger than rate x qty and won't add up to the Sub Total); in that case use rate x qty instead.
 - Include EVERY tax/charge line printed on the bill in "taxes", even if two lines look alike. Use null for amounts that are not on the bill.
-- Do not invent items. If text is unreadable, make your best guess; the user will correct it.`;
+- Do not invent items. If text is unreadable, make your best guess; the user will correct it.
+- For each item set "doubt" to null when you are sure. If you are not sure about the name, the quantity or the price (blurry, smudged, cut off), set "doubt" to {"field": "name" | "qty" | "price", "note": "a few words on why"}.`;
 
-const BILL_JSON_SCHEMA = {
+const nullable = (type: string) => ({ type: [type, "null"] });
+
+export const BILL_JSON_SCHEMA = {
   type: "object",
   properties: {
     merchant: { type: "string" },
@@ -19,8 +20,23 @@ const BILL_JSON_SCHEMA = {
       type: "array",
       items: {
         type: "object",
-        properties: { name: { type: "string" }, qty: { type: "integer" }, price: { type: "number" } },
-        required: ["name", "qty", "price"],
+        properties: {
+          name: { type: "string" },
+          qty: { type: "integer" },
+          price: { type: "number" },
+          doubt: {
+            anyOf: [
+              {
+                type: "object",
+                properties: { field: { type: "string", enum: ["name", "qty", "price"] }, note: { type: "string" } },
+                required: ["field", "note"],
+                additionalProperties: false,
+              },
+              { type: "null" },
+            ],
+          },
+        },
+        required: ["name", "qty", "price", "doubt"],
         additionalProperties: false,
       },
     },
@@ -33,141 +49,43 @@ const BILL_JSON_SCHEMA = {
         additionalProperties: false,
       },
     },
-    serviceCharge: { type: "number" },
-    discount: { type: "number" },
+    serviceCharge: nullable("number"),
+    discount: nullable("number"),
     total: { type: "number" },
   },
   required: ["merchant", "items", "taxes", "serviceCharge", "discount", "total"],
   additionalProperties: false,
 };
 
-/** OpenAI vision via Chat Completions + strict structured output (plain fetch, no SDK). */
-async function parseWithOpenAI(base64: string, mediaType: string): Promise<ParsedBill> {
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: { "content-type": "application/json", authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
-    body: JSON.stringify({
-      model: process.env.OPENAI_MODEL ?? "gpt-4o",
-      messages: [
-        {
-          role: "user",
-          content: [
-            { type: "text", text: PROMPT },
-            { type: "image_url", image_url: { url: `data:${mediaType};base64,${base64}`, detail: "high" } },
-          ],
-        },
-      ],
-      response_format: { type: "json_schema", json_schema: { name: "bill", strict: true, schema: BILL_JSON_SCHEMA } },
-    }),
-  });
-  if (!res.ok) throw new Error(`OpenAI ${res.status}: ${(await res.text()).slice(0, 200)}`);
-  const json = (await res.json()) as { choices: { message: { content: string | null } }[] };
-  const content = json.choices[0]?.message.content;
-  if (!content) throw new Error("Bill could not be read");
-  return parsedBillSchema.parse(JSON.parse(content));
-}
+/** A believable bill so the whole app can be tried without an API key (BILL_PARSER=stub). */
+export const STUB_BILL: ParsedBill = {
+  merchant: "The Local Diners",
+  items: [
+    { name: "Flavoured Mojito", qty: 1, price: 330, doubt: null },
+    { name: "Cucumber Mint", qty: 1, price: 170, doubt: null },
+    { name: "Long Island Elec", qty: 2, price: 680, doubt: null },
+    { name: "Crunchy Salad", qty: 1, price: 160, doubt: null },
+    { name: "Assorted Satay", qty: 1, price: 260, doubt: null },
+    { name: "Tequila Chicken", qty: 1, price: 320, doubt: null },
+    { name: "Fajitas Chicken", qty: 1, price: 300, doubt: null },
+    { name: "Surf N Turf", qty: 1, price: 360, doubt: { field: "price", note: "the price is smudged" } },
+  ],
+  taxes: [
+    { label: "VAT 5.5%", amount: 55.55 },
+    { label: "VAT 14.5%", amount: 227.65 },
+    { label: "Service tax 5.6%", amount: 158.93 },
+  ],
+  serviceCharge: 258,
+  discount: 0,
+  total: 3280,
+};
 
-/** Retry transient provider errors (rate limit / overload) with exponential backoff. */
-async function fetchWithRetry(url: string, init: RequestInit, tries = 5): Promise<Response> {
-  for (let i = 0; ; i++) {
-    const res = await fetch(url, init);
-    if ((![429, 502, 503].includes(res.status)) || i >= tries - 1) return res;
-    await new Promise((r) => setTimeout(r, 1500 * 2 ** i));
-  }
-}
+const task: VisionTask<ParsedBill> = {
+  prompt: PROMPT,
+  schema: BILL_JSON_SCHEMA,
+  parse: (json) => parsedBillSchema.parse(json),
+  stub: () => STUB_BILL,
+};
 
-/** Google Gemini (free tier via AI Studio key). JSON mode + zod validation. */
-async function parseWithGemini(base64: string, mediaType: string): Promise<ParsedBill> {
-  const model = process.env.GEMINI_MODEL ?? "gemini-3.5-flash-lite";
-  const res = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-    method: "POST",
-    headers: { "content-type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY ?? "" },
-    body: JSON.stringify({
-      contents: [
-        {
-          parts: [
-            { text: `${PROMPT}\nReply with JSON only, matching this JSON Schema:\n${JSON.stringify(BILL_JSON_SCHEMA)}` },
-            { inline_data: { mime_type: mediaType, data: base64 } },
-          ],
-        },
-      ],
-      generationConfig: { responseMimeType: "application/json", temperature: 0 },
-    }),
-  });
-  if (!res.ok) throw new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 200)}`);
-  const json = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
-  const text = json.candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("");
-  if (!text) throw new Error("Bill could not be read");
-  return parsedBillSchema.parse(JSON.parse(text));
-}
-
-export async function parseBillImage(base64: string, mediaType: string): Promise<ParsedBill> {
-  const pick = process.env.BILL_PARSER;
-  if (pick === "gemini" || (!pick && !process.env.ANTHROPIC_API_KEY && !process.env.OPENAI_API_KEY && process.env.GEMINI_API_KEY))
-    return parseWithGemini(base64, mediaType);
-  const useOpenAI =
-    process.env.BILL_PARSER === "openai" || (!process.env.BILL_PARSER && !process.env.ANTHROPIC_API_KEY && !!process.env.OPENAI_API_KEY);
-  if (useOpenAI) return parseWithOpenAI(base64, mediaType);
-  const client = new Anthropic();
-  const res = await client.messages.create({
-    model: MODEL,
-    max_tokens: 2048,
-    tools: [
-      {
-        name: "record_bill",
-        description: "Record the structured contents of the bill.",
-        input_schema: {
-          type: "object",
-          properties: {
-            merchant: { type: "string" },
-            items: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  name: { type: "string" },
-                  qty: { type: "integer" },
-                  price: { type: "number" },
-                },
-                required: ["name", "qty", "price"],
-              },
-            },
-            taxes: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: { label: { type: "string" }, amount: { type: "number" } },
-                required: ["label", "amount"],
-              },
-            },
-            serviceCharge: { type: "number" },
-            discount: { type: "number" },
-            total: { type: "number" },
-          },
-          required: ["items", "total"],
-        },
-      },
-    ],
-    tool_choice: { type: "tool", name: "record_bill" },
-    messages: [
-      {
-        role: "user",
-        content: [
-          {
-            type: "image",
-            source: {
-              type: "base64",
-              media_type: mediaType as "image/jpeg" | "image/png" | "image/webp" | "image/gif",
-              data: base64,
-            },
-          },
-          { type: "text", text: PROMPT },
-        ],
-      },
-    ],
-  });
-
-  const block = res.content.find((b) => b.type === "tool_use");
-  if (!block || block.type !== "tool_use") throw new Error("Bill could not be read");
-  return parsedBillSchema.parse(block.input);
-}
+export const parseBillImage = (base64: string, mediaType: string): Promise<ParsedBill> =>
+  visionJson(task, { base64, mediaType });
