@@ -1,8 +1,10 @@
-# Baant · Night Tab brand kit
+# Dibs · Night Tab brand kit
 
 **Version** 1.0 · **Locked** 2026-10-06 · **Status** Approved (Step 3)
 
 > Everyone pays for exactly what they ate.
+>
+> Tagline: **Call dibs. Split the bill.**
 
 Open `index.html` in a browser for the visual book. Everything below is generated from one token source, so the three token files always agree.
 
@@ -30,8 +32,9 @@ Open `index.html` in a browser for the visual book. Everything below is generate
 2. Every amount is JetBrains Mono, tabular, with the ₹ sign in `accentText`.
 3. You are always coral. Friends are indigo, violet and green, in that order. You come last in an avatar row.
 4. The primary button names the action and the amount: "Pay Aarav · UPI".
-5. Motion uses transform and opacity only, under 320ms, no bounce. Buttons scale to `0.97` on press. Respect `prefers-reduced-motion`.
-6. Hover styles only inside `@media (hover: hover) and (pointer: fine)`.
+5. Claiming is "dibs": "Call dibs", "You have dibs", "Up for grabs". English only, no mixed-language copy.
+6. Motion uses transform and opacity only, under 320ms, no bounce. Buttons scale to `0.97` on press. Respect `prefers-reduced-motion`.
+7. Hover styles only inside `@media (hover: hover) and (pointer: fine)`.
 
 ## Accessibility
 
@@ -62,7 +65,7 @@ Set `data-theme` before first paint (a tiny inline script in `<head>`) to avoid 
 
 ## Decision history
 
-See `.claude/skills/moodforge/projects/baant.md`.
+See `.claude/skills/moodforge/projects/dibs.md`.
 
 ## Next
 

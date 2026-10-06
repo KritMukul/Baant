@@ -31,7 +31,7 @@ export default function ClaimBoard({ code, billId, bill, items, participants, cl
   const [editing, setEditing] = useState(false);
   const [optimistic, setOptimistic] = useState<Record<string, boolean>>({}); // itemId -> my claim state
   const [, startTransition] = useTransition();
-  const key = `baant:${code}`;
+  const key = `dibs:${code}`;
 
   useEffect(() => {
     try {
@@ -134,7 +134,7 @@ export default function ClaimBoard({ code, billId, bill, items, participants, cl
                   <b>{formatINR(i.price)}</b>
                 </div>
                 <div className="chips">
-                  {who.length ? who.map(nameOf).join(", ") + (who.length > 1 ? ` (${formatINR(Math.ceil(i.price / who.length))} each)` : "") : "Nobody yet"}
+                  {who.length ? who.map(nameOf).join(", ") + (who.length > 1 ? ` (${formatINR(Math.ceil(i.price / who.length))} each)` : "") : "Nobody has dibs yet"}
                 </div>
               </div>
             );
@@ -143,7 +143,7 @@ export default function ClaimBoard({ code, billId, bill, items, participants, cl
       {editing && <button className="ghost" onClick={async () => { await addItem(code); router.refresh(); }}>+ Add item</button>}
 
       {unclaimed.length > 0 && !editing && (
-        <p className="muted">{unclaimed.length} {unclaimed.length === 1 ? "item is" : "items are"} not claimed yet.</p>
+        <p className="muted">{unclaimed.length} {unclaimed.length === 1 ? "item is" : "items are"} still up for grabs.</p>
       )}
 
       {myShare && (
@@ -155,7 +155,7 @@ export default function ClaimBoard({ code, billId, bill, items, participants, cl
           {myShare.total > 0 && me!.participantId && (
             <a
               className="pay"
-              href={upiLink({ vpa: bill.payerVpa, name: bill.payerName, amount: myShare.total, note: `Baant ${bill.merchant}`.trim() })}
+              href={upiLink({ vpa: bill.payerVpa, name: bill.payerName, amount: myShare.total, note: `Dibs ${bill.merchant}`.trim() })}
             >
               Pay {bill.payerName} {formatINR(myShare.total)} (UPI)
             </a>

@@ -1,4 +1,4 @@
-# Baant · Design State
+# Dibs · Design State
 
 **Last updated:** 2026-10-06
 **Current phase:** Step 3 — Brand Kit (waiting for approval)
@@ -21,7 +21,7 @@
 7. Light accent: Coral #ff6b4a with WHITE label on the primary button (round 2c, "lets go with coral only"). Known AA exception (2.82:1); mitigated by accentEdge #d9431a outline. Do not silently change; offer #e02900 or dark label as the AA fix if asked.
 8. Light ground #f5f4fb, surface #ffffff, accentText #c2371a.
 9. Language: English only. No Hinglish anywhere in the product copy, brand kit or app (user, round 3: "we will not include hinglish only english").
-10. The app is being renamed. New name not chosen yet. The name is a single variable (`NAME` in the kit generator) plus a few app strings.
+10. **Name: Dibs** (renamed from Dibs, round 3). Tagline: "Call dibs. Split the bill." Claim copy: "Call dibs", "You have dibs", "Up for grabs". Rejected names, never re-propose: Quits, Fairplate, Clink, Evenly, Halfsies, TapSplit, SnapSplit, BillSplit, Forkout, GoDutch, Pieceful, WhoAte, Platemates, Checkmates, Bitewise, Billmates, Yourbite, Plink, Halfplate, Bagsy, Chopchop, Carve (not chosen; user picked Dibs).
 
 ## Rejected Directions
 
@@ -90,7 +90,7 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 **File:** `docs/design/brand-kit/index.html` (+ tokens.css/ts/json, README.md, assets/)
 **Checks:** tokens.ts compiles under tsc --strict; tokens.json parses; SVGs well-formed; page has no horizontal overflow at 400px or 1200px, no console errors; contrast matrix computed for 14 pairs x 2 themes (1 approved exception).
 **User reaction:** "this is fine but we will not include hinglish only english and we will rename the app"
-**Outcome:** APPROVED with changes: Hinglish removed from kit and app copy; rename pending a name.
+**Outcome:** APPROVED with changes: Hinglish removed from kit and app copy; renamed to Dibs ("go with Dibs"). Kit, app, README regenerated.
 
 ---
 

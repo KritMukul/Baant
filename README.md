@@ -1,12 +1,12 @@
-# Baant
+# Dibs
 
-Photograph the bill, share a link, everyone taps what they ate, everyone pays by UPI.
+Call dibs on what you ate. Photograph the bill, share a link, everyone taps their items, everyone pays by UPI.
 
 ## Flow
 1. The host uploads a photo and enters their name and UPI ID. A vision model parses the bill into structured JSON.
 2. `validateBill` checks that items + tax + service − discount equals the total. On a mismatch the host sees a banner and can edit the items.
 3. The link `/b/<code>` is shared with the group. Guests join with just a name (no signup).
-4. People tap items to claim them; shared items split equally. Supabase Realtime shows every tap to everyone.
+4. People call dibs by tapping items; shared items split equally. Supabase Realtime shows every tap to everyone.
 5. Tax, service charge and discount are split in proportion to each person's items (largest-remainder rounding, exact to the paisa). Each person gets a `upi://pay` button.
 
 ## Code map

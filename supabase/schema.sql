@@ -1,4 +1,4 @@
--- Baant schema. Run in the Supabase SQL editor.
+-- Dibs schema. Run in the Supabase SQL editor.
 -- Writes happen only through server actions using the service-role key.
 -- Anon clients get read-only access (needed for Realtime); rows are scoped by unguessable codes/UUIDs.
 

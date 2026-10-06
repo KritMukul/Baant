@@ -1,5 +1,5 @@
 /**
- * Baant · Night Tab design tokens (TypeScript)
+ * Dibs · Night Tab design tokens (TypeScript)
  * v1.0 · generated from one source; do not hand-edit values.
  *
  *   import { theme, colors } from '@/theme/tokens';
