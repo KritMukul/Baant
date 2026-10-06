@@ -61,6 +61,14 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 **User reaction:** pending
 **Outcome:** pending
 
+### Round 2b — 2026-10-06
+
+**Step:** 2 (iteration)
+**Concept:** light accent too washed out (#ff9b78 on #f5f4fb is 1.9:1). Three stronger options: A Coral #ff6b4a (dark btn text), B Tangerine #d2400f (white btn text), C Rose #f0527a (dark btn text).
+**File:** `.superpowers/brainstorm/s1/content/round2b-light-accent.html`
+**User reaction (round 2):** "light me peach thoda off lag rha hai"
+**Outcome:** pending pick. Dark peach #ffb59a stays locked.
+
 ---
 
 ## Permanent artifacts
@@ -68,4 +76,5 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 ```
 .superpowers/brainstorm/s1/content/round1-directions.html
 .superpowers/brainstorm/s1/content/round2-night-tab-preview.html
+.superpowers/brainstorm/s1/content/round2b-light-accent.html
 ```

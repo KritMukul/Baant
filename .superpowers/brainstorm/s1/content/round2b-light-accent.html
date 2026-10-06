@@ -1,0 +1,201 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"></head><body style=margin:0><title>Night Tab Light Accent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Sora:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: toggle bar, then three screens (claim board, pay sheet, host fix) in light and dark rows. App tokens live on .phone so each phone is self-contained. */
+:root{--pbg:#e9e8f2;--pfg:#14152b;--pmute:#5b5f80;--pcard:#ffffff;--pline:#d6d5e8;--sans:'Sora',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--pbg:#08091a;--pfg:#ecebf8;--pmute:#9a9ec0;--pcard:#12142a;--pline:#272a4d;color-scheme:dark}}
+:root[data-theme="dark"]{--pbg:#08091a;--pfg:#ecebf8;--pmute:#9a9ec0;--pcard:#12142a;--pline:#272a4d;color-scheme:dark}
+body{background:var(--pbg);color:var(--pfg);font-family:var(--sans);font-size:14px;line-height:1.5;padding-inline:16px;padding-block:28px}
+.wrap{max-width:1100px;margin-inline:auto;display:grid;gap:26px}
+.eb{font:500 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--pmute)}
+h1{font:700 clamp(30px,5vw,48px)/1.02 var(--sans);letter-spacing:-.035em;margin:10px 0 10px;text-wrap:balance}
+.lede{color:var(--pmute);max-width:62ch;margin:0}
+.bar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;position:sticky;top:env(safe-area-inset-top,0px);background:var(--pbg);padding-block:10px;z-index:20;border-bottom:1px solid var(--pline)}
+.seg{display:inline-flex;border:1px solid var(--pline);border-radius:99px;padding:3px;background:var(--pcard)}
+.seg button{font:600 12.5px var(--sans);border:0;background:transparent;color:var(--pmute);padding:7px 16px;border-radius:99px;cursor:pointer;transition:background 150ms ease,color 150ms ease,transform 140ms cubic-bezier(.23,1,.32,1)}
+.seg button:active{transform:scale(.97)}
+.seg button[aria-pressed="true"]{background:var(--pfg);color:var(--pbg)}
+.seg button:focus-visible{outline:2px solid #ff9b78;outline-offset:2px}
+.note{font:500 12px var(--mono);color:var(--pmute)}
+.row{display:grid;gap:22px 18px;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));justify-items:center;padding-block:6px}
+.rowhead{display:flex;align-items:center;gap:10px;font:600 12px var(--mono);letter-spacing:.12em;text-transform:uppercase}
+.rowhead i{width:12px;height:12px;border-radius:50%;border:1px solid #0004}
+.stage[data-show="light"] [data-row="dark"],.stage[data-show="dark"] [data-row="light"]{display:none}
+.cap{font:500 12px var(--mono);color:var(--pmute);text-align:center;margin-top:12px}
+.tok{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr))}
+.tok div{background:var(--pcard);border:1px solid var(--pline);border-radius:12px;padding:12px 14px;font:500 12px var(--mono);display:grid;gap:3px}
+.tok b{font:600 12px var(--sans)}
+.dots{display:flex;gap:5px;margin-top:4px}.dots i{width:18px;height:18px;border-radius:5px;border:1px solid #0003}
+
+/* ---------- phone + app tokens ---------- */
+.phone{--bg:#f5f4fb;--sf:#ffffff;--tx:#14152b;--mu:#5b5f80;--ac:#ff9b78;--act:#b83f17;--on:#1b1020;--pe:#4a5fd0;--bd:#dcdcf0;--glow:#ff9b7822;--a1:#4a5fd0;--a2:#7c4fe0;--a3:#0e7f6d;--aon:#fff;--warn:#b42318;--warnbg:#fdecea;--ok:#0e7f6d}
+.phone.dark{--bg:#0c0d1c;--sf:#171a30;--tx:#ecebf8;--mu:#8e92b3;--ac:#ffb59a;--act:#ffb59a;--on:#1b1020;--pe:#8fa4ff;--bd:#2b2f55;--glow:#ffb59a44;--a1:#8fa4ff;--a2:#c6a7ff;--a3:#7fe3d0;--aon:#0c0d1c;--warn:#ffb4a8;--warnbg:#3a1620;--ok:#7fe3d0}
+.phone{width:300px;height:620px;border-radius:44px;position:relative;overflow:hidden;background:var(--bg);color:var(--tx);font-family:var(--sans);box-shadow:0 0 0 9px #0a0a0a,0 0 0 10px #3a3a3a,0 30px 60px -25px #0008;flex-shrink:0;margin:10px 0 6px;transition:none}
+.notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:84px;height:22px;background:#0a0a0a;border-radius:99px;z-index:5}
+.scr{height:calc(100% - 36px);display:flex;flex-direction:column}
+.sb{display:flex;justify-content:space-between;padding:14px 26px 0;box-sizing:border-box;font:600 11px -apple-system,system-ui,sans-serif;height:36px}
+.mono{font-family:var(--mono)}
+.hd{padding:6px 16px 8px}
+.hd .e{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mu)}
+.tot{font:600 32px/1.05 var(--mono);letter-spacing:-.05em;margin:2px 0}
+.tot .c{color:var(--act)}
+.sub{font-size:11px;color:var(--mu)}
+.avs{display:flex;margin-top:7px}
+.av{font-style:normal;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;font-size:10px;font-weight:700;background:var(--a1);color:var(--aon);border:2px solid var(--bg)}
+.av+.av{margin-left:-6px}
+.av.b{background:var(--a2)}.av.c{background:var(--a3)}.av.me{background:var(--ac);color:var(--on)}
+.list{list-style:none;margin:0;padding:0 12px;flex:1;display:flex;flex-direction:column;gap:5px;overflow:hidden}
+.it{display:flex;align-items:center;gap:8px;padding:4px 10px;min-height:36px;font-size:11.5px;background:var(--sf);border:1px solid var(--bd);border-radius:14px;cursor:pointer;transition:border-color 150ms ease,box-shadow 150ms ease,background 150ms ease,transform 140ms cubic-bezier(.23,1,.32,1)}
+.it:active{transform:scale(.98)}
+.it .n{font-weight:600}.it .n small{display:block;font-weight:400;font-size:9.5px;color:var(--mu)}
+.it .p{margin-left:auto;font:500 11.5px var(--mono);white-space:nowrap}
+.it .who{display:flex}.it .who .av{width:20px;height:20px;font-size:8.5px}
+.it.mine{border-color:var(--ac);box-shadow:0 0 0 3px var(--glow)}
+.it.open{background:transparent;border-style:dashed;color:var(--mu)}
+.foot{padding:8px 14px 16px;display:grid;gap:8px;background:linear-gradient(transparent,var(--bg) 20%)}
+.frow{display:flex;justify-content:space-between;align-items:baseline}
+.frow .l{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mu)}
+.frow small{display:block;font-size:9.5px;color:var(--mu);white-space:nowrap}
+.frow b{font:600 24px/1 var(--mono);letter-spacing:-.04em}
+.pill{font:inherit;font-weight:700;font-size:13.5px;border:0;width:100%;background:var(--ac);color:var(--on);border-radius:99px;padding:7px 7px 7px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:transform 140ms cubic-bezier(.23,1,.32,1),filter 150ms ease}
+.pill::after{content:'→';display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--on);color:var(--ac);font-size:18px}
+.pill:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){.it:hover{border-color:var(--ac)}.pill:hover{filter:brightness(1.05)}.seg button:hover{color:var(--pfg)}}
+.back{padding:6px 16px 0;font-size:12px;color:var(--mu)}
+.big{padding:6px 16px 8px}
+.big .who2{font-size:12px;color:var(--mu)}
+.big .amt{font:600 42px/1.05 var(--mono);letter-spacing:-.06em;margin:4px 0 0}
+.big .amt .c{color:var(--act)}
+.card{margin:0 12px;background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:8px 12px;display:grid}
+.card .r{display:flex;justify-content:space-between;font-size:11px;padding:5px 0;border-bottom:1px solid var(--bd)}
+.card .r:last-child{border:0}
+.card .r span:last-child{font-family:var(--mono)}
+.card .r.k{font-weight:700}
+.vpa{margin:10px 12px 0;display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px dashed var(--bd);border-radius:14px;padding:8px 12px;font:500 11px var(--mono)}
+.vpa button{font:600 10.5px var(--sans);border:1px solid var(--bd);background:var(--sf);color:var(--tx);border-radius:99px;padding:5px 10px;cursor:pointer}
+.apps{display:flex;gap:6px;margin:10px 12px 0}
+.apps span{flex:1;text-align:center;font-size:10.5px;font-weight:600;border:1px solid var(--bd);background:var(--sf);border-radius:12px;padding:8px 2px}
+.apps span.on{border-color:var(--ac);box-shadow:0 0 0 3px var(--glow)}
+.hint{font-size:10px;color:var(--mu);text-align:center;padding:0 16px}
+.warn{margin:4px 12px 8px;background:var(--warnbg);color:var(--warn);border:1px solid var(--warn);border-radius:14px;padding:9px 12px;font-size:11px}
+.warn b{display:block;font-size:12px}
+.ed{display:grid;grid-template-columns:1fr 78px;gap:6px;padding:0 12px;margin-bottom:5px}
+.ed span{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:8px 10px;font-size:11px}
+.ed span+span{font:500 11px var(--mono);text-align:right}
+.add{margin:2px 12px 0;display:flex;justify-content:space-between;align-items:center;border:1px dashed var(--ac);color:var(--act);border-radius:12px;padding:8px 12px;font-size:11px;font-weight:600;cursor:pointer;background:transparent;width:calc(100% - 24px)}
+.add:active{transform:scale(.98)}
+.sum{display:flex;justify-content:space-between;margin:6px 16px 0;font:500 11px var(--mono);color:var(--mu)}
+.sum b{color:var(--ok);font-weight:600}
+@media (prefers-reduced-motion:reduce){.it,.pill,.seg button,.add{transition:none}}
+
+.phone.v1{--ac:#ff6b4a;--act:#c2371a;--on:#1b1020;--glow:#ff6b4a2e}
+.phone.v2{--ac:#d2400f;--act:#b83a0d;--on:#ffffff;--glow:#d2400f26}
+.phone.v3{--ac:#f0527a;--act:#c2294f;--on:#1b1020;--glow:#f0527a2e}
+.phone.v0{}
+.vh{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline;margin-top:6px}
+.vh b{font:700 20px var(--sans);letter-spacing:-.02em}
+.vh span{font:500 12px var(--mono);color:var(--pmute)}
+.sw2{display:inline-flex;gap:6px;align-items:center}.sw2 i{width:16px;height:16px;border-radius:50%;border:1px solid #0004}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eb">Round 02b · Light accent</div>
+    <h1>Peach, but <span style="color:#ff6b4a">stronger</span></h1>
+    <p class="lede">The light peach only reaches 1.9:1 against the lavender ground, so it reads washed out. These three are deeper and sit clearly on the page. Dark keeps its peach. Tap items on the first screen.</p>
+  </header>
+  <div id="stage"></div>
+  <section class="tok" aria-label="Notes">
+    <div><b>Coral</b>Closest to the original peach, just more saturated. Dark text on button, 6.5:1.</div>
+    <div><b>Tangerine</b>Most contrast against the ground (4:1). White text on button, so it feels a step more serious.</div>
+    <div><b>Rose</b>Pulls the accent toward pink, which sits well on lavender. Dark text on button, 5.4:1. Moves furthest from the dark peach.</div>
+  </section>
+</div>
+<script>
+(function(){
+  var ITEMS=[
+    {n:'Flavoured Mojito',p:330,who:['b']},
+    {n:'Long Island Elec ×2',p:680,who:['c'],me:true,sub:'with Kabir'},
+    {n:'Assorted Satay',p:260,who:['a','b'],me:true,sub:'3 ways'},
+    {n:'Surf N Turf',p:360,who:[],me:true},
+    {n:'Crunchy Salad',p:160,who:[]}
+  ];
+  var K=3280/2580;
+  function av(c,l){return '<i class="av '+c+'">'+l+'</i>'}
+  var L={a:['','A'],b:['b','D'],c:['c','K']};
+  function fmt(n){return n.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2})}
+  function sb(){return '<div class="notch"></div><div class="sb"><span>8:54</span><span>5G ▮▮▮</span></div>'}
+
+  function claim(theme){
+    var el=document.createElement('div');el.className='phone '+theme;
+    var me=ITEMS.map(function(i){return !!i.me});
+    function render(){
+      var sub=0,open=0;
+      ITEMS.forEach(function(i,x){var cnt=i.who.length+(me[x]?1:0);if(cnt===0){open++}else if(me[x]){sub+=i.p/cnt}});
+      var tax=sub*(K-1);
+      el.innerHTML=sb()+'<div class="scr"><div class="hd"><div class="e">The Local Diners · Kalyan Nagar</div>'+
+      '<div class="tot"><span class="c">₹</span>3,280.00</div><div class="sub">Aarav paid · 4 people · '+open+' item'+(open===1?'':'s')+' unclaimed</div>'+
+      '<div class="avs">'+av('','A')+av('b','D')+av('c','K')+av('me','M')+'</div></div>'+
+      '<ul class="list">'+ITEMS.map(function(i,x){
+        var cnt=i.who.length+(me[x]?1:0);
+        var w=i.who.map(function(k){return av(L[k][0],L[k][1])}).join('')+(me[x]?av('me','M'):'');
+        var s=cnt>1?'split '+cnt+' ways':'';
+        return '<li class="it'+(me[x]?' mine':'')+(cnt===0?' open':'')+'" data-x="'+x+'" role="button" tabindex="0" aria-pressed="'+me[x]+'"><span class="n">'+i.n+(s?'<small>'+s+'</small>':'')+'</span><span class="p">₹'+fmt(i.p)+'</span><span class="who">'+w+'</span></li>';
+      }).join('')+'</ul>'+
+      '<div class="foot"><div class="frow"><div><div class="l">Your share</div><small>items ₹'+fmt(sub)+' + tax ₹'+fmt(tax)+'</small></div><b>₹'+fmt(sub+tax)+'</b></div>'+
+      '<button class="pill" type="button">Pay Aarav · UPI</button></div></div>';
+    }
+    el.addEventListener('click',function(e){var li=e.target.closest('.it');if(!li)return;var x=+li.dataset.x;me[x]=!me[x];render()});
+    el.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('it')){e.preventDefault();e.target.click()}});
+    render();return el;
+  }
+  function pay(theme){
+    var el=document.createElement('div');el.className='phone '+theme;
+    el.innerHTML=sb()+'<div class="scr"><div class="back">← Claim board</div>'+
+    '<div class="big"><div class="who2">You owe Aarav</div><div class="amt"><span class="c">₹</span>1,000.10</div></div>'+
+    '<div class="card"><div class="r"><span>Long Island Elec ×2 (½)</span><span>340.00</span></div><div class="r"><span>Assorted Satay (⅓)</span><span>86.67</span></div><div class="r"><span>Surf N Turf</span><span>360.00</span></div>'+
+    '<div class="r"><span>VAT, service tax &amp; charge</span><span>213.43</span></div><div class="r k"><span>Total</span><span>1,000.10</span></div></div>'+
+    '<div class="vpa"><span>aarav.k@okaxis</span><button type="button">Copy</button></div>'+
+    '<div class="apps"><span class="on">GPay</span><span>PhonePe</span><span>Paytm</span></div>'+
+    '<div style="flex:1"></div><div class="hint">Opens your UPI app with the amount filled in. No fees.</div>'+
+    '<div class="foot"><button class="pill" type="button">Pay ₹1,000.10</button></div></div>';
+    return el;
+  }
+  function fix(theme){
+    var el=document.createElement('div');el.className='phone '+theme;
+    var rows=[['Tandoori Chicken','295.00'],['Lasooni Dal Tadka','275.00'],['Hyderabadi Murg Biryani','375.00'],['Tandoori Roti ×2','60.00'],['Tandoori Roti','30.00']];
+    var added=false;
+    function render(){
+      var diff=added?0:52.22;
+      el.innerHTML=sb()+'<div class="scr"><div class="hd"><div class="e">Liquor Street · Faridabad</div><div class="tot"><span class="c">₹</span>1,139.00</div><div class="sub">Scanned 20 May · check before you share</div></div>'+
+      (added?'<div class="warn" style="background:transparent;color:var(--ok);border-color:var(--ok)"><b>Adds up to ₹1,139.00</b>Ready to share with the group.</div>':
+      '<div class="warn"><b>₹52.22 short of the bill total</b>Items and taxes add to ₹1,086.78. A charge may be missing.</div>')+
+      rows.map(function(r){return '<div class="ed"><span>'+r[0]+'</span><span>'+r[1]+'</span></div>'}).join('')+
+      '<div class="ed"><span>CGST + SGST 2.5%</span><span>51.78</span></div>'+
+      (added?'<div class="ed"><span>S.Tax</span><span>51.75</span></div>':'<button class="add" type="button"><span>+ Add “S.Tax” found on bill</span><span class="mono">51.75</span></button>')+
+      '<div class="sum"><span>Difference</span><b'+(added?'':' style="color:var(--warn)"')+'>'+(added?'₹0.00 ✓':'−₹52.22')+'</b></div>'+
+      '<div style="flex:1"></div><div class="foot"><button class="pill" type="button">'+(added?'Share link':'Share anyway')+'</button></div></div>';
+    }
+    el.addEventListener('click',function(e){if(e.target.closest('.add')){added=true;render()}});
+    render();return el;
+  }
+
+  var stage=document.getElementById('stage');
+  var V=[['v1','Coral','#ff6b4a','#c2371a'],['v2','Tangerine','#d2400f','#b83a0d'],['v3','Rose','#f0527a','#c2294f']];
+  V.forEach(function(v,i){
+    var row=document.createElement('div');
+    var h=document.createElement('div');h.className='vh';
+    h.innerHTML='<b>'+String.fromCharCode(65+i)+' · '+v[1]+'</b><span class="sw2"><i style="background:'+v[2]+'"></i><i style="background:'+v[3]+'"></i> '+v[2]+' fill · '+v[3]+' text</span>';
+    var grid=document.createElement('div');grid.className='row';
+    [[claim,'Claim board'],[pay,'Pay sheet']].forEach(function(s){
+      var w=document.createElement('div');w.appendChild(s[0](v[0]));var c=document.createElement('div');c.className='cap';c.textContent=s[1];w.appendChild(c);grid.appendChild(w);
+    });
+    row.appendChild(h);row.appendChild(grid);stage.appendChild(row);
+  });
+  stage.querySelectorAll('.vpa button').forEach(function(b){b.addEventListener('click',function(){
+    try{navigator.clipboard.writeText('aarav.k@okaxis')}catch(e){};b.textContent='Copied';setTimeout(function(){b.textContent='Copy'},1200)})});
+})();
+</script>
+</body></html>
