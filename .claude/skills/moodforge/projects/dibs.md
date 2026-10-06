@@ -1,7 +1,7 @@
 # Dibs · Design State
 
 **Last updated:** 2026-10-06
-**Current phase:** Step 3 — Brand Kit (waiting for approval)
+**Current phase:** Step 4 — Animation Review (waiting for approval)
 **Status:** in_progress
 
 ---
@@ -101,6 +101,16 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 **Checks:** next build clean; /icon returns 200 image/png and renders the mark; kit page no overflow at 400/1100px.
 **Outcome:** APPLIED.
 
+### Round 4 — 2026-10-06
+
+**Step:** 4 (Animation Review)
+**Skills loaded:** moodforge (emil-design-eng motion rules from SKILL.md; GSAP 3.12.5 + ScrollTrigger from cdnjs)
+**Concept:** Motion gallery with brand tokens: 4-question rules, easing plotter (3 use, 2 banned), the tap (claim dot + ripple + share crossfade), buttons, pay sheet, dialog, toast stack, popover, screen + theme transitions, scroll-scrubbed rings, broken-on-purpose, Reduced motion and Slow-mo 1x/2x/4x controls.
+**File:** `.superpowers/brainstorm/s1/content/round4-animations.html`
+**Checks:** all demos exercised headlessly (claim math 457.67 -> 661.09, sheet open/close flush, toast stack, popover, screen swap, slow-mo 4x = 1280ms, reduced motion, dark theme, scroll rings); no JS errors; no overflow at 400px. Not tested on a real phone; GSAP loaded from cdnjs (blocked in the sandbox, tested with the same version from npm).
+**User reaction:** pending
+**Outcome:** pending
+
 ---
 
 ## Permanent artifacts
@@ -110,5 +120,6 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 .superpowers/brainstorm/s1/content/round2-night-tab-preview.html
 .superpowers/brainstorm/s1/content/round2b-light-accent.html
 .superpowers/brainstorm/s1/content/round2c-coral-white.html
+.superpowers/brainstorm/s1/content/round4-animations.html
 docs/design/brand-kit/  (index.html, tokens.css, tokens.ts, tokens.json, README.md, assets/)
 ```

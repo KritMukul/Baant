@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0">
+<title>Dibs Motion</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+/**
+ * Dibs · Night Tab design tokens (CSS)
+ * v1.0 · generated from one source; do not hand-edit values.
+ *
+ * Theme: light by default, dark via prefers-color-scheme, and an explicit
+ * data-theme="light" | "dark" on <html> always wins (this is the app toggle).
+ */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Sora:wght@400;500;600;700&display=swap');
+
+:root {
+  /* ── Colour: light (default) ── */
+  --color-bg: #f5f4fb;
+  --color-surface: #ffffff;
+  --color-border: #dcdcf0;
+  --color-text: #14152b;
+  --color-text-muted: #5b5f80;
+  --color-accent: #ff6b4a;
+  --color-accent-edge: #d9431a;
+  --color-on-accent: #ffffff;
+  --color-accent-text: #c2371a;
+  --color-link: #4a5fd0;
+  --color-friend1: #4a5fd0;
+  --color-friend2: #7c4fe0;
+  --color-friend3: #0e7f6d;
+  --color-on-friend: #ffffff;
+  --color-me: #ff6b4a;
+  --color-on-me: #1b1020;
+  --color-warn: #b42318;
+  --color-warn-bg: #fdecea;
+  --color-success: #0e7f6d;
+  --color-glow: rgba(255, 107, 74, 0.18);
+
+  /* ── Typography ── */
+  --font-ui: 'Sora', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+  --fs-amount: 42px; --lh-amount: 1.05; --fw-amount: 600; --ls-amount: -0.06em;
+  --fs-amount-sm: 24px; --lh-amount-sm: 1.0; --fw-amount-sm: 600; --ls-amount-sm: -0.04em;
+  --fs-h1: 28px; --lh-h1: 1.1; --fw-h1: 700; --ls-h1: -0.03em;
+  --fs-h2: 20px; --lh-h2: 1.2; --fw-h2: 700; --ls-h2: -0.02em;
+  --fs-h3: 16px; --lh-h3: 1.3; --fw-h3: 600; --ls-h3: -0.01em;
+  --fs-body: 14px; --lh-body: 1.5; --fw-body: 400; --ls-body: 0em;
+  --fs-caption: 12px; --lh-caption: 1.4; --fw-caption: 500; --ls-caption: 0em;
+  --fs-label: 10px; --lh-label: 1.0; --fw-label: 500; --ls-label: 0.1em;
+
+  /* ── Spacing (4px base) ── */
+  --space-xxs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+  --space-xxxl: 64px;
+
+  /* ── Radius ── */
+  --radius-xs: 8px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --radius-phone: 44px;
+  --radius-pill: 9999px;
+
+  /* ── Elevation ── */
+  --shadow-card: 0 1px 2px rgba(20, 21, 43, 0.06), 0 10px 24px -14px rgba(20, 21, 43, 0.22);
+  --ring-mine: 0 0 0 3px var(--color-glow);
+
+  /* ── Motion ── */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-hover: ease;
+  --ease-linear: linear;
+  --dur-press: 140ms;
+  --dur-hover: 150ms;
+  --dur-popover: 180ms;
+  --dur-toast: 220ms;
+  --dur-modal: 240ms;
+  --dur-sheet: 320ms;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: #0c0d1c;
+    --color-surface: #171a30;
+    --color-border: #2b2f55;
+    --color-text: #ecebf8;
+    --color-text-muted: #8e92b3;
+    --color-accent: #ffb59a;
+    --color-accent-edge: #ffb59a;
+    --color-on-accent: #1b1020;
+    --color-accent-text: #ffb59a;
+    --color-link: #8fa4ff;
+    --color-friend1: #8fa4ff;
+    --color-friend2: #c6a7ff;
+    --color-friend3: #7fe3d0;
+    --color-on-friend: #0c0d1c;
+    --color-me: #ffb59a;
+    --color-on-me: #1b1020;
+    --color-warn: #ffb4a8;
+    --color-warn-bg: #3a1620;
+    --color-success: #7fe3d0;
+    --color-glow: rgba(255, 181, 154, 0.27);
+    --shadow-card: none;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #0c0d1c;
+  --color-surface: #171a30;
+  --color-border: #2b2f55;
+  --color-text: #ecebf8;
+  --color-text-muted: #8e92b3;
+  --color-accent: #ffb59a;
+  --color-accent-edge: #ffb59a;
+  --color-on-accent: #1b1020;
+  --color-accent-text: #ffb59a;
+  --color-link: #8fa4ff;
+  --color-friend1: #8fa4ff;
+  --color-friend2: #c6a7ff;
+  --color-friend3: #7fe3d0;
+  --color-on-friend: #0c0d1c;
+  --color-me: #ffb59a;
+  --color-on-me: #1b1020;
+  --color-warn: #ffb4a8;
+  --color-warn-bg: #3a1620;
+  --color-success: #7fe3d0;
+  --color-glow: rgba(255, 181, 154, 0.27);
+  --shadow-card: none;
+  color-scheme: dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-press: 0ms; --dur-hover: 0ms; --dur-popover: 0ms; --dur-toast: 0ms; --dur-modal: 0ms; --dur-sheet: 0ms; }
+}
+
+/* Layout: sticky control bar, then nine demo sections on the brand-kit spine. Motion tokens come from tokens.css (durations, eases) and are scaled at runtime for slow-mo. */
+*{box-sizing:border-box}
+body{margin:0;background:var(--color-bg);color:var(--color-text);font:var(--fw-body) var(--fs-body)/var(--lh-body) var(--font-ui)}
+code,.mono{font-family:var(--font-mono)}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:var(--color-bg);border-bottom:1px solid var(--color-border);display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;justify-content:space-between;padding:10px 16px}
+.bar .grp{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.bar label{font:500 10px var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-muted)}
+.seg{display:inline-flex;border:1px solid var(--color-border);border-radius:99px;padding:3px;background:var(--color-surface)}
+.seg button{font:600 12px var(--font-ui);border:0;background:transparent;color:var(--color-text-muted);padding:6px 12px;border-radius:99px;cursor:pointer;transition:background var(--dur-hover) ease,color var(--dur-hover) ease,transform var(--dur-press) var(--ease-out)}
+.seg button:active{transform:scale(.97)}
+.seg button[aria-pressed="true"]{background:var(--color-text);color:var(--color-bg)}
+button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--color-accent-edge);outline-offset:2px}
+main{max-width:1080px;margin:0 auto;padding:0 16px 80px}
+section{padding-block:56px;border-bottom:1px solid var(--color-border)}
+.head{display:grid;gap:12px;margin-bottom:26px}
+.head .num{font:600 clamp(64px,12vw,140px)/.8 var(--font-mono);letter-spacing:-.06em;color:var(--color-border)}
+.head .lab{font:500 11px var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent-text);display:flex;gap:10px;align-items:center}
+.head .lab::before{content:'';width:28px;height:1px;background:currentColor}
+h1{font:700 clamp(46px,10vw,112px)/.92 var(--font-ui);letter-spacing:-.05em;margin:14px 0 12px;text-wrap:balance}
+h2{font:700 clamp(28px,4.6vw,48px)/1.03 var(--font-ui);letter-spacing:-.035em;margin:0;text-wrap:balance}
+h2 em{font-style:normal;color:var(--color-accent-text)}
+.lede{font-size:17px;color:var(--color-text-muted);max-width:56ch;margin:0}
+.body{color:var(--color-text-muted);max-width:62ch;margin:0}
+h3{font:600 14px var(--font-ui);margin:0 0 8px}
+.hero{padding-block:56px 40px}
+.ch{display:inline-block}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow-card);min-width:0;display:grid;gap:10px;align-content:start}
+.card p{margin:0;color:var(--color-text-muted);font-size:13px}
+.tbl{overflow-x:auto;border:1px solid var(--color-border);border-radius:var(--radius-lg);background:var(--color-surface)}
+table{border-collapse:collapse;width:100%;font-size:12.5px;min-width:520px}
+th{text-align:left;font:500 10.5px var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-muted);padding:10px 12px;border-bottom:1px solid var(--color-border)}
+td{padding:9px 12px;border-bottom:1px solid var(--color-border);vertical-align:top}
+tr:last-child td{border-bottom:0}
+.btn{font:700 13.5px var(--font-ui);border:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:space-between;gap:14px;background:var(--color-accent);color:var(--color-on-accent);border-radius:99px;padding:7px 7px 7px 20px;box-shadow:inset 0 0 0 1px var(--color-accent-edge);transition:transform var(--dur-press) var(--ease-out),filter var(--dur-hover) ease}
+.btn::after{content:'→';display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--color-on-accent);color:var(--color-accent-text);font-size:18px}
+.btn:active{transform:scale(.97)}
+.btn.sec{background:transparent;color:var(--color-text);box-shadow:inset 0 0 0 1px var(--color-border);padding:12px 20px}
+.btn.sec::after{display:none}
+.btn[disabled]{opacity:.45;cursor:not-allowed}.btn[disabled]:active{transform:none}
+@media (hover:hover) and (pointer:fine){.btn:hover{filter:brightness(1.06)}.seg button:hover{color:var(--color-text)}}
+.stage{position:relative;overflow:hidden;min-height:170px;background:var(--color-bg);border:1px solid var(--color-border);border-radius:var(--radius-lg);display:grid;place-items:center;padding:14px}
+.lbl{font:500 10px var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-muted)}
+.note{font:400 12px/1.5 var(--font-mono);color:var(--color-text-muted)}
+.pill{font:600 11px var(--font-mono);padding:3px 8px;border-radius:99px}
+.ok{background:color-mix(in srgb,var(--color-success) 16%,transparent);color:var(--color-success)}
+.bad{background:var(--color-warn-bg);color:var(--color-warn)}
+/* easing plotter */
+.plot{width:100%;max-width:420px;height:auto}
+.plot .ax{stroke:var(--color-border);stroke-width:1}
+.plot .crv{fill:none;stroke-width:2.6;stroke-linecap:round}
+.track{position:relative;height:28px;border-radius:99px;background:var(--color-bg);border:1px solid var(--color-border)}
+.ball{position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:var(--color-accent);box-shadow:inset 0 0 0 1px var(--color-accent-edge)}
+.eaz{display:grid;grid-template-columns:90px 1fr auto;gap:10px;align-items:center}
+.eaz b{font:600 12px var(--font-mono)}
+/* ruler */
+.ruler{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.ruler button{font:600 11px var(--font-mono);border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-text);border-radius:12px;padding:10px 4px;cursor:pointer;display:grid;gap:6px;justify-items:center;transition:transform var(--dur-press) var(--ease-out)}
+.ruler button:active{transform:scale(.97)}
+.ruler i{display:block;width:100%;height:6px;border-radius:99px;background:var(--color-border);position:relative;overflow:hidden}
+.ruler i u{position:absolute;inset:0;background:var(--color-accent);transform:scaleX(0);transform-origin:left}
+@media (max-width:560px){.ruler{grid-template-columns:repeat(3,1fr)}}
+/* claim demo */
+.list{display:grid;gap:8px;width:min(100%,360px)}
+.it{display:flex;align-items:center;gap:10px;padding:8px 12px;min-height:42px;border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface);cursor:pointer;font:inherit;color:inherit;text-align:left;width:100%;transition:border-color var(--dur-hover) ease,box-shadow var(--dur-hover) ease,transform var(--dur-press) var(--ease-out)}
+.it:active{transform:scale(.98)}
+.it[aria-pressed="true"]{border-color:var(--color-accent-edge);box-shadow:var(--ring-mine)}
+.it small{display:block;color:var(--color-text-muted);font-size:10.5px}
+.it .p{margin-left:auto;font:500 12px var(--font-mono)}
+.who{display:flex;position:relative}
+.av{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;font:700 10px var(--font-ui);color:var(--color-on-friend);border:2px solid var(--color-surface);position:relative}
+.av+.av{margin-left:-7px}
+.av.f1{background:var(--color-friend1)}.av.f2{background:var(--color-friend2)}.av.f3{background:var(--color-friend3)}
+.av.me{background:var(--color-me);color:var(--color-on-me)}
+.rip{position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--color-accent-edge);pointer-events:none;opacity:0}
+.share{display:flex;justify-content:space-between;align-items:baseline;width:min(100%,360px);padding:6px 4px 0}
+.share .amt{font:600 28px var(--font-mono);letter-spacing:-.05em;display:inline-block;position:relative;overflow:visible}
+.share .amt .c{color:var(--color-accent-text)}
+/* sheet / modal / toast / popover */
+.sheetwrap{position:relative;width:100%;height:260px;overflow:hidden;border-radius:var(--radius-lg);background:var(--color-bg);border:1px solid var(--color-border);display:grid;place-items:center}
+.backdrop{position:absolute;inset:0;background:#0c0d1c;opacity:0;pointer-events:none}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--color-surface);border-top:1px solid var(--color-border);border-radius:var(--radius-xl) var(--radius-xl) 0 0;padding:10px 16px 16px;display:grid;gap:10px}
+.grab{width:36px;height:4px;border-radius:99px;background:var(--color-border);justify-self:center}
+.sheet .amt{font:600 26px var(--font-mono);letter-spacing:-.05em}
+.sheet .amt .c{color:var(--color-accent-text)}
+.modal{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+.dlg{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);padding:16px;width:min(86%,300px);display:grid;gap:10px;opacity:0;transform:scale(.95);box-shadow:0 20px 50px -20px #0007}
+.dlg h4{margin:0;font:700 16px var(--font-ui)}
+.toasts{position:absolute;left:50%;bottom:16px;width:min(86%,280px);transform:translateX(-50%);height:44px}
+.toast{position:absolute;left:0;right:0;bottom:0;height:44px;background:var(--color-text);color:var(--color-bg);border-radius:99px;padding:0 16px;display:flex;align-items:center;font:600 12px var(--font-ui);opacity:0}
+.pop{position:absolute;left:0;bottom:calc(100% + 8px);background:var(--color-text);color:var(--color-bg);font:500 11.5px var(--font-ui);padding:8px 10px;border-radius:10px;white-space:nowrap;opacity:0;transform:translateY(4px) scale(.96);transform-origin:left bottom;pointer-events:none}
+.trig{position:relative;display:inline-block;border-bottom:1.5px dotted var(--color-text-muted);cursor:help;font-size:13px}
+/* page transition */
+.phone{width:240px;height:300px;border-radius:30px;border:6px solid #0a0a0a;background:var(--color-bg);position:relative;overflow:hidden;box-shadow:0 18px 40px -22px #0007}
+.scr{position:absolute;inset:0;padding:16px 14px;display:grid;gap:8px;align-content:start;background:var(--color-bg)}
+.scr h4{margin:2px 0;font:700 15px var(--font-ui)}
+.scr .amt{font:600 30px var(--font-mono);letter-spacing:-.05em}
+.scr .amt .c{color:var(--color-accent-text)}
+.scr .row{display:flex;justify-content:space-between;font-size:11.5px;padding:7px 10px;border:1px solid var(--color-border);border-radius:12px;background:var(--color-surface)}
+/* scroll demo */
+.rcpt{width:min(100%,360px);display:grid;gap:8px}
+.rrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface);font-size:12.5px}
+.rrow .p{font:500 12px var(--font-mono)}
+.rrow .ring{position:absolute;inset:-1px;border-radius:inherit;border:1.5px solid var(--color-accent-edge);box-shadow:var(--ring-mine);opacity:0;pointer-events:none}
+.rrow{position:relative}
+/* broken */
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:620px){.cmp{grid-template-columns:1fr}}
+.cmp .col{border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:12px;display:grid;gap:8px;background:var(--color-surface);min-width:0}
+.cmp .st{height:90px;border-radius:12px;background:var(--color-bg);border:1px solid var(--color-border);display:grid;place-items:center;overflow:hidden;position:relative}
+.chip{width:60px;height:34px;border-radius:12px;background:var(--color-accent);box-shadow:inset 0 0 0 1px var(--color-accent-edge);opacity:0}
+.bar2{height:10px;width:80%;border-radius:99px;background:var(--color-border);position:relative;overflow:hidden}
+.bar2 i{position:absolute;inset:0;background:var(--color-accent);transform-origin:left;transform:scaleX(0)}
+.bar2 b{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--color-accent)}
+.kl{display:grid;gap:4px;width:80%}
+.kl span{padding:5px 8px;border-radius:8px;border:1px solid var(--color-border);font-size:11px;position:relative}
+.kl span.on{border-color:var(--color-accent-edge);background:color-mix(in srgb,var(--color-accent) 18%,transparent)}
+.kl.slowk span{transition:border-color 250ms ease-in,background 250ms ease-in}
+.dec{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+/* reduced motion: keep opacity and colour, drop movement */
+html[data-reduced] *,html[data-reduced] *::before,html[data-reduced] *::after{transition-property:opacity,color,background-color,border-color,box-shadow,filter!important}
+html[data-reduced] .btn:active,html[data-reduced] .it:active,html[data-reduced] .seg button:active,html[data-reduced] .ruler button:active{transform:none}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-property:opacity,color,background-color,border-color,box-shadow,filter!important}}
+::view-transition-old(root),::view-transition-new(root){animation-duration:var(--dur-modal);animation-timing-function:var(--ease-out)}
+html[data-reduced]::view-transition-old(root),html[data-reduced]::view-transition-new(root){animation:none}
+</style>
+
+<div class="bar" role="toolbar" aria-label="Motion controls">
+  <div class="grp"><label>Reduced motion</label><div class="seg" id="segR" role="group"><button type="button" data-r="off" aria-pressed="true">Off</button><button type="button" data-r="on" aria-pressed="false">On</button></div></div>
+  <div class="grp"><label>Slow-mo</label><div class="seg" id="segS" role="group"><button type="button" data-s="1" aria-pressed="true">1×</button><button type="button" data-s="2" aria-pressed="false">2×</button><button type="button" data-s="4" aria-pressed="false">4×</button></div></div>
+  <div class="grp"><label>Theme</label><div class="seg" id="segT" role="group"><button type="button" data-t="light" aria-pressed="false">Light</button><button type="button" data-t="dark" aria-pressed="false">Dark</button><button type="button" data-t="system" aria-pressed="true">System</button></div></div>
+</div>
+<main>
+<header class="hero">
+  <div class="lab mono" style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-text-muted)">Dibs · Step 4 · Motion review</div>
+  <h1 id="heroH">Fast. Honest. <span style="color:var(--color-accent-text)">Interruptible.</span></h1>
+  <p class="lede">Everything here is live. Press things, then turn on Slow-mo to see what a 140ms press actually does, or Reduced motion to see the app without movement.</p>
+</header>
+
+<section id="rules">
+  <div class="head"><div class="num">01</div><div class="lab">The rules</div><h2>Four questions <em>before anything moves.</em></h2><p class="body">Each of Dibs's animations has to pass all four. If it cannot say why it moves, it does not move.</p></div>
+  <div class="grid">
+    <div class="card"><h3>1 · Should it animate at all?</h3><div class="tbl" style="box-shadow:none"><table style="min-width:0"><tbody>
+      <tr><td>Tap an item (tens per bill)</td><td>Short: ≤160ms, ring and dot only</td></tr>
+      <tr><td>Press a button</td><td>Scale to 0.97, 140ms</td></tr>
+      <tr><td>Open the pay sheet (once per bill)</td><td>Full: 320ms</td></tr>
+      <tr><td>Everyone's settled (rare)</td><td>Delight: the one big moment</td></tr>
+      <tr><td>Keyboard moves a highlight</td><td><b>Never</b></td></tr></tbody></table></div></div>
+    <div class="card"><h3>2 · Why does it move?</h3><p><b>Feedback:</b> the dot and ring confirm your tap.<br><b>Spatial:</b> the sheet rises from where Pay lives.<br><b>State:</b> the share amount changes, so it crossfades.<br><b>Jarring change:</b> screens slide 24px so a swap is not a jump.</p></div>
+    <div class="card"><h3>3 · Which easing?</h3><p>Three tokens, nothing else. Click one to feel it.</p>
+      <div class="eaz"><b>out</b><div class="track"><div class="ball" data-e="out"></div></div><button class="btn sec" style="padding:8px 14px" data-play="out" type="button">Play</button></div>
+      <div class="eaz"><b>inOut</b><div class="track"><div class="ball" data-e="inOut"></div></div><button class="btn sec" style="padding:8px 14px" data-play="inOut" type="button">Play</button></div>
+      <div class="eaz"><b>sheet</b><div class="track"><div class="ball" data-e="sheet"></div></div><button class="btn sec" style="padding:8px 14px" data-play="sheet" type="button">Play</button></div></div>
+    <div class="card"><h3>4 · How fast?</h3><p>Click a tick to play that duration.</p>
+      <div class="ruler" id="ruler"></div><p class="note">Exit runs at 75% of enter. Nothing in the UI goes past 320ms.</p></div>
+  </div>
+</section>
+
+<section id="curves">
+  <div class="head"><div class="num">02</div><div class="lab">Easing</div><h2>Strong out. <em>Never in. Never bounce.</em></h2><p class="body">The three Dibs curves against two that are banned. Ease-in delays the first frames, which is exactly when the eye is watching. Bounce reads as childish and dated.</p></div>
+  <div class="grid">
+    <div class="card"><svg class="plot" id="plot" viewBox="-14 -52 308 372" role="img" aria-label="Easing curves"></svg></div>
+    <div class="card" id="legend"></div>
+  </div>
+</section>
+
+<section id="tap">
+  <div class="head"><div class="num">03</div><div class="lab">The tap</div><h2>Calling dibs <em>should feel like a click.</em></h2><p class="body">The signature moment. Tap an item: the row gets a coral ring, your dot arrives (95% size, fading in), a ripple confirms it, and your share changes with a short crossfade. Un-claiming is quieter and faster. Try it, then slow it down.</p></div>
+  <div class="grid">
+    <div class="stage" style="min-height:300px"><div style="display:grid;gap:10px;justify-items:center;width:100%">
+      <div class="list" id="claim"></div>
+      <div class="share"><span class="lbl">Your share</span><span class="amt" id="amt"><span class="c">₹</span><span id="amtv">0.00</span></span></div></div></div>
+    <div class="card"><h3>Sequence (first claim)</h3>
+      <div class="tbl" style="box-shadow:none"><table style="min-width:0"><tbody>
+        <tr><td class="mono">0ms</td><td>Row border + ring: colour change, 150ms ease</td></tr>
+        <tr><td class="mono">0ms</td><td>Row presses to 0.98 while held, back on release (140ms)</td></tr>
+        <tr><td class="mono">0ms</td><td>Your dot: scale .95 → 1, opacity 0 → 1, 140ms out</td></tr>
+        <tr><td class="mono">40ms</td><td>Ripple ring: scale .6 → 2.2, opacity .55 → 0, 280ms out</td></tr>
+        <tr><td class="mono">0ms</td><td>Share: old number rises 4px, fades and blurs 2px; new one arrives, 160ms</td></tr>
+        <tr><td class="mono">Release</td><td>Dot fades out in 105ms. No ripple.</td></tr></tbody></table></div>
+      <p class="note">Rule: the ripple fires only on claim. People un-claim by mistake; that should be forgettable, not celebrated.</p></div>
+  </div>
+</section>
+
+<section id="buttons">
+  <div class="head"><div class="num">04</div><div class="lab">Buttons</div><h2>Every button <em>presses.</em></h2><p class="body">Scale to 0.97 on press in 140ms. Hover only where there is a real pointer. Focus gets a ring that appears instantly. Disabled does nothing.</p></div>
+  <div class="grid">
+    <div class="stage"><button class="btn" type="button">Pay Aarav · UPI</button></div>
+    <div class="stage"><button class="btn sec" type="button">Copy UPI ID</button></div>
+    <div class="stage"><button class="btn" type="button" disabled>Pay Aarav · UPI</button></div>
+  </div>
+  <p class="note" style="margin-top:10px">Default · Secondary · Disabled. Tab to any of them to see the focus ring. Hover brightens by 6% over 150ms, gated to <span class="mono">(hover:hover) and (pointer:fine)</span>.</p>
+</section>
+
+<section id="components">
+  <div class="head"><div class="num">05</div><div class="lab">Components</div><h2>Sheet, dialog, toast, <em>popover.</em></h2><p class="body">Each one enters from something, never from nothing. The sheet rises from the bottom edge, the popover grows from its trigger, the dialog stays centred, toasts stack.</p></div>
+  <div class="grid">
+    <div class="card"><h3>Pay sheet · 320ms in, 240ms out</h3><div class="sheetwrap" id="sw1"><button class="btn sec" id="openSheet" type="button">Open pay sheet</button><div class="backdrop" id="bd1"></div>
+      <div class="sheet" id="sheet" role="dialog" aria-label="Pay sheet"><div class="grab"></div><div class="lbl">You owe Aarav</div><div class="amt"><span class="c">₹</span>1,000.10</div><button class="btn" id="closeSheet" type="button">Pay ₹1,000.10</button></div></div>
+      <p class="note">Curve: sheet. Backdrop fades in over 240ms.</p></div>
+    <div class="card"><h3>Dialog · 240ms, from 95%</h3><div class="sheetwrap" id="sw2"><button class="btn sec" id="openDlg" type="button">Share anyway?</button><div class="backdrop" id="bd2"></div>
+      <div class="modal"><div class="dlg" id="dlg" role="dialog" aria-label="Share anyway"><h4>₹52.22 short of the total</h4><p class="note" style="font-family:var(--font-ui)">A charge may be missing. Friends will pay a little less than the bill.</p><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn sec" id="dlgNo" type="button" style="padding:9px 14px">Fix it</button><button class="btn" id="dlgYes" type="button" style="padding:4px 4px 4px 14px">Share</button></div></div></div></div>
+      <p class="note">Dialogs stay centred. No origin trick.</p></div>
+    <div class="card"><h3>Toast stack · 220ms in, 165ms out</h3><div class="sheetwrap" id="sw3"><button class="btn sec" id="addToast" type="button">Copy UPI ID</button><div class="toasts" id="toasts"></div></div>
+      <p class="note">New toast rises 8px and fades in. Older ones scale to 95% and fade back. Auto-dismiss after 3s.</p></div>
+    <div class="card"><h3>Popover · 180ms from its trigger</h3><div class="stage"><span class="trig" id="trig" tabindex="0">split 3 ways ⓘ<span class="pop" id="pop" role="tooltip">Satay ₹260 ÷ 3 = ₹86.67 each</span></span></div>
+      <p class="note">Scales from the trigger's corner, not the centre. Hover or focus it.</p></div>
+  </div>
+</section>
+
+<section id="transitions">
+  <div class="head"><div class="num">06</div><div class="lab">Transitions</div><h2>Screens slide a little. <em>Themes swap whole.</em></h2><p class="body">Between screens: the old one drifts 16px and fades with 2px of blur while the new one arrives from 24px, in 280ms. Switching Light and Dark never animates every colour at once: it cross-fades the whole view in 240ms (View Transitions where supported, an instant swap elsewhere).</p></div>
+  <div class="grid">
+    <div class="stage" style="min-height:340px"><div class="phone" id="phone">
+      <div class="scr" id="s1"><h4>The Local Diners</h4><div class="amt"><span class="c">₹</span>1,000.10</div><div class="lbl">Your share</div><div class="row"><span>Long Island Elec ×2</span><span class="mono">340.00</span></div><div class="row"><span>Assorted Satay</span><span class="mono">86.67</span></div><div class="row"><span>Surf N Turf</span><span class="mono">360.00</span></div><button class="btn" id="go" type="button" style="margin-top:6px;justify-content:space-between">Pay Aarav</button></div>
+      <div class="scr" id="s2" style="opacity:0;visibility:hidden"><div class="lbl" id="back" role="button" tabindex="0" style="cursor:pointer">← Claim board</div><h4>Pay Aarav</h4><div class="amt"><span class="c">₹</span>1,000.10</div><div class="row"><span class="mono">aarav.k@okaxis</span><span>Copy</span></div><div class="row"><span>GPay</span><span>✓</span></div><button class="btn" type="button" style="margin-top:6px">Open GPay</button></div></div></div>
+    <div class="card"><h3>Theme switch</h3><p>Use the Theme control in the top bar. In browsers with View Transitions the whole page cross-fades in 240ms; the colours never animate one by one, which would flash mismatched pairs. With Reduced motion on, it swaps instantly.</p><p class="note">Hard rule: never put <span class="mono">transition: all</span> on the root.</p></div>
+  </div>
+</section>
+
+<section id="scroll">
+  <div class="head"><div class="num">07</div><div class="lab">Scroll</div><h2>The host's list <em>claims itself.</em></h2><p class="body">The only scroll-driven moment: on the host's review screen, rows pick up their ring one by one as you scroll through them (ScrollTrigger, scrubbed). Everything is readable before you scroll; the ring is the only thing that arrives.</p></div>
+  <div class="stage" style="min-height:360px"><div class="rcpt" id="rcpt"></div></div>
+</section>
+
+<section id="broken">
+  <div class="head"><div class="num">08</div><div class="lab">Broken on purpose</div><h2>What we <em>won't ship.</em></h2><p class="body">Press both sides. The difference is the argument.</p></div>
+  <div style="display:grid;gap:14px">
+    <div class="cmp"><div class="col"><span class="pill bad">✗ scale(0) entry</span><div class="st"><div class="chip" id="b1w"></div></div><button class="btn sec" data-b="1w" type="button" style="padding:9px 14px">Play</button></div>
+      <div class="col"><span class="pill ok">✓ scale(.95) + fade</span><div class="st"><div class="chip" id="b1r"></div></div><button class="btn sec" data-b="1r" type="button" style="padding:9px 14px">Play</button></div></div>
+    <div class="cmp"><div class="col"><span class="pill bad">✗ ease-in, 300ms</span><div class="st"><div class="chip" id="b2w"></div></div><button class="btn sec" data-b="2w" type="button" style="padding:9px 14px">Play</button></div>
+      <div class="col"><span class="pill ok">✓ out, 200ms</span><div class="st"><div class="chip" id="b2r"></div></div><button class="btn sec" data-b="2r" type="button" style="padding:9px 14px">Play</button></div></div>
+    <div class="cmp"><div class="col"><span class="pill bad">✗ bounce</span><div class="st"><div class="chip" id="b3w"></div></div><button class="btn sec" data-b="3w" type="button" style="padding:9px 14px">Play</button></div>
+      <div class="col"><span class="pill ok">✓ strong out</span><div class="st"><div class="chip" id="b3r"></div></div><button class="btn sec" data-b="3r" type="button" style="padding:9px 14px">Play</button></div></div>
+    <div class="cmp"><div class="col"><span class="pill bad">✗ animate width</span><div class="st"><div class="bar2"><b id="b4w"></b></div></div><button class="btn sec" data-b="4w" type="button" style="padding:9px 14px">Play</button><p class="note">Layout property: reflows every frame on a busy phone.</p></div>
+      <div class="col"><span class="pill ok">✓ animate transform</span><div class="st"><div class="bar2"><i id="b4r"></i></div></div><button class="btn sec" data-b="4r" type="button" style="padding:9px 14px">Play</button><p class="note">scaleX is composited on the GPU.</p></div></div>
+    <div class="cmp"><div class="col"><span class="pill bad">✗ keyboard animates</span><div class="st"><div class="kl slowk" id="kw" tabindex="0" aria-label="Wrong list"><span class="on">Mojito</span><span>Satay</span><span>Surf N Turf</span></div></div><p class="note">Focus the list, press ↓ or ↑. It lags by 250ms.</p></div>
+      <div class="col"><span class="pill ok">✓ keyboard is instant</span><div class="st"><div class="kl" id="kr" tabindex="0" aria-label="Right list"><span class="on">Mojito</span><span>Satay</span><span>Surf N Turf</span></div></div><p class="note">Same keys. The highlight moves immediately.</p></div></div>
+  </div>
+</section>
+
+<section id="decide" style="border-bottom:0">
+  <div class="head"><div class="num">09</div><div class="lab">Your call</div><h2>Three things <em>to approve.</em></h2></div>
+  <div class="dec">
+    <div class="card"><h3>1 · Overall feel</h3><p>Crisp and quick: nothing over 320ms, strong ease-out everywhere, no bounce. Slower or softer is possible but I would not go past 400ms.</p></div>
+    <div class="card"><h3>2 · The ripple</h3><p>Only on claim, 280ms. It is the one decorative flourish. Say "quieter" to drop it to a ring-only confirm, or "more" to add a tiny dot pulse on the share amount.</p></div>
+    <div class="card"><h3>3 · Theme switch</h3><p>Whole-view cross-fade, 240ms, instant when Reduced motion is on. Alternative: always instant.</p></div>
+  </div>
+  <p class="note" style="margin-top:14px">Reply "approved", or name what to change ("faster press", "no ripple", "softer sheet"). On approval, Step 5 builds every screen with exactly these tokens.</p>
+</section>
+</main>
+
+<script>
+(function(){
+'use strict';
+var root=document.documentElement, G=window.gsap;
+var BASE={press:140,hover:150,popover:180,toast:220,modal:240,sheet:320};
+var SLOW=1;
+function R(){return root.hasAttribute('data-reduced')||(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)}
+function $(s,c){return (c||document).querySelector(s)}
+function $$(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))}
+function pressed(group,attr,val){$$('button',group).forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset[attr]===val))})}
+
+/* ---- cubic-bezier as a GSAP ease function ---- */
+function bez(x1,y1,x2,y2){
+  var cx=3*x1,bx=3*(x2-x1)-cx,ax=1-cx-bx,cy=3*y1,by=3*(y2-y1)-cy,ay=1-cy-by;
+  function sx(t){return((ax*t+bx)*t+cx)*t}function sy(t){return((ay*t+by)*t+cy)*t}function dx(t){return(3*ax*t+2*bx)*t+cx}
+  return function(x){if(x<=0)return 0;if(x>=1)return 1;var t=x,i,e,d;
+    for(i=0;i<8;i++){e=sx(t)-x;if(Math.abs(e)<1e-5)return sy(t);d=dx(t);if(Math.abs(d)<1e-6)break;t-=e/d}
+    var lo=0,hi=1;t=x;for(i=0;i<24;i++){e=sx(t)-x;if(Math.abs(e)<1e-5)break;if(e<0)lo=t;else hi=t;t=(lo+hi)/2}return sy(t)}
+}
+var CURVES={out:[.23,1,.32,1],inOut:[.77,0,.175,1],sheet:[.32,.72,0,1],easeIn:[.42,0,1,1],bounce:[.68,-.55,.27,1.55]};
+var E={};Object.keys(CURVES).forEach(function(k){E[k]=bez.apply(null,CURVES[k])});
+
+if(!G){document.body.insertAdjacentHTML('afterbegin','<p style="padding:16px;color:var(--color-warn)">GSAP failed to load, so the demos are static. Reload to retry.</p>');return}
+if(window.ScrollTrigger)G.registerPlugin(ScrollTrigger);
+
+/* ---- global controls ---- */
+$$('#segR button').forEach(function(b){b.addEventListener('click',function(){
+  if(b.dataset.r==='on')root.setAttribute('data-reduced','');else root.removeAttribute('data-reduced');pressed($('#segR'),'r',b.dataset.r)})});
+$$('#segS button').forEach(function(b){b.addEventListener('click',function(){
+  SLOW=+b.dataset.s;pressed($('#segS'),'s',b.dataset.s);
+  Object.keys(BASE).forEach(function(k){root.style.setProperty('--dur-'+k,(BASE[k]*SLOW)+'ms')});
+  G.globalTimeline.timeScale(1/SLOW)})});
+$$('#segT button').forEach(function(b){b.addEventListener('click',function(){
+  var t=b.dataset.t;function apply(){if(t==='system')root.removeAttribute('data-theme');else root.setAttribute('data-theme',t);pressed($('#segT'),'t',t)}
+  if(document.startViewTransition&&!R()){try{document.startViewTransition(apply)}catch(e){apply()}}else apply()})});
+
+/* ---- hero: 24ms per character, once ---- */
+(function(){var h=$('#heroH');if(!h||R())return;var label=h.textContent;h.setAttribute('aria-label',label);
+  (function walk(n){Array.prototype.slice.call(n.childNodes).forEach(function(c){
+    if(c.nodeType===3){var f=document.createDocumentFragment();c.textContent.split('').forEach(function(ch){var s=document.createElement('span');s.className='ch';s.setAttribute('aria-hidden','true');s.textContent=ch===' '?' ':ch;f.appendChild(s)});c.parentNode.replaceChild(f,c)}
+    else if(c.nodeType===1)walk(c)})})(h);
+  G.from($$('.ch',h),{y:14,opacity:0,duration:.28,ease:E.out,stagger:.024,clearProps:'all'})})();
+
+/* ---- 01 ease balls + duration ruler ---- */
+$$('[data-play]').forEach(function(b){b.addEventListener('click',function(){
+  var k=b.dataset.play,ball=$('[data-e="'+k+'"]'),track=ball.parentNode,dist=track.clientWidth-26;
+  G.killTweensOf(ball);if(R()){G.set(ball,{x:dist});G.delayedCall(.6,function(){G.set(ball,{x:0})});return}
+  G.fromTo(ball,{x:0},{x:dist,duration:1,ease:E[k],onComplete:function(){G.delayedCall(.5,function(){G.set(ball,{x:0})})}})})});
+(function(){var r=$('#ruler');Object.keys(BASE).forEach(function(k){var b=document.createElement('button');b.type='button';
+  b.innerHTML='<span>'+k+'</span><span>'+BASE[k]+'ms</span><i><u></u></i>';r.appendChild(b);
+  b.addEventListener('click',function(){var u=$('u',b);G.killTweensOf(u);G.fromTo(u,{scaleX:0},{scaleX:1,duration:BASE[k]/1000,ease:'none',onComplete:function(){G.delayedCall(.5,function(){G.set(u,{scaleX:0})})}})})})})();
+
+/* ---- 02 curve plot ---- */
+(function(){var svg=$('#plot'),S=280,ns='http://www.w3.org/2000/svg';
+  var colors={out:'var(--color-accent-edge)',inOut:'var(--color-link)',sheet:'var(--color-success)',easeIn:'var(--color-text-muted)',bounce:'var(--color-text-muted)'};
+  function el(n,a){var e=document.createElementNS(ns,n);for(var k in a)e.setAttribute(k,a[k]);return e}
+  svg.appendChild(el('line',{x1:0,y1:S,x2:S,y2:S,'class':'ax'}));svg.appendChild(el('line',{x1:0,y1:0,x2:S,y2:0,'class':'ax'}));svg.appendChild(el('line',{x1:0,y1:0,x2:0,y2:S,'class':'ax'}));
+  Object.keys(CURVES).forEach(function(k){var pts=[];for(var i=0;i<=80;i++){var t=i/80;pts.push((t*S).toFixed(1)+','+((1-E[k](t))*S).toFixed(1))}
+    var p=el('polyline',{points:pts.join(' '),'class':'crv',stroke:colors[k]});if(k==='easeIn'||k==='bounce')p.setAttribute('stroke-dasharray','6 6');svg.appendChild(p)});
+  [['time →',S-34,S+12],['progress ↑',4,-6]].forEach(function(l){var t=el('text',{x:l[1],y:l[2],'font-size':10,fill:'var(--color-text-muted)','font-family':'var(--font-mono)'});t.textContent=l[0];svg.appendChild(t)});
+  var rows=[['out','Enter and exit','cubic-bezier(0.23, 1, 0.32, 1)',1],['inOut','Moving on screen','cubic-bezier(0.77, 0, 0.175, 1)',1],['sheet','Sheets and drawers','cubic-bezier(0.32, 0.72, 0, 1)',1],['easeIn','Delays the first frames','cubic-bezier(0.42, 0, 1, 1)',0],['bounce','Dated, childish','cubic-bezier(0.68, -0.55, 0.27, 1.55)',0]];
+  $('#legend').innerHTML=rows.map(function(r){return '<div style="display:grid;gap:2px;padding:8px 0;border-bottom:1px solid var(--color-border)"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><b class="mono" style="font-size:12.5px"><i style="display:inline-block;width:12px;height:3px;border-radius:2px;background:'+colors[r[0]]+';margin-right:8px;vertical-align:middle"></i>'+r[0]+'</b><span class="pill '+(r[3]?'ok':'bad')+'">'+(r[3]?'✓ use':'✗ never')+'</span></div><span class="note">'+r[1]+' · '+r[2]+'</span></div>'}).join('')})();
+
+/* ---- 03 the tap ---- */
+(function(){
+  var items=[{n:'Flavoured Mojito',p:330,w:['f2'],s:'Diya has it'},{n:'Assorted Satay',p:260,w:['f1','f2'],s:'Aarav, Diya'},{n:'Surf N Turf',p:360,w:[],s:'tap to call dibs'},{n:'Crunchy Salad',p:160,w:[],s:'up for grabs'}];
+  var L={f1:'A',f2:'D',f3:'K'},K=3280/2580,mine=items.map(function(){return false}),box=$('#claim'),first=true;
+  function fmt(n){return n.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2})}
+  function total(){var s=0;items.forEach(function(it,i){if(mine[i])s+=it.p/(it.w.length+1)});return s*K}
+  items.forEach(function(it,i){var b=document.createElement('button');b.type='button';b.className='it';b.setAttribute('aria-pressed','false');
+    b.innerHTML='<span>'+it.n+'<small>'+it.s+'</small></span><span class="p">₹'+fmt(it.p)+'</span><span class="who">'+it.w.map(function(c){return '<i class="av '+c+'">'+L[c]+'</i>'}).join('')+'<i class="av me" style="opacity:0">M<span class="rip"></span></i></span>';
+    box.appendChild(b);
+    b.addEventListener('click',function(){
+      mine[i]=!mine[i];b.setAttribute('aria-pressed',String(mine[i]));setSub(b,i);
+      var me=$('.me',b),rip=$('.rip',b);G.killTweensOf([me,rip]);
+      if(mine[i]){ if(R()){G.set(me,{opacity:1,scale:1})}else{G.fromTo(me,{opacity:0,scale:.95},{opacity:1,scale:1,duration:.14,ease:E.out});G.fromTo(rip,{scale:.6,opacity:.55},{scale:2.2,opacity:0,duration:.28,delay:.04,ease:E.out})} }
+      else{G.to(me,{opacity:0,scale:.95,duration:.105,ease:E.out})}
+      swap(fmt(total()))})});
+  function setSub(b,i){var s=$('small',b);s.textContent=mine[i]?(items[i].w.length?'You, '+items[i].s:'You have dibs'):items[i].s}
+  var v=$('#amtv');function swap(txt){G.killTweensOf(v);
+    if(R()){v.textContent=txt;return}
+    G.to(v,{y:-4,opacity:0,filter:'blur(2px)',duration:.08,ease:E.out,onComplete:function(){v.textContent=txt;G.fromTo(v,{y:4,opacity:0,filter:'blur(2px)'},{y:0,opacity:1,filter:'blur(0px)',duration:.08,ease:E.out,clearProps:'filter'})}})}
+  v.textContent=fmt(0);
+  /* start in a realistic state: Surf N Turf claimed */
+  mine[2]=true;var b2=box.children[2];b2.setAttribute('aria-pressed','true');setSub(b2,2);G.set($('.me',b2),{opacity:1});v.textContent=fmt(total());
+})();
+
+/* ---- 05 sheet, dialog, toast, popover ---- */
+(function(){
+  var sheet=$('#sheet'),bd1=$('#bd1'),open1=false;
+  G.set(sheet,{yPercent:100});
+  function sheetTo(o){open1=o;G.killTweensOf([sheet,bd1]);
+    if(R()){G.to(sheet,{yPercent:0,opacity:o?1:0,duration:o?.14:.105,ease:E.out});G.to(bd1,{opacity:o?.35:0,duration:.14,ease:E.out});return}
+    G.to(sheet,{yPercent:o?0:100,opacity:1,duration:o?.32:.24,ease:E.sheet});G.to(bd1,{opacity:o?.35:0,duration:o?.24:.18,ease:E.out})}
+  if(R())G.set(sheet,{yPercent:0,opacity:0});
+  $('#openSheet').addEventListener('click',function(){if(R())G.set(sheet,{yPercent:0});sheetTo(true)});
+  $('#closeSheet').addEventListener('click',function(){sheetTo(false)});
+  $('#bd1').style.pointerEvents='none';
+  $('#sw1').addEventListener('click',function(e){if(open1&&!sheet.contains(e.target)&&e.target.id!=='openSheet')sheetTo(false)});
+  var dlg=$('#dlg'),bd2=$('#bd2'),open2=false;
+  function dlgTo(o){open2=o;G.killTweensOf([dlg,bd2]);
+    dlg.parentNode.style.pointerEvents=o?'auto':'none';
+    G.to(dlg,{opacity:o?1:0,scale:R()?1:(o?1:.95),duration:o?.24:.18,ease:E.out});G.to(bd2,{opacity:o?.35:0,duration:o?.2:.15,ease:E.out})}
+  $('#openDlg').addEventListener('click',function(){dlgTo(true)});$('#dlgNo').addEventListener('click',function(){dlgTo(false)});$('#dlgYes').addEventListener('click',function(){dlgTo(false)});
+  /* toasts */
+  var wrap=$('#toasts'),list=[],n=0;
+  function layout(){list.forEach(function(t,i){var idx=list.length-1-i;G.to(t,{y:R()?0:-idx*9,scale:R()?1:1-.05*idx,opacity:idx>2?0:Math.max(0,1-.38*idx),duration:.3,ease:E.out,overwrite:'auto'});t.style.zIndex=10+i})}
+  function dismiss(t){var i=list.indexOf(t);if(i<0)return;list.splice(i,1);G.to(t,{opacity:0,y:R()?0:8,duration:.165,ease:E.out,overwrite:'auto',onComplete:function(){t.remove()}});layout()}
+  $('#addToast').addEventListener('click',function(){n++;var t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=n===1?'Copied aarav.k@okaxis':'Copied again ('+n+')';wrap.appendChild(t);list.push(t);
+    G.fromTo(t,{y:R()?0:8,opacity:0,scale:R()?1:.95},{y:0,opacity:1,scale:1,duration:.22,ease:E.out});layout();
+    G.delayedCall(3,function(){dismiss(t)});if(list.length>3)dismiss(list[0])});
+  /* popover from trigger */
+  var trig=$('#trig'),pop=$('#pop'),shown=false;
+  function pp(o){if(shown===o)return;shown=o;G.killTweensOf(pop);G.to(pop,{opacity:o?1:0,y:o||R()?0:4,scale:o||R()?1:.96,duration:o?.18:.135,ease:E.out})}
+  trig.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse')pp(true)});trig.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse')pp(false)});
+  trig.addEventListener('focus',function(){pp(true)});trig.addEventListener('blur',function(){pp(false)});trig.addEventListener('click',function(){pp(!shown)});
+})();
+
+/* ---- 06 screen transition ---- */
+(function(){var s1=$('#s1'),s2=$('#s2');G.set(s2,{opacity:0,visibility:'hidden'});
+  function go(fwd){var a=fwd?s1:s2,b=fwd?s2:s1;G.killTweensOf([s1,s2]);G.set(b,{visibility:'visible'});
+    if(R()){G.to(a,{opacity:0,duration:.14,onComplete:function(){G.set(a,{visibility:'hidden'})}});G.fromTo(b,{opacity:0},{opacity:1,duration:.14});return}
+    G.to(a,{x:fwd?-16:16,opacity:0,filter:'blur(2px)',duration:.2,ease:E.out,onComplete:function(){G.set(a,{visibility:'hidden',x:0,filter:'blur(0px)'})}});
+    G.fromTo(b,{x:fwd?24:-24,opacity:0},{x:0,opacity:1,duration:.28,ease:E.out})}
+  $('#go').addEventListener('click',function(){go(true)});
+  var bk=$('#back');bk.addEventListener('click',function(){go(false)});bk.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();go(false)}})})();
+
+/* ---- 07 scroll-scrubbed rings ---- */
+(function(){var rows=[['Tandoori Chicken','295.00'],['Lasooni Dal Tadka','275.00'],['Hyderabadi Murg Biryani','375.00'],['Tandoori Roti ×2','60.00'],['Tandoori Roti','30.00'],['CGST + SGST 2.5%','51.78']];
+  var box=$('#rcpt');box.innerHTML=rows.map(function(r){return '<div class="rrow"><span>'+r[0]+'</span><span class="p">₹'+r[1]+'</span><span class="ring"></span></div>'}).join('');
+  if(!window.ScrollTrigger)return;
+  $$('.rrow',box).forEach(function(row){G.to($('.ring',row),{opacity:1,ease:'none',scrollTrigger:{trigger:row,start:'top 78%',end:'top 52%',scrub:true}})})})();
+
+/* ---- 08 broken on purpose ---- */
+(function(){
+  function reset(el,p){G.set(el,p)}
+  var T={
+   '1w':function(){var e=$('#b1w');G.killTweensOf(e);G.fromTo(e,{scale:0,opacity:1},{scale:1,duration:.3,ease:'power1.out',onComplete:function(){G.delayedCall(.8,function(){reset(e,{opacity:0,scale:1})})}})},
+   '1r':function(){var e=$('#b1r');G.killTweensOf(e);G.fromTo(e,{scale:.95,opacity:0},{scale:1,opacity:1,duration:.2,ease:E.out,onComplete:function(){G.delayedCall(.8,function(){reset(e,{opacity:0})})}})},
+   '2w':function(){var e=$('#b2w');G.killTweensOf(e);G.fromTo(e,{x:-50,opacity:1},{x:0,duration:.3,ease:E.easeIn,onComplete:function(){G.delayedCall(.8,function(){reset(e,{opacity:0})})}})},
+   '2r':function(){var e=$('#b2r');G.killTweensOf(e);G.fromTo(e,{x:-50,opacity:1},{x:0,duration:.2,ease:E.out,onComplete:function(){G.delayedCall(.8,function(){reset(e,{opacity:0})})}})},
+   '3w':function(){var e=$('#b3w');G.killTweensOf(e);G.fromTo(e,{y:-40,opacity:1},{y:0,duration:.6,ease:E.bounce,onComplete:function(){G.delayedCall(.8,function(){reset(e,{opacity:0})})}})},
+   '3r':function(){var e=$('#b3r');G.killTweensOf(e);G.fromTo(e,{y:-40,opacity:1},{y:0,duration:.22,ease:E.out,onComplete:function(){G.delayedCall(.8,function(){reset(e,{opacity:0})})}})},
+   '4w':function(){var e=$('#b4w');G.killTweensOf(e);G.fromTo(e,{width:'0%'},{width:'100%',duration:.6,ease:'none',onComplete:function(){G.delayedCall(.8,function(){reset(e,{width:'0%'})})}})},
+   '4r':function(){var e=$('#b4r');G.killTweensOf(e);G.fromTo(e,{scaleX:0},{scaleX:1,duration:.6,ease:'none',onComplete:function(){G.delayedCall(.8,function(){reset(e,{scaleX:0})})}})}};
+  $$('[data-b]').forEach(function(b){b.addEventListener('click',function(){T[b.dataset.b]()})});
+  ['kw','kr'].forEach(function(id){var l=$('#'+id),sp=$$('span',l);l.addEventListener('keydown',function(e){if(e.key!=='ArrowDown'&&e.key!=='ArrowUp')return;e.preventDefault();
+    var i=sp.findIndex(function(s){return s.classList.contains('on')});sp[i].classList.remove('on');i=(i+(e.key==='ArrowDown'?1:-1)+sp.length)%sp.length;sp[i].classList.add('on')})});
+})();
+})();
+
+</script>
+</body></html>
