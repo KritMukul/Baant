@@ -65,10 +65,19 @@ async function parseWithOpenAI(base64: string, mediaType: string): Promise<Parse
   return parsedBillSchema.parse(JSON.parse(content));
 }
 
+/** Retry transient provider errors (rate limit / overload) with exponential backoff. */
+async function fetchWithRetry(url: string, init: RequestInit, tries = 5): Promise<Response> {
+  for (let i = 0; ; i++) {
+    const res = await fetch(url, init);
+    if ((![429, 502, 503].includes(res.status)) || i >= tries - 1) return res;
+    await new Promise((r) => setTimeout(r, 1500 * 2 ** i));
+  }
+}
+
 /** Google Gemini (free tier via AI Studio key). JSON mode + zod validation. */
 async function parseWithGemini(base64: string, mediaType: string): Promise<ParsedBill> {
-  const model = process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+  const model = process.env.GEMINI_MODEL ?? "gemini-3.5-flash-lite";
+  const res = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
     method: "POST",
     headers: { "content-type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY ?? "" },
     body: JSON.stringify({
