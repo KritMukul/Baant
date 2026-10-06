@@ -1,7 +1,7 @@
 # Dibs · Design State
 
 **Last updated:** 2026-10-06
-**Current phase:** Step 5 — All Screens, screen 5 (Check the scan) awaiting approval. Screens 1-4 approved (Settle + corrected Pay approved together by the user's "approved"). Phone first; see locked decisions 13-17
+**Current phase:** Step 5 — All Screens, screen 6 (Share: link + QR) awaiting approval. Screens 1-5 approved (Settle + corrected Pay approved together; Check the scan approved with decision 17). Phone first; see locked decisions 13-17
 **Status:** in_progress
 
 ---
@@ -168,10 +168,24 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 **Step:** 5 (screen 5: Check the scan, host, phone, light + dark)
 **Concept:** the required stop between Scan and Share. One test decides everything: items + charges against the bill's printed total (the same `validateBill`, ±Rs 1, ported to the mock and verified against vectors.json). States: (1) looks right (Local Diners, auto round-off -Rs 0.13 shown), (2) short (Liquor Street, Rs 52.22 short, one-tap "Found on the bill: S.Tax Rs 51.75. Add it?" then Rs 0.47 round-off), (3) over (duplicate Crunchy Salad, Rs 160.13 over, "Remove it" / "Keep both"), (4) unclear reads (Sharma Dhaba, two rows marked Check with what was read and why; they never block), (5) edit-item sheet with validation (empty name, price like 37.5O), (6) add-charge sheet (Tax / Service / Discount). Dock: "Looks right, share link" only when the totals match; otherwise disabled "Fix the difference" plus a "Share anyway" link that opens a dialog ("Rs 52.22 short of the bill total ... friends will pay a little less"). Round-off is stored as a signed discount. Prices are before tax is stated once above the list.
 **File:** `.superpowers/brainstorm/s1/content/round5-scan.html`
-**Proposed decisions (17, pending approval):** (a) Check-the-scan is a required stop even when it matches. (b) Round-off is automatic up to Rs 1 and always shown; above Rs 1 needs a fix or an explicit Share anyway. (c) Editing is per item through a sheet, not inline fields.
+**Decision 17 (approved):** (a) Check-the-scan is a required stop even when it matches. (b) Round-off is automatic up to Rs 1 and always shown; above Rs 1 needs a fix or an explicit Share anyway. (c) Editing is per item through a sheet, not inline fields.
 **Bugs found and fixed in this round:** (1) Item lists were clipped (rows cut, 4th item invisible) because `.lst{overflow:hidden}` inside a definite-height grid collapses its auto track; fixed with `overflow:clip` + `grid-auto-rows:max-content` on the scroll body. My first test run PASSED because it only counted DOM rows. Added geometry assertions (list height >= sum of rows, no row content overflows its box, last charge reachable above the dock, dock does not overlap body) and verified they fail on the buggy build. (2) Share-anyway dialog was under its own backdrop (`.dlg` needed position + z-index); the test now asserts the dialog is the top element at its centre. (3) Remove-duplicate button wrapped to two lines; shortened to "Remove it".
 **Lessons (do not repeat):** assert real geometry, not just presence (count of elements proves nothing about what the user can see); screenshot every state before trusting a green test.
 **Checks:** 12 phones, flows (add suggested tax, remove duplicate, edit with validation, qty stepper, delete, add item, add tax/discount charge, remove charge, share-anyway dialog both ways, reduced motion), visibility, negative and geometry assertions in both themes, no JS errors, no overflow at 400px. Not tested on a real phone.
+**User reaction:** "approved, build the next screen" (all three proposed decisions accepted: required stop, auto round-off up to Rs 1, per-item edit sheet)
+**Outcome:** approved
+
+---
+
+### Round 5.6 — 2026-10-06
+
+**Step:** 5 (screen 6: Share, host, phone, light + dark)
+**Concept:** the moment the bill becomes a link. One primary action ("Send on WhatsApp", prefilled message via `https://wa.me/?text=`), then Copy link / Show QR / More (system share sheet) in one row. Link looks like `krit.website/b/k3Fq9aB` (7 chars, case-sensitive, as `actions.ts` already generates). A live "Who's here" panel: empty at first, then rows per friend and "n of N items picked". Once a friend is in: primary becomes "Open the board", "Share again" is a link, and "Edit" disappears (edit from the board). States: (1) Ready, (2) Shared short (note carries the shortfall from "Share anyway"), (3) QR sheet, (4) Making the link (skeleton, disabled send), (5) Could not create (draft kept, Try again), (6) Friends are in. The QR is real (npm `qrcode`, level M, version 3, 29 modules, 4-module quiet zone), always dark on white in both themes, 259px, and the test decodes the rendered SVG with `jsqr`.
+**File:** `.superpowers/brainstorm/s1/content/round5-share.html`
+**Proposed decisions (18, pending approval):** (a) WhatsApp-first primary, system share sheet under More. (b) Joining is live to the host; Edit hidden after the first friend joins. (c) Keep the 7-char case-sensitive link code; payment reference (`7K2`) stays a separate short code in the UPI note.
+**Build requirements noted:** keep the bill draft locally until the link exists (the error state promises it); hide "More" when `navigator.share` is missing (grid goes to two columns); clipboard needs a fallback (`execCommand`) and a "press and hold" message if both fail; QR rendered from the `qrcode` package, never inverted or themed.
+**Bugs found and fixed in this round (test harness):** the sticky review bar covered click targets after scrolling (tests now scroll the target to the viewport centre first); an edit to my own test helper made it call itself forever (found by the run hanging; fixed). No product bugs surfaced this round, so I proved the assertions can fail: wrong link in the QR (decode test fails), Edit left visible after a friend joins (negative assertion fails), QR modules coloured by theme (colour assertion fails). All three caught, then restored.
+**Checks:** 12 phones, flows (copy with exact clipboard payload and reset, clipboard-rejected fallback, WhatsApp href equals the encoded message, QR open/close by button and backdrop, friends joining one by one with dock swap, creating -> ready, retry, Kabir picks), visibility + negative + geometry (no content outside phone width, URL fits, touch targets at least 44px, dock clear of body) assertions in both themes, reduced motion, no JS errors, no overflow at 400px. Not tested on a real phone; WhatsApp deep link and camera scan of the on-screen QR not tried on real devices.
 **User reaction:** pending
 **Outcome:** pending
 
@@ -190,6 +204,7 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 .superpowers/brainstorm/s1/content/round5-pay.html
 .superpowers/brainstorm/s1/content/round5-settle.html
 .superpowers/brainstorm/s1/content/round5-scan.html
+.superpowers/brainstorm/s1/content/round5-share.html
 docs/spec/examples/local-diners.json
 docs/design/brand-kit/  (index.html, tokens.css, tokens.ts, tokens.json, README.md, assets/)
 ```
