@@ -1,7 +1,7 @@
 # Dibs · Design State
 
 **Last updated:** 2026-10-06
-**Current phase:** Step 5 — All Screens, screen 6 (Share: link + QR) awaiting approval. Screens 1-5 approved (Settle + corrected Pay approved together; Check the scan approved with decision 17). Phone first; see locked decisions 13-17
+**Current phase:** Step 5 — All Screens, screen 7 (Join, guest) awaiting approval. Screens 1-6 approved (Settle + corrected Pay approved together; Check the scan approved with decision 17; Share approved with decision 18). Phone first; see locked decisions 13-17
 **Status:** in_progress
 
 ---
@@ -182,10 +182,24 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 **Step:** 5 (screen 6: Share, host, phone, light + dark)
 **Concept:** the moment the bill becomes a link. One primary action ("Send on WhatsApp", prefilled message via `https://wa.me/?text=`), then Copy link / Show QR / More (system share sheet) in one row. Link looks like `krit.website/b/k3Fq9aB` (7 chars, case-sensitive, as `actions.ts` already generates). A live "Who's here" panel: empty at first, then rows per friend and "n of N items picked". Once a friend is in: primary becomes "Open the board", "Share again" is a link, and "Edit" disappears (edit from the board). States: (1) Ready, (2) Shared short (note carries the shortfall from "Share anyway"), (3) QR sheet, (4) Making the link (skeleton, disabled send), (5) Could not create (draft kept, Try again), (6) Friends are in. The QR is real (npm `qrcode`, level M, version 3, 29 modules, 4-module quiet zone), always dark on white in both themes, 259px, and the test decodes the rendered SVG with `jsqr`.
 **File:** `.superpowers/brainstorm/s1/content/round5-share.html`
-**Proposed decisions (18, pending approval):** (a) WhatsApp-first primary, system share sheet under More. (b) Joining is live to the host; Edit hidden after the first friend joins. (c) Keep the 7-char case-sensitive link code; payment reference (`7K2`) stays a separate short code in the UPI note.
+**Decision 18 (approved):** (a) WhatsApp-first primary, system share sheet under More. (b) Joining is live to the host; Edit hidden after the first friend joins. (c) Keep the 7-char case-sensitive link code; payment reference (`7K2`) stays a separate short code in the UPI note.
 **Build requirements noted:** keep the bill draft locally until the link exists (the error state promises it); hide "More" when `navigator.share` is missing (grid goes to two columns); clipboard needs a fallback (`execCommand`) and a "press and hold" message if both fail; QR rendered from the `qrcode` package, never inverted or themed.
 **Bugs found and fixed in this round (test harness):** the sticky review bar covered click targets after scrolling (tests now scroll the target to the viewport centre first); an edit to my own test helper made it call itself forever (found by the run hanging; fixed). No product bugs surfaced this round, so I proved the assertions can fail: wrong link in the QR (decode test fails), Edit left visible after a friend joins (negative assertion fails), QR modules coloured by theme (colour assertion fails). All three caught, then restored.
 **Checks:** 12 phones, flows (copy with exact clipboard payload and reset, clipboard-rejected fallback, WhatsApp href equals the encoded message, QR open/close by button and backdrop, friends joining one by one with dock swap, creating -> ready, retry, Kabir picks), visibility + negative + geometry (no content outside phone width, URL fits, touch targets at least 44px, dock clear of body) assertions in both themes, reduced motion, no JS errors, no overflow at 400px. Not tested on a real phone; WhatsApp deep link and camera scan of the on-screen QR not tried on real devices.
+**User reaction:** "approved, build the next screen" (all three proposed decisions accepted: WhatsApp-first, live joining with Edit hidden after the first friend, 7-char case-sensitive link code)
+**Outcome:** approved
+
+---
+
+### Round 5.7 — 2026-10-06
+
+**Step:** 5 (screen 7: Join, guest first open of the link, phone, light + dark)
+**Concept:** what a friend sees the first time they tap the WhatsApp link. "Aarav invited you" / "Pick what you had." / one sentence of what happens next; a bill card (merchant, total, item and charge counts, host, who is already in); one field (first name); primary "Join and pick items" with "No sign-up. Your name is only used on this bill." States: (1) first open, (2) name entered, (3) name already on the bill ("mukul" matches Mukul: "Is that you?" -> That's me / Use another name), (4) name missing, (5) joining, (6) link does not work, (7) bill already settled. Name rules: trim + collapse spaces, case-insensitive match, 24 characters, host's first or full name cannot be used (no takeover), empty = one sentence next to the field; typing clears the error; Enter submits except while a takeover question is open. Input is built for phones: `autocomplete=given-name`, `autocapitalize=words`, `enterkeyhint=go`, `maxlength=24`, label tied to input, `aria-describedby` helper, `aria-invalid` on errors, 50px tall. Guests see only a summary before joining; the item list appears after. Returning guests (cookie) skip this screen. No theme toggle here (follows the phone); toggle lives in Settings and the board's menu.
+**File:** `.superpowers/brainstorm/s1/content/round5-join.html`
+**Proposed decisions (19, pending approval):** (a) Name only, no accounts; returning guests skip the screen. (b) "That's me" takes over an existing name (needed after switching browsers; payments are still confirmed by the host in the bank app); the host's name is blocked. Alternative: always create "Mukul 2". (c) No theme toggle on this screen.
+**Build requirements noted:** use `interactive-widget=resizes-content` (or visualViewport) so the Join button stays above the on-screen keyboard; server must treat names case-insensitively and trim/collapse whitespace; takeover must replace the participant secret; closed-link states must be distinct for not-found and settled.
+**Bugs found and fixed in this round:** none surfaced by the tests, so I proved the assertions can fail with four deliberate breaks: host name allowed (4 failures), case-sensitive matching (3), `autocomplete` removed (2), `maxlength` removed (3). All caught, then restored. Visual: avatar stack overlap eased (-8px to -5px) after the screenshot showed the first initial half hidden.
+**Checks:** 14 phones, validation flows (empty submit with focus move, typing clears the error, Enter submits, click submits, takeover with canonical casing, whitespace and caps match, Use another name focuses and selects, host first and full name blocked, spaces only, 24 character cap, Enter ignored while the takeover question is open, own-bill link does not navigate), `whoText` unit cases 0 to 5, visibility + negative + geometry (no content outside phone width, touch targets at least 44px, dock clear of body) in both themes, reduced motion, no JS errors, no overflow at 400px. Not tested on a real phone or with a real on-screen keyboard.
 **User reaction:** pending
 **Outcome:** pending
 
@@ -205,6 +219,7 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 .superpowers/brainstorm/s1/content/round5-settle.html
 .superpowers/brainstorm/s1/content/round5-scan.html
 .superpowers/brainstorm/s1/content/round5-share.html
+.superpowers/brainstorm/s1/content/round5-join.html
 docs/spec/examples/local-diners.json
 docs/design/brand-kit/  (index.html, tokens.css, tokens.ts, tokens.json, README.md, assets/)
 ```
