@@ -56,7 +56,26 @@ Payments are UPI deep links and QR codes. No gateway, no fees, and **no confirma
 - **Pay by QR (web, desktop and tablet).** The host console shows, per person, a large QR that encodes the same `upi://pay?pa=…&pn=…&am=…&cu=INR&tn=…` string as the phone button. The friend scans it with their phone's UPI app or camera. It cannot be scanned by the same device it is shown on, so on a phone the web page shows the button, not a QR.
 - **Join by QR.** The console header shows a QR of `/b/{code}`. A friend scans it with the camera and lands on the web claim page.
 - **Phone web.** The UPI button is a plain `upi://pay?...` link. On Android it opens the system chooser. On iOS it may or may not (see risks).
-- **Paid state.** Add a `payments` table (`participant_id`, `status`, `paid_at`). The friend taps "I've paid", the host confirms with "Mark paid" after checking their bank app.
+- **Paid state.** Add a `payments` table (`participant_id`, `status`, `paid_at`, `utr`, `proof_url`). See the next section for how far "paid" can be trusted.
+
+### Can Dibs make sure a payment happened?
+
+**Not with plain UPI links and QR codes.** The money moves between the friend's bank and the host's bank; Dibs only hands over a pre-filled request and sees nothing back. The options, from weakest to strongest guarantee:
+
+| Level | What it is | What it proves | Cost |
+|---|---|---|---|
+| 0 | Friend taps "I've paid" | Nothing, it is a claim | Free |
+| 1 | **Reference code in the UPI note** (`tn`, for example `Dibs 7K2 Mukul`) | Lets the host match the bank notification to the person at a glance. Proves nothing alone | Free |
+| 2 | Friend adds the **UTR** (12-digit UPI reference) and/or a **screenshot**; Dibs reads the screenshot with the vision model and checks amount, payee, status and time against what was expected | Catches honest mistakes (wrong amount, wrong person, failed payment, old screenshot). A determined friend can fake a screenshot | Free; one vision call per proof |
+| 3 | **Host confirms** ("Mark paid") after seeing it in their bank app, with the expected amount, name and reference code on screen | This is the real check today. Only the host's bank statement is ground truth | Free |
+| 4 | **Payment gateway** (for example dynamic QR plus webhooks, as in Razorpay's [QR code API](https://razorpay.com/docs/payments/payment-methods/upi-qr/api)) | A server-to-server confirmation per payment | Needs a business account and KYC, money passes through the gateway, then has to reach the host, fees may apply. Changes the product (no longer "no gateway, no fees") and may carry regulatory duties. Get advice before choosing it |
+
+Ruled out or not available here:
+- **UPI collect requests between people** (Dibs asking the friend's app to pull money): NPCI told banks and apps to stop P2P collect from 1 October 2025 ([report](https://www.theweek.in/wire-updates/business/2025/08/14/dcm65-biz-npci-collect.html)). Merchant collect continues, which is a gateway path.
+- **Payment result from the UPI app**: on native Android, apps can return `Status`/`txnId` to the caller ([overview](https://proandroiddev.com/upi-payment-flow-on-android-from-uri-construction-to-result-verification-f39ecfc26ad6)), but a web page gets nothing back, and the response is not proof. Parked with the Android app.
+- **Reading the host's bank SMS or notifications**: Android only, invasive, and fragile.
+
+**Recommended now:** levels 0 to 3 together. Friend taps "I've paid" (optionally with UTR or screenshot), Dibs checks what it can, the host confirms. The host's ledger shows each person as *Unpaid*, *Says paid* or *Confirmed*, and the bill as settled only when every share is *Confirmed*. Choosing level 4 is a separate business decision.
 
 ### Biggest product risk: verify on real devices before building more
 

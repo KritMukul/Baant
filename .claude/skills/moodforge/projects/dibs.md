@@ -1,7 +1,7 @@
 # Dibs · Design State
 
 **Last updated:** 2026-10-06
-**Current phase:** Step 5 — All Screens, screen 1 (Home) awaiting approval (phone first; see locked decisions 13 and 14)
+**Current phase:** Step 5 — All Screens, screen 2 (Claim board) awaiting approval; payment-verification approach pending (phone first; see locked decisions 13, 14)
 **Status:** in_progress
 
 ---
@@ -117,11 +117,22 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 ### Round 5.1 — 2026-10-06
 
 **Step:** 5 (screen 1: Home / scan, phone, light + dark)
-**Planned screen order:** 1 Home/scan, 2 Claim board, 3 Pay, 4 Host fixes the scan, 5 Share (link + QR), 6 Join (guest), 7 Settled, 8 Settings (theme toggle, remembered host). Tablet and desktop adaptation after the phone set.
+**Planned screen order:** 1 Home/scan, 2 Claim board, 3 Pay, 4 Host fixes the scan, 5 Share (link + QR), 6 Join (guest), 7 Settled, 8 Settings (theme toggle, remembered host). Added after the payment question: a host Settle ledger (Unpaid / Says paid / Confirmed). Tablet and desktop adaptation after the phone set.
 **Concept:** five live states per theme (empty, ready/returning, field errors, scanning, couldn't read it). One action per state; disabled CTA explains itself; UPI validated live, error after blur; scanning is steps + skeleton rows matching the claim board; error is a row with tips.
 **File:** `.superpowers/brainstorm/s1/content/round5-home.html`
 **Checks:** 10 phones exercised headlessly (photo, typing, validation, scan success + toast, cancel, retake, in-app theme toggle, reduced motion); no JS errors; no overflow at 400px. Fixed on the way: classList.toggle with undefined force flipped error styles on untouched fields. Not tested on a real phone.
 **Open decisions (asked):** remember host on device (recommended yes); no How-it-works strip; gallery upload stays.
+**User reaction (5.1):** "approved go ahead"
+**Outcome:** APPROVED. Home screen locked.
+
+### Round 5.2 — 2026-10-06
+
+**Step:** 5 (screen 2: Claim board, phone, light + dark)
+**Concept:** six live states per theme: just joined, mid-bill provisional, everything claimed, host view (take leftovers / split equally / lock claims), offline, loading. Share is the second-biggest number; Pay is off until every item is claimed and says why with a Nudge link; a friend claiming the same item splits it with a one-time flash and toast.
+**File:** `.superpowers/brainstorm/s1/content/round5-claim-board.html`
+**Checks:** 12 phones exercised headlessly (claim, conflict split 1,000.10 -> 771.27, leftovers, lock, offline retry, loading finish, in-app theme); no JS errors; no overflow at 400px. Bugs fixed on the way: toast SVG rendered 312px (missing CSS), a Provisional chip on a Rs 0.00 share, duplicate Nudge copy. Not tested on a real phone.
+**Open decisions (asked):** Pay stays off until all claimed (alternative: warn); qty lines claimed whole; no undo timer.
+**User question during this round:** "can we make sure somehow that the payment is done" -> answered in docs/PLATFORMS.md ("Can Dibs make sure a payment happened?"). Recommended levels 0-3 (I've paid + reference code + optional UTR/screenshot check + host confirms). Gateway (level 4) is a separate business decision. Pay screen (3) and a host Settle ledger depend on the answer.
 **User reaction:** pending
 **Outcome:** pending
 
@@ -136,5 +147,6 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 .superpowers/brainstorm/s1/content/round2c-coral-white.html
 .superpowers/brainstorm/s1/content/round4-animations.html
 .superpowers/brainstorm/s1/content/round5-home.html
+.superpowers/brainstorm/s1/content/round5-claim-board.html
 docs/design/brand-kit/  (index.html, tokens.css, tokens.ts, tokens.json, README.md, assets/)
 ```
