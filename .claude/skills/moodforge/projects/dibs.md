@@ -1,7 +1,7 @@
 # Dibs · Design State
 
 **Last updated:** 2026-10-06
-**Current phase:** Step 5 — All Screens, screen 4 (Settle ledger) awaiting approval; Pay re-issued with corrected numbers (phone first; see locked decisions 13, 14, 15, 16)
+**Current phase:** Step 5 — All Screens, screen 5 (Check the scan) awaiting approval. Screens 1-4 approved (Settle + corrected Pay approved together by the user's "approved"). Phone first; see locked decisions 13-17
 **Status:** in_progress
 
 ---
@@ -158,6 +158,20 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 **Bugs found and fixed in this round:** (1) `.settled{display:grid}` overrode the `hidden` attribute so the Settled hero showed on every phone; my test only asserted things that SHOULD be visible. Added NEGATIVE assertions (things that must not be visible) to settle and claim tests; verified the new assertion fails on the buggy build. (2) Confirm-anyway Settled text claimed the full amount was confirmed.
 **Lessons (do not repeat):** assert what must NOT be visible too; check mocks' numbers against the real engine before presenting.
 **Checks:** 12 phones, full flows (mark paid via sheet, walk to Settled, undo, short payment ask/confirm anyway, not received, remind, loading finish), visibility and negative assertions in both themes, no JS errors, no overflow at 400px. Not tested on a real phone.
+**User reaction:** "approved, build the next screen" (given in reply to a message asking to approve Settle and re-approve the corrected Pay together; both treated as approved)
+**Outcome:** approved
+
+---
+
+### Round 5.5 — 2026-10-06
+
+**Step:** 5 (screen 5: Check the scan, host, phone, light + dark)
+**Concept:** the required stop between Scan and Share. One test decides everything: items + charges against the bill's printed total (the same `validateBill`, ±Rs 1, ported to the mock and verified against vectors.json). States: (1) looks right (Local Diners, auto round-off -Rs 0.13 shown), (2) short (Liquor Street, Rs 52.22 short, one-tap "Found on the bill: S.Tax Rs 51.75. Add it?" then Rs 0.47 round-off), (3) over (duplicate Crunchy Salad, Rs 160.13 over, "Remove it" / "Keep both"), (4) unclear reads (Sharma Dhaba, two rows marked Check with what was read and why; they never block), (5) edit-item sheet with validation (empty name, price like 37.5O), (6) add-charge sheet (Tax / Service / Discount). Dock: "Looks right, share link" only when the totals match; otherwise disabled "Fix the difference" plus a "Share anyway" link that opens a dialog ("Rs 52.22 short of the bill total ... friends will pay a little less"). Round-off is stored as a signed discount. Prices are before tax is stated once above the list.
+**File:** `.superpowers/brainstorm/s1/content/round5-scan.html`
+**Proposed decisions (17, pending approval):** (a) Check-the-scan is a required stop even when it matches. (b) Round-off is automatic up to Rs 1 and always shown; above Rs 1 needs a fix or an explicit Share anyway. (c) Editing is per item through a sheet, not inline fields.
+**Bugs found and fixed in this round:** (1) Item lists were clipped (rows cut, 4th item invisible) because `.lst{overflow:hidden}` inside a definite-height grid collapses its auto track; fixed with `overflow:clip` + `grid-auto-rows:max-content` on the scroll body. My first test run PASSED because it only counted DOM rows. Added geometry assertions (list height >= sum of rows, no row content overflows its box, last charge reachable above the dock, dock does not overlap body) and verified they fail on the buggy build. (2) Share-anyway dialog was under its own backdrop (`.dlg` needed position + z-index); the test now asserts the dialog is the top element at its centre. (3) Remove-duplicate button wrapped to two lines; shortened to "Remove it".
+**Lessons (do not repeat):** assert real geometry, not just presence (count of elements proves nothing about what the user can see); screenshot every state before trusting a green test.
+**Checks:** 12 phones, flows (add suggested tax, remove duplicate, edit with validation, qty stepper, delete, add item, add tax/discount charge, remove charge, share-anyway dialog both ways, reduced motion), visibility, negative and geometry assertions in both themes, no JS errors, no overflow at 400px. Not tested on a real phone.
 **User reaction:** pending
 **Outcome:** pending
 
@@ -175,6 +189,7 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 .superpowers/brainstorm/s1/content/round5-claim-board.html
 .superpowers/brainstorm/s1/content/round5-pay.html
 .superpowers/brainstorm/s1/content/round5-settle.html
+.superpowers/brainstorm/s1/content/round5-scan.html
 docs/spec/examples/local-diners.json
 docs/design/brand-kit/  (index.html, tokens.css, tokens.ts, tokens.json, README.md, assets/)
 ```
