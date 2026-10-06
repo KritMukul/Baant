@@ -2,6 +2,9 @@
 
 Call dibs on what you ate. Photograph the bill, share a link, everyone taps their items, everyone pays by UPI.
 
+## Platforms
+Desktop and tablet web (this Next.js app, payments by QR), then a native Android app in Kotlin, then iOS in Swift if there is time. The web app stays usable on phones as the no-signup fallback. See `docs/PLATFORMS.md`.
+
 ## Flow
 1. The host uploads a photo and enters their name and UPI ID. A vision model parses the bill into structured JSON.
 2. `validateBill` checks that items + tax + service − discount equals the total. On a mismatch the host sees a banner and can edit the items.
@@ -17,7 +20,9 @@ Call dibs on what you ate. Photograph the bill, share a link, everyone taps thei
 - `src/lib/parseBill.ts` – vision parsing (Claude, OpenAI or Gemini)
 - `src/app/actions.ts` – server actions (create, join, claim, host edit)
 - `supabase/schema.sql` – tables, RLS, realtime publication
-- `docs/design/brand-kit/` – design tokens (light and dark), logo, brand book
+- `docs/design/brand-kit/` – design tokens (CSS, TS, JSON, Kotlin), logo, brand book
+- `docs/spec/vectors.json` – shared test vectors the Kotlin and Swift ports must match (`scripts/gen-vectors.mts`)
+- `docs/PLATFORMS.md` – platform plan, API, QR payments, build order
 
 ## Setup
 ```

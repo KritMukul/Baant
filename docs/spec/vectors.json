@@ -1,0 +1,484 @@
+{
+  "allocate": [
+    {
+      "amount": 100,
+      "weights": [
+        1,
+        1,
+        1
+      ],
+      "out": [
+        34,
+        33,
+        33
+      ]
+    },
+    {
+      "amount": 101,
+      "weights": [
+        1,
+        1,
+        1
+      ],
+      "out": [
+        34,
+        34,
+        33
+      ]
+    },
+    {
+      "amount": -101,
+      "weights": [
+        3,
+        5,
+        7
+      ],
+      "out": [
+        -20,
+        -34,
+        -47
+      ]
+    },
+    {
+      "amount": 10,
+      "weights": [
+        0,
+        0
+      ],
+      "out": [
+        5,
+        5
+      ]
+    },
+    {
+      "amount": 0,
+      "weights": [
+        1,
+        2
+      ],
+      "out": [
+        0,
+        0
+      ]
+    },
+    {
+      "amount": 1,
+      "weights": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "out": [
+        1,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "amount": 99999,
+      "weights": [
+        3333,
+        3333,
+        3334
+      ],
+      "out": [
+        33330,
+        33330,
+        33339
+      ]
+    }
+  ],
+  "split": [
+    {
+      "name": "shared + discount",
+      "items": [
+        {
+          "id": "a",
+          "name": "Paneer",
+          "qty": 1,
+          "price": 30000
+        },
+        {
+          "id": "b",
+          "name": "Naan",
+          "qty": 2,
+          "price": 10000
+        },
+        {
+          "id": "c",
+          "name": "Beer",
+          "qty": 1,
+          "price": 20000
+        }
+      ],
+      "charges": {
+        "tax": 3000,
+        "service": 3000,
+        "discount": 6000
+      },
+      "claims": {
+        "a": [
+          "x",
+          "y"
+        ],
+        "b": [
+          "x",
+          "y",
+          "z"
+        ],
+        "c": [
+          "z"
+        ]
+      },
+      "people": [
+        "x",
+        "y",
+        "z"
+      ],
+      "out": {
+        "shares": {
+          "x": {
+            "subtotal": 18334,
+            "tax": 917,
+            "service": 917,
+            "discount": 1834,
+            "total": 18334
+          },
+          "y": {
+            "subtotal": 18333,
+            "tax": 916,
+            "service": 916,
+            "discount": 1833,
+            "total": 18332
+          },
+          "z": {
+            "subtotal": 23333,
+            "tax": 1167,
+            "service": 1167,
+            "discount": 2333,
+            "total": 23334
+          }
+        },
+        "unclaimed": []
+      }
+    },
+    {
+      "name": "unclaimed item",
+      "items": [
+        {
+          "id": "a",
+          "name": "Paneer",
+          "qty": 1,
+          "price": 30000
+        },
+        {
+          "id": "b",
+          "name": "Naan",
+          "qty": 2,
+          "price": 10000
+        },
+        {
+          "id": "c",
+          "name": "Beer",
+          "qty": 1,
+          "price": 20000
+        }
+      ],
+      "charges": {
+        "tax": 3000,
+        "service": 3000,
+        "discount": 6000
+      },
+      "claims": {
+        "a": [
+          "x"
+        ]
+      },
+      "people": [
+        "x",
+        "y"
+      ],
+      "out": {
+        "shares": {
+          "x": {
+            "subtotal": 30000,
+            "tax": 3000,
+            "service": 3000,
+            "discount": 6000,
+            "total": 30000
+          },
+          "y": {
+            "subtotal": 0,
+            "tax": 0,
+            "service": 0,
+            "discount": 0,
+            "total": 0
+          }
+        },
+        "unclaimed": [
+          {
+            "id": "b",
+            "name": "Naan",
+            "qty": 2,
+            "price": 10000
+          },
+          {
+            "id": "c",
+            "name": "Beer",
+            "qty": 1,
+            "price": 20000
+          }
+        ]
+      }
+    },
+    {
+      "name": "local diners",
+      "items": [
+        {
+          "id": "mojito",
+          "name": "Flavoured Mojito",
+          "qty": 1,
+          "price": 33000
+        },
+        {
+          "id": "long",
+          "name": "Long Island Elec",
+          "qty": 2,
+          "price": 68000
+        },
+        {
+          "id": "satay",
+          "name": "Assorted Satay",
+          "qty": 1,
+          "price": 26000
+        },
+        {
+          "id": "surf",
+          "name": "Surf N Turf",
+          "qty": 1,
+          "price": 36000
+        },
+        {
+          "id": "salad",
+          "name": "Crunchy Salad",
+          "qty": 1,
+          "price": 16000
+        }
+      ],
+      "charges": {
+        "tax": 28383,
+        "service": 25800,
+        "discount": 0
+      },
+      "claims": {
+        "mojito": [
+          "d"
+        ],
+        "long": [
+          "k",
+          "m"
+        ],
+        "satay": [
+          "a",
+          "d",
+          "m"
+        ],
+        "surf": [
+          "m"
+        ],
+        "salad": []
+      },
+      "people": [
+        "a",
+        "d",
+        "k",
+        "m"
+      ],
+      "out": {
+        "shares": {
+          "a": {
+            "subtotal": 8667,
+            "tax": 1509,
+            "service": 1372,
+            "discount": 0,
+            "total": 11548
+          },
+          "d": {
+            "subtotal": 41667,
+            "tax": 7256,
+            "service": 6595,
+            "discount": 0,
+            "total": 55518
+          },
+          "k": {
+            "subtotal": 34000,
+            "tax": 5920,
+            "service": 5382,
+            "discount": 0,
+            "total": 45302
+          },
+          "m": {
+            "subtotal": 78666,
+            "tax": 13698,
+            "service": 12451,
+            "discount": 0,
+            "total": 104815
+          }
+        },
+        "unclaimed": [
+          {
+            "id": "salad",
+            "name": "Crunchy Salad",
+            "qty": 1,
+            "price": 16000
+          }
+        ]
+      }
+    }
+  ],
+  "settle": [
+    {
+      "name": "one creditor",
+      "balances": {
+        "a": 5000,
+        "b": -2000,
+        "c": -3000,
+        "d": 0
+      },
+      "out": [
+        {
+          "from": "c",
+          "to": "a",
+          "amount": 3000
+        },
+        {
+          "from": "b",
+          "to": "a",
+          "amount": 2000
+        }
+      ]
+    },
+    {
+      "name": "chain",
+      "balances": {
+        "a": -1000,
+        "b": 0,
+        "c": 1000
+      },
+      "out": [
+        {
+          "from": "a",
+          "to": "c",
+          "amount": 1000
+        }
+      ]
+    },
+    {
+      "name": "trip",
+      "balances": {
+        "a": 6300,
+        "b": -4100,
+        "c": 1300,
+        "d": -3500
+      },
+      "out": [
+        {
+          "from": "b",
+          "to": "a",
+          "amount": 4100
+        },
+        {
+          "from": "d",
+          "to": "a",
+          "amount": 2200
+        },
+        {
+          "from": "d",
+          "to": "c",
+          "amount": 1300
+        }
+      ]
+    }
+  ],
+  "upi": [
+    {
+      "vpa": "me@okaxis",
+      "name": "Mukul K",
+      "amount": 12345,
+      "note": "Goa trip",
+      "out": "upi://pay?pa=me%40okaxis&pn=Mukul%20K&am=123.45&cu=INR&tn=Goa%20trip"
+    },
+    {
+      "vpa": "aarav.k@okaxis",
+      "name": "Aarav",
+      "amount": 100010,
+      "note": "Dibs The Local Diners",
+      "out": "upi://pay?pa=aarav.k%40okaxis&pn=Aarav&am=1000.10&cu=INR&tn=Dibs%20The%20Local%20Diners"
+    },
+    {
+      "vpa": "x@y",
+      "name": "A&B",
+      "amount": 5,
+      "note": "",
+      "out": "upi://pay?pa=x%40y&pn=A%26B&am=0.05&cu=INR"
+    }
+  ],
+  "validate": [
+    {
+      "items": [
+        {
+          "price": 10000
+        }
+      ],
+      "charges": {
+        "tax": 500,
+        "service": 1000,
+        "discount": 200
+      },
+      "total": 11300,
+      "out": {
+        "ok": true
+      }
+    },
+    {
+      "items": [
+        {
+          "price": 10000
+        }
+      ],
+      "charges": {
+        "tax": 500,
+        "service": 1000,
+        "discount": 200
+      },
+      "total": 15000,
+      "out": {
+        "ok": false,
+        "expected": 15000,
+        "actual": 11300,
+        "diff": -3700
+      }
+    },
+    {
+      "items": [
+        {
+          "price": 103500
+        }
+      ],
+      "charges": {
+        "tax": 5178,
+        "service": 0,
+        "discount": 0
+      },
+      "total": 113900,
+      "out": {
+        "ok": false,
+        "expected": 113900,
+        "actual": 108678,
+        "diff": -5222
+      }
+    }
+  ]
+}

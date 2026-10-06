@@ -15,6 +15,7 @@ Open `index.html` in a browser for the visual book. Everything below is generate
 | `index.html` | Visual brand book (toggle Light / Dark / System inside it) |
 | `tokens.css` | CSS variables. Light is default, dark follows `prefers-color-scheme`, `data-theme` on `<html>` always wins |
 | `tokens.ts` | Typed tokens for both modes, plus motion |
+| `tokens.kt` | Jetpack Compose theme for the Android app (not compiled yet) |
 | `tokens.json` | DTCG format for Style Dictionary and Figma plugins |
 | `assets/` | `logo-mark(.-dark).svg`, `logo-wordmark(.-dark).svg` (the lockup), `app-icon.svg` |
 
