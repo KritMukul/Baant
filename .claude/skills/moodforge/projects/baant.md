@@ -1,23 +1,27 @@
 # Baant · Design State
 
 **Last updated:** 2026-10-06
-**Current phase:** Step 1 — Discovery (waiting for user pick)
+**Current phase:** Step 2 — Screen Preview (waiting for approval)
 **Status:** in_progress
 
 ---
 
 ## Current Direction
 
-undecided
+**Night Tab (B)** — indigo-black ground, peach accent, Sora + JetBrains Mono, thumb-size pill CTA. Dark is the approved look; a light twin is being validated.
 
 ## Locked Decisions
 
 1. Real data only: Indian restaurant bills, real item names and ₹ amounts (fixtures in `fixtures/bills/`).
 2. Pay button always shows the exact rupee amount and the host's name.
+3. Direction: Night Tab (B), chosen round 1.
+4. Both themes ship; the app gets a Light · Dark · System toggle.
+5. Dark palette is locked as shown in round 1: #0c0d1c ground, #171a30 surface, #ffb59a peach, #8fa4ff periwinkle.
+6. Fonts: Sora (UI), JetBrains Mono (all digits and ₹).
 
 ## Rejected Directions
 
-*(none yet)*
+1. **A Thermal Slip, C Truck Art, D Sticker Pop, E Clear Fold** (round 1) — not chosen. User picked B: "go for B".
 
 ## Preserved
 
@@ -25,8 +29,8 @@ undecided
 
 ## Open Questions
 
-1. Which of A–E (or a mix) is the direction?
-2. Dark mode: ship alongside, or only if B is picked?
+1. Does the light version (round 2) feel like the same product as the dark one?
+2. Interpreted "in Light mode the designs are good keep this for dark" as: the dark design is approved as-is; confirm that reading.
 
 ## Inspiration sources
 
@@ -44,6 +48,16 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 **Skills loaded:** moodforge, artifact-design (superpowers:brainstorming, frontend-design, bolder etc. not installed in this environment)
 **Concept:** 5 worlds on one claim-board scaffold: A Thermal Slip (receipt paper, safe-ish), B Night Tab (dark indigo + peach), C Truck Art (ambitious), D Sticker Pop (neo-brutal), E Clear Fold (safe fintech).
 **File:** `.superpowers/brainstorm/s1/content/round1-directions.html`
+**User reaction:** "go for B ... keep this for dark and make a light version of it as well and we will add toggle in app"
+**Outcome:** APPROVED B. Others not chosen.
+
+### Round 2 — 2026-10-06
+
+**Step:** 2 (Screen Preview)
+**Skills loaded:** moodforge, artifact-design
+**Concept:** Night Tab in dark + new light twin; 3 real screens each (claim board with live share maths, pay sheet, host fixes the scan with a ₹52.22 mismatch from the Liquor Street fixture).
+**File:** `.superpowers/brainstorm/s1/content/round2-night-tab-preview.html`
+**Light palette:** ground #f5f4fb, surface #fff, text #14152b, muted #5b5f80, peach fill #ff9b78, peach text #b83f17, periwinkle #4a5fd0. All text pairs ≥4.5:1 (checked).
 **User reaction:** pending
 **Outcome:** pending
 
@@ -53,4 +67,5 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 
 ```
 .superpowers/brainstorm/s1/content/round1-directions.html
+.superpowers/brainstorm/s1/content/round2-night-tab-preview.html
 ```
