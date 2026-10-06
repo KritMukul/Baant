@@ -1,7 +1,7 @@
 # Dibs · Design State
 
 **Last updated:** 2026-10-06
-**Current phase:** Step 5 — All Screens, screen 3 (Pay) awaiting approval (phone first; see locked decisions 13, 14, 15)
+**Current phase:** Step 5 — All Screens, screen 4 (Settle ledger) awaiting approval; Pay re-issued with corrected numbers (phone first; see locked decisions 13, 14, 15, 16)
 **Status:** in_progress
 
 ---
@@ -21,6 +21,7 @@
 7. Light accent: Coral #ff6b4a with WHITE label on the primary button (round 2c, "lets go with coral only"). Known AA exception (2.82:1); mitigated by accentEdge #d9431a outline. Do not silently change; offer #e02900 or dark label as the AA fix if asked.
 8. Light ground #f5f4fb, surface #ffffff, accentText #c2371a.
 9. Language: English only. No Hinglish anywhere in the product copy, brand kit or app (user, round 3: "we will not include hinglish only english").
+16. **Name stays Dibs for now (user: "abhi dibs ke saath continue")**, public launch gated on a trademark clearance search (found: Teleperformance D.i.b.s. device mark across classes 9/35/36/38/41/42/45, DIBS Technology Pune software firm, Class 25 DIBS, legacy DIBS Payment Services Nordic). User bought krit.website (not dibs.website), so share links will be krit.website/b/<code>.
 15. **Payment verification = levels 0-3 (user: "approved, levels 0-3")**: friend taps I've paid; reference code in the UPI note (Dibs 7K2 Mukul); optional UTR (12 digits) and/or screenshot read by the vision model (amount, payee, status, time); host confirms in their bank app. Per person: Unpaid / Says paid / Confirmed; bill is Settled only when everyone is Confirmed. Gateway (level 4) NOT chosen. Claim board approved with: Pay off until all claimed, qty lines claimed whole, no undo timer.
 14. **Mobile first (user: "next app bhi primarily mobile focused hi rahegi"):** the Next.js app is primarily mobile-focused. Phone is the design target (about 390px); tablet and desktop only adapt the same screens (centred column, optional QR panel). No feature exists only on large screens. Refines decision 13.
 13. **Scope narrowed (2026-10-06, later the same day; user: "hold off the android app and next app hi rakhte hai for now, mobile me bhi vhi rakh lenge"):** ONE responsive Next.js app for phone, tablet and desktop. Android and iOS are on hold (tokens.kt and shared vectors kept, parked). Phone web is first-class again, installable as a PWA. Pay: UPI button on phones, QR on tablet and desktop. Step 5 is one responsive set of screens, phone first. Supersedes the platform split in decision 12.
@@ -146,6 +147,17 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 **File:** `.superpowers/brainstorm/s1/content/round5-pay.html`
 **Checks:** 16 phones; full flow Pay -> sheet -> proof -> check -> Says paid -> Confirmed, mismatch path (pay missing 900.00), fallback copy, undo, in-app theme. NEW: asserted computed visibility (effective opacity product, size, display) of the key element in every state and after every transition, both themes (lesson from the avatar bug). No JS errors, no overflow at 400px. Not tested on a real phone. The screenshot check shown is a design mock; the real one needs the vision call and a payments table.
 **Next screen:** host Settle ledger (Unpaid / Says paid / Confirmed, Mark paid), then Host fixes the scan, Share, Join, Settled, Settings.
+**User reaction (5.3):** not explicit; user said "continue with dibs" and moved on, treated as continue. Pay screen re-issued after the correction below, so it still needs a real approval.
+
+### Round 5.4 — 2026-10-06
+
+**CORRECTION found while building screen 4 (mine, material):** the claim board and Pay mocks used a constant factor (3280/2580) for shares. The real engine spreads tax/service over the CLAIMED subtotal only, so the numbers were wrong: final Mukul share is Rs 1,000.09 not 1,000.10; mid-bill (3 unclaimed) it is Rs 1,092.58 not 1,000.10, and falls as items are claimed; with Diya also on Surf N Turf it is Rs 842.59 not 771.27. The mock's 'provisional, can drop' chip had been showing a figure that never dropped. Fixed: a verified JS port of the engine (scratchpad/shared/engine.js, matches docs/spec/vectors.json and the TS engine) now drives claim board, Pay and Settle; fixture docs/spec/examples/local-diners.json + src/lib/example.test.ts keep the numbers honest (22 tests). Pay: 1,000.09, satay 86.66, mismatch screenshot shows 100.09 so the missing amount stays 900.00.
+**Step:** 5 (screen 4: host Settle ledger, phone, light + dark)
+**Concept:** per friend Unpaid / Says paid / Confirmed (+ Says paid, short); only the host moves someone to Confirmed. Three-layer bar (confirmed, says paid, unpaid). Open a row to see UTR + screenshot result and exactly what to look for in the bank app (amount + reference code). Mark paid (cash) via a sheet; Not received; Ask for the missing amount; Confirm anyway (records accepted shortfall, and the Settled text then says what was actually received). Remind = share a message, not a push. Settled shows the one emoji. Shares: Aarav 707.71, Diya 733.13, Kabir 839.07, Mukul 1,000.09 = 3,280.00.
+**File:** `.superpowers/brainstorm/s1/content/round5-settle.html`
+**Bugs found and fixed in this round:** (1) `.settled{display:grid}` overrode the `hidden` attribute so the Settled hero showed on every phone; my test only asserted things that SHOULD be visible. Added NEGATIVE assertions (things that must not be visible) to settle and claim tests; verified the new assertion fails on the buggy build. (2) Confirm-anyway Settled text claimed the full amount was confirmed.
+**Lessons (do not repeat):** assert what must NOT be visible too; check mocks' numbers against the real engine before presenting.
+**Checks:** 12 phones, full flows (mark paid via sheet, walk to Settled, undo, short payment ask/confirm anyway, not received, remind, loading finish), visibility and negative assertions in both themes, no JS errors, no overflow at 400px. Not tested on a real phone.
 **User reaction:** pending
 **Outcome:** pending
 
@@ -162,5 +174,7 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 .superpowers/brainstorm/s1/content/round5-home.html
 .superpowers/brainstorm/s1/content/round5-claim-board.html
 .superpowers/brainstorm/s1/content/round5-pay.html
+.superpowers/brainstorm/s1/content/round5-settle.html
+docs/spec/examples/local-diners.json
 docs/design/brand-kit/  (index.html, tokens.css, tokens.ts, tokens.json, README.md, assets/)
 ```

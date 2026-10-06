@@ -1,0 +1,277 @@
+{
+  "bill": {
+    "merchant": "The Local Diners",
+    "printedTotal": 328000
+  },
+  "items": [
+    {
+      "id": "mojito",
+      "name": "Flavoured Mojito",
+      "qty": 1,
+      "price": 33000
+    },
+    {
+      "id": "cucumber",
+      "name": "Cucumber Mint",
+      "qty": 1,
+      "price": 17000
+    },
+    {
+      "id": "long",
+      "name": "Long Island Elec",
+      "qty": 2,
+      "price": 68000
+    },
+    {
+      "id": "salad",
+      "name": "Crunchy Salad",
+      "qty": 1,
+      "price": 16000
+    },
+    {
+      "id": "satay",
+      "name": "Assorted Satay",
+      "qty": 1,
+      "price": 26000
+    },
+    {
+      "id": "tequila",
+      "name": "Tequila Chicken",
+      "qty": 1,
+      "price": 32000
+    },
+    {
+      "id": "fajitas",
+      "name": "Fajitas Chicken",
+      "qty": 1,
+      "price": 30000
+    },
+    {
+      "id": "surf",
+      "name": "Surf N Turf",
+      "qty": 1,
+      "price": 36000
+    }
+  ],
+  "charges": {
+    "tax": 44213,
+    "service": 25800,
+    "discount": 13
+  },
+  "people": [
+    "A",
+    "D",
+    "K",
+    "M"
+  ],
+  "scenarios": {
+    "final": {
+      "claims": {
+        "mojito": [
+          "D"
+        ],
+        "cucumber": [
+          "K"
+        ],
+        "long": [
+          "K",
+          "M"
+        ],
+        "salad": [
+          "D"
+        ],
+        "satay": [
+          "A",
+          "D",
+          "M"
+        ],
+        "tequila": [
+          "A"
+        ],
+        "fajitas": [
+          "K",
+          "A"
+        ],
+        "surf": [
+          "M"
+        ]
+      },
+      "shares": {
+        "A": {
+          "subtotal": 55667,
+          "tax": 9540,
+          "service": 5567,
+          "discount": 3,
+          "total": 70771
+        },
+        "D": {
+          "subtotal": 57667,
+          "tax": 9882,
+          "service": 5767,
+          "discount": 3,
+          "total": 73313
+        },
+        "K": {
+          "subtotal": 66000,
+          "tax": 11310,
+          "service": 6600,
+          "discount": 3,
+          "total": 83907
+        },
+        "M": {
+          "subtotal": 78666,
+          "tax": 13481,
+          "service": 7866,
+          "discount": 4,
+          "total": 100009
+        }
+      },
+      "unclaimed": []
+    },
+    "midBill": {
+      "claims": {
+        "mojito": [
+          "D"
+        ],
+        "cucumber": [
+          "K"
+        ],
+        "long": [
+          "K",
+          "M"
+        ],
+        "satay": [
+          "A",
+          "D",
+          "M"
+        ],
+        "surf": [
+          "M"
+        ]
+      },
+      "shares": {
+        "A": {
+          "subtotal": 8667,
+          "tax": 2129,
+          "service": 1242,
+          "discount": 0,
+          "total": 12038
+        },
+        "D": {
+          "subtotal": 41667,
+          "tax": 10235,
+          "service": 5972,
+          "discount": 3,
+          "total": 57871
+        },
+        "K": {
+          "subtotal": 51000,
+          "tax": 12527,
+          "service": 7310,
+          "discount": 4,
+          "total": 70833
+        },
+        "M": {
+          "subtotal": 78666,
+          "tax": 19322,
+          "service": 11276,
+          "discount": 6,
+          "total": 109258
+        }
+      },
+      "unclaimed": [
+        {
+          "id": "salad",
+          "name": "Crunchy Salad",
+          "qty": 1,
+          "price": 16000
+        },
+        {
+          "id": "tequila",
+          "name": "Tequila Chicken",
+          "qty": 1,
+          "price": 32000
+        },
+        {
+          "id": "fajitas",
+          "name": "Fajitas Chicken",
+          "qty": 1,
+          "price": 30000
+        }
+      ]
+    },
+    "midBillDiyaTakesSurf": {
+      "claims": {
+        "mojito": [
+          "D"
+        ],
+        "cucumber": [
+          "K"
+        ],
+        "long": [
+          "K",
+          "M"
+        ],
+        "satay": [
+          "A",
+          "D",
+          "M"
+        ],
+        "surf": [
+          "M",
+          "D"
+        ]
+      },
+      "shares": {
+        "A": {
+          "subtotal": 8667,
+          "tax": 2129,
+          "service": 1242,
+          "discount": 1,
+          "total": 12037
+        },
+        "D": {
+          "subtotal": 59667,
+          "tax": 14656,
+          "service": 8552,
+          "discount": 4,
+          "total": 82871
+        },
+        "K": {
+          "subtotal": 51000,
+          "tax": 12527,
+          "service": 7310,
+          "discount": 4,
+          "total": 70833
+        },
+        "M": {
+          "subtotal": 60666,
+          "tax": 14901,
+          "service": 8696,
+          "discount": 4,
+          "total": 84259
+        }
+      },
+      "unclaimed": [
+        {
+          "id": "salad",
+          "name": "Crunchy Salad",
+          "qty": 1,
+          "price": 16000
+        },
+        {
+          "id": "tequila",
+          "name": "Tequila Chicken",
+          "qty": 1,
+          "price": 32000
+        },
+        {
+          "id": "fajitas",
+          "name": "Fajitas Chicken",
+          "qty": 1,
+          "price": 30000
+        }
+      ]
+    }
+  }
+}

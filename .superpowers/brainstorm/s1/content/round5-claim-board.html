@@ -331,7 +331,7 @@ html[data-reduced] .skbar,html[data-reduced] .skt,html[data-reduced] .it.pend .s
   <h3>What this screen decides</h3>
   <ul>
     <li><b>The share is the second-biggest number</b> after the bill total, always in the dock, always in mono.</li>
-    <li><b>Provisional versus final.</b> Tax and service are spread over what has been claimed so far, so your share drops as others claim. Until every item has an owner the chip says <i>Provisional</i> and Pay is off, with the reason and a Nudge button.</li>
+    <li><b>Provisional versus final.</b> Tax and service are spread over what has been claimed so far, so your share drops as others claim. Until every item has an owner the chip says <i>Provisional</i> and Pay is off, with the reason and a Nudge button. Numbers come from the real split engine: in the mid-bill phone your share reads ₹1,092.58 and falls to ₹1,000.09 once the last three items are claimed.</li>
     <li><b>Two people tap the same item</b>: no conflict, it just splits. The newcomer's dot arrives, the row flashes once, and a toast says "Diya also called dibs on Surf N Turf. Split 2 ways."</li>
     <li><b>The host gets leftovers handled</b>: take them, or split them equally, then lock claims so every share becomes final.</li>
     <li><b>Offline is a state, not an error</b>: taps are kept and marked as waiting to sync.</li>
@@ -351,6 +351,24 @@ html[data-reduced] .skbar,html[data-reduced] .skt,html[data-reduced] .it.pend .s
 </main>
 
 <script>
+/* Plain-JS port of src/lib/money.ts allocate + src/lib/split.ts splitBill, for the design mocks.
+   Verified against docs/spec/vectors.json by scratchpad/shared/engine_test.js. Money is integer paise. */
+var DibsEngine=(function(){
+function allocate(amount,weights){var n=weights.length;if(n===0)return[];var total=weights.reduce(function(a,b){return a+b},0);
+  var w=total>0?weights:weights.map(function(){return 1}),wT=total>0?total:n;var sign=amount<0?-1:1,abs=Math.abs(amount);
+  var raw=w.map(function(x){return abs*x/wT}),parts=raw.map(Math.floor);var left=abs-parts.reduce(function(a,b){return a+b},0);
+  var order=raw.map(function(r,i){return{i:i,frac:r-Math.floor(r)}}).sort(function(a,b){return b.frac-a.frac||a.i-b.i});
+  for(var k=0;left>0;k=(k+1)%n,left--)parts[order[k].i]+=1;return parts.map(function(p){return sign*p})}
+function uniq(a){var o=[];a.forEach(function(x){if(o.indexOf(x)<0)o.push(x)});return o}
+function splitBill(items,charges,claims,ids){var sub={};ids.forEach(function(p){sub[p]=0});var unclaimed=[];
+  items.forEach(function(item){var who=uniq(claims[item.id]||[]).filter(function(p){return p in sub}).sort();
+    if(who.length===0){unclaimed.push(item);return}
+    allocate(item.price,who.map(function(){return 1})).forEach(function(amt,i){sub[who[i]]+=amt})});
+  var weights=ids.map(function(p){return sub[p]});var tax=allocate(charges.tax,weights),service=allocate(charges.service,weights),discount=allocate(charges.discount,weights);
+  var shares={};ids.forEach(function(p,i){shares[p]={subtotal:sub[p],tax:tax[i],service:service[i],discount:discount[i],total:sub[p]+tax[i]+service[i]-discount[i]}});
+  return{shares:shares,unclaimed:unclaimed}}
+return{allocate:allocate,splitBill:splitBill}})();
+//if(typeof module!=='undefined')module.exports=DibsEngine;
 (function(){
 'use strict';
 var root=document.documentElement,G=window.gsap;
@@ -387,7 +405,6 @@ var ITEMS=[
  {id:'tequila',n:'Tequila Chicken',q:1,p:320,cat:'starter'},
  {id:'fajitas',n:'Fajitas Chicken',q:1,p:300,cat:'main'},
  {id:'surf',n:'Surf N Turf',q:1,p:360,cat:'main'}];
-var K=3280/2580;
 
 function Board(host,o){
   var S={theme:o.theme,me:o.me||'M',isHost:!!o.isHost,phase:o.phase||'ready',hint:!!o.hint,locked:false,pend:{},claims:{}};
@@ -397,8 +414,10 @@ function Board(host,o){
   host.appendChild(ph);var scr=$('.scr',ph),toast=$('.toast',ph);
   function mine(it){return S.claims[it.id].indexOf(S.me)>=0}
   function unclaimed(){return ITEMS.filter(function(it){return S.claims[it.id].length===0})}
-  function sub(){var s=0;ITEMS.forEach(function(it){var w=S.claims[it.id];if(w.indexOf(S.me)>=0)s+=it.p/w.length});return s}
-  function share(){return sub()*K}
+  var CH={tax:44213,service:25800,discount:13};
+  function calc(){var items=ITEMS.map(function(it){return{id:it.id,name:it.n,qty:it.q,price:it.p*100}});return DibsEngine.splitBill(items,CH,S.claims,ORDER).shares[S.me]}
+  function sub(){return calc().subtotal/100}
+  function share(){return calc().total/100}
   function names(w){return w.map(function(id){return id===S.me?'you':P[id].n})}
   function subline(it){var w=S.claims[it.id],q=it.q>1?it.q+' × ₹'+fmt(it.p/it.q)+' · ':'';
     if(!w.length)return q+'Up for grabs';var mi=w.indexOf(S.me)>=0;
@@ -425,7 +444,7 @@ function Board(host,o){
     b.innerHTML=S.locked?'<div class="hostbox"><div class="t"><b>Claims are locked.</b> Everyone\'s share is final and friends can pay.</div></div>':
      u.length?'<div class="hostbox"><div class="t"><b>'+u.length+' item'+(u.length>1?'s':'')+' nobody has claimed:</b> '+u.map(function(i){return i.n}).join(', ')+'</div><div class="two"><button class="btn sec" data-a="take" type="button" style="min-height:44px;padding:0 10px">Take them</button><button class="btn sec" data-a="splitall" type="button" style="min-height:44px;padding:0 10px">Split equally</button></div></div>':
      '<div class="hostbox"><div class="t"><b>Everything is claimed.</b> Lock claims to make shares final.</div></div>'}
-  function dock(){var d=$('[data-k=dock]',scr);if(!d)return;var u=unclaimed().length,sh=share(),s=sub(),tax=sh-s,final=u===0;
+  function dock(){var d=$('[data-k=dock]',scr);if(!d)return;var u=unclaimed().length,c=calc(),sh=c.total/100,s=c.subtotal/100,tax=(c.total-c.subtotal)/100,final=u===0;
     var chip=(!S.isHost&&sh<=0&&S.phase!=='offline')?'':S.phase==='offline'?'<span class="chip prov">Waiting to sync</span>':
       (S.isHost&&S.locked)||(!S.isHost&&final)?'<span class="chip fin">'+UI.check+'Final · everything is claimed</span>':
       '<span class="chip prov">'+UI.info+'Provisional · your share can drop</span>';

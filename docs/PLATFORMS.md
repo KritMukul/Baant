@@ -47,7 +47,7 @@ Server stays the authority for parsing and validation. Clients compute shares lo
 
 The money logic is small and exact: `allocate`, `splitBill`, `simplifyDebts`, `balancesFromBills`, `upiLink`, `validateBill`. It lives in `src/lib/` (TypeScript). Ports are checked against **`docs/spec/vectors.json`**, generated from the TypeScript by `scripts/gen-vectors.mts`; `src/lib/vectors.test.ts` keeps TypeScript honest. A Kotlin port is done when a unit test reading the same JSON passes unchanged. Money is always integer paise.
 
-**Known property to design around:** `splitBill` spreads tax, service and discount over the *claimed* subtotal only. Until every item is claimed, each person's share is provisional and will drop as others claim. The UI says so ("Final once everything is claimed") and the pay button should wait or warn.
+**Known property to design around:** `splitBill` spreads tax, service and discount over the *claimed* subtotal only. Until every item is claimed, each person's share is provisional and will drop as others claim. Worked example (`docs/spec/examples/local-diners.json`, tested): with 3 of 8 items still unclaimed Mukul's share reads ₹1,092.58, and it falls to ₹1,000.09 once the last items are claimed. Showing a provisional figure that does not move would be wrong, and so would letting someone pay it. The UI says so ("Final once everything is claimed") and the pay button should wait or warn.
 
 ## Payments
 
