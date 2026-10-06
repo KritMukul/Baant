@@ -60,6 +60,8 @@ export interface BillView {
   /** Only for the host and people who have joined (they need it to pay). */
   payerVpa: string | null;
   shortAtShare: Paise;
+  claimsLocked: boolean;
+  sharedAt: string | null;
   settled: boolean;
   me: { id: string; name: string; isHost: boolean } | null;
   items: { id: string; name: string; qty: number; price: Paise; flag: ItemFlag | null }[];
@@ -103,6 +105,8 @@ export function buildView(d: BillData, v: Viewer): BillView | null {
     hostFullName: d.bill.payerName,
     payerVpa: member ? d.bill.payerVpa : null,
     shortAtShare: d.bill.shortAtShare,
+    claimsLocked: d.bill.claimsLocked,
+    sharedAt: d.bill.sharedAt,
     settled: ledger.settled,
     me: me ? { id: me.id, name: me.name, isHost: me.isHost } : null,
     items: d.items.map((i) => ({ id: i.id, name: i.name, qty: i.qty, price: i.price, flag: i.flag })),
@@ -303,11 +307,38 @@ async function loadMember(store: Store, code: string, creds: Creds): Promise<{ d
 export async function claim(store: Store, code: string, creds: Creds, itemId: string, on: boolean): Promise<Result> {
   const m = await loadMember(store, code, creds);
   if (isFail(m)) return m;
+  if (m.d.bill.claimsLocked) return fail("locked", `${m.d.participants.find((p) => p.isHost)!.name} has locked the claims, so shares are final.`);
   if (m.d.payments.some((p) => p.participantId === m.v.participantId && p.status !== "rejected"))
     return fail("locked", "You've already paid, so your items are locked. Ask the host if something is wrong.");
   if (!m.d.items.some((i) => i.id === itemId)) return fail("not_found", "That item is gone");
   await store.setClaim(code, m.v.participantId, itemId, on);
   return { ok: true };
+}
+
+/** Host: freeze (or reopen) everyone's picks. Freezing needs everything claimed; reopening needs nobody to have paid. */
+export async function setClaimsLocked(store: Store, code: string, creds: Creds, on: boolean): Promise<Result> {
+  const h = await loadHost(store, code, creds);
+  if (isFail(h)) return h;
+  const { d } = h;
+  if (d.bill.status !== "open") return fail("not_found", "Share the bill first");
+  if (on && !sharesOf(d).allClaimed) return fail("not_final", "Everything has to be claimed first");
+  if (!on && d.payments.some((p) => p.status !== "rejected")) return fail("locked", lockedMsg);
+  await store.patchBill(code, { claimsLocked: on });
+  return { ok: true };
+}
+
+/** Host: deal with items nobody claimed. "take" = host has them; "split" = everyone who is here shares them. */
+export async function claimLeftovers(store: Store, code: string, creds: Creds, mode: "take" | "split"): Promise<Result<{ count: number }>> {
+  const h = await loadHost(store, code, creds);
+  if (isFail(h)) return h;
+  const { d } = h;
+  if (d.bill.status !== "open") return fail("not_found", "Share the bill first");
+  if (d.bill.claimsLocked) return fail("locked", "Claims are locked");
+  if (d.payments.some((p) => p.status !== "rejected")) return fail("locked", lockedMsg);
+  const { unclaimed } = sharesOf(d);
+  const who = mode === "take" ? d.participants.filter((p) => p.isHost) : d.participants;
+  for (const it of unclaimed) for (const p of who) await store.setClaim(code, p.id, it.id, true);
+  return { ok: true, count: unclaimed.length };
 }
 
 /* ------------------------------------------------------------------ paying */

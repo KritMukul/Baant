@@ -27,6 +27,8 @@ export interface Bill {
   thumb: string | null;
   /** If the host shared with a difference, how much short (negative) or over (positive). 0 = matched. */
   shortAtShare: Paise;
+  /** The host froze everyone's picks: shares are final. */
+  claimsLocked: boolean;
   createdAt: string;
   sharedAt: string | null;
 }

@@ -1,40 +1,23 @@
-import { notFound } from "next/navigation";
-import { admin } from "@/lib/supabase";
-import { isHost } from "@/app/actions";
-import ClaimBoard from "./ClaimBoard";
+import { notFound, redirect } from "next/navigation";
+import { appOrigin } from "@/server/origin";
+import { loadForViewer } from "@/server/load";
+import BoardScreen from "./BoardScreen";
+import JoinScreen, { DeadEnd } from "./JoinScreen";
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata({ params }: { params: Promise<{ code: string }> }) {
+  const { code } = await params;
+  return { title: "Dibs", robots: { index: false, follow: false }, alternates: { canonical: `/b/${code}` } };
+}
+
+/** One link, four outcomes: the host goes on to check the scan, a friend who has joined sees the board, a stranger joins, a dead link says so. */
 export default async function BillPage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
-  const db = admin();
-  const { data: bill } = await db.from("bills").select("*").eq("code", code).single();
-  if (!bill) notFound();
-
-  const [items, participants, claims, host] = await Promise.all([
-    db.from("items").select("id,name,qty,price").eq("bill_id", bill.id).order("position").order("name"),
-    db.from("participants").select("id,name").eq("bill_id", bill.id).order("created_at"),
-    db.from("claims").select("item_id,participant_id").eq("bill_id", bill.id),
-    isHost(code),
-  ]);
-
-  return (
-    <ClaimBoard
-      code={code}
-      billId={bill.id}
-      bill={{
-        merchant: bill.merchant,
-        total: bill.total,
-        tax: bill.tax,
-        service: bill.service,
-        discount: bill.discount,
-        payerName: bill.payer_name,
-        payerVpa: bill.payer_vpa,
-      }}
-      items={items.data ?? []}
-      participants={participants.data ?? []}
-      claims={claims.data ?? []}
-      isHost={host}
-    />
-  );
+  const l = await loadForViewer(code);
+  if (!l) notFound();
+  const { view, viewer } = l;
+  if (viewer.role === "host" && view.status === "draft") redirect(`/b/${code}/check`);
+  if (viewer.role === "anon") return view.settled ? <DeadEnd kind="settled" view={view} /> : <JoinScreen code={code} view={view} />;
+  return <BoardScreen code={code} initial={view} origin={await appOrigin()} />;
 }

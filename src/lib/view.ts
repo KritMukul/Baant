@@ -68,3 +68,15 @@ export function ledgerOf(d: BillData): Ledger {
     owedTotal: rows.reduce((n, r) => n + r.pay.owed, 0),
   };
 }
+
+/** The same split as `sharesOf`, from loose pieces (a screen's own view, with optimistic claims). */
+export function splitFromParts(
+  items: { id: string; name: string; qty: number; price: Paise }[],
+  charges: { kind: "tax" | "service" | "discount" | string; amount: Paise }[],
+  participantIds: string[],
+  claims: { itemId: string; participantId: string }[],
+) {
+  const m: Claims = {};
+  for (const c of claims) (m[c.itemId] ??= []).push(c.participantId);
+  return splitBill(items, totalsOf(charges as { kind: "tax" | "service" | "discount"; amount: Paise }[]), m, [...participantIds].sort());
+}

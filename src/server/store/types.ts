@@ -61,7 +61,7 @@ export interface Store {
 
   patchBill(
     code: string,
-    patch: Partial<Pick<Bill, "status" | "shortAtShare" | "sharedAt" | "merchant" | "total">>,
+    patch: Partial<Pick<Bill, "status" | "shortAtShare" | "sharedAt" | "merchant" | "total" | "claimsLocked">>,
   ): Promise<void>;
 
   saveItem(

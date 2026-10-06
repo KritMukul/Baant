@@ -17,6 +17,7 @@ create table if not exists bills (
   payer_vpa text not null,
   thumb text,                                -- small data-URL thumbnail, display only
   short_at_share int not null default 0,     -- paise short (-) or over (+) when shared anyway
+  claims_locked boolean not null default false, -- the host froze everyone's picks
   created_at timestamptz not null default now(),
   shared_at timestamptz
 );

@@ -221,6 +221,54 @@ describe("claiming", () => {
   });
 });
 
+describe("locking and leftovers", () => {
+  it("host can take or split leftovers; friends cannot", async () => {
+    const s = memoryStore();
+    const { code, host } = await open(s);
+    const diya = await guest(s, code, "Diya");
+    const d = await data(s, code);
+    await svc.claim(s, code, diya, d.items[0].id, true);
+    expect(await svc.claimLeftovers(s, code, diya, "take")).toMatchObject({ ok: false, code: "forbidden" });
+    expect(await svc.claimLeftovers(s, code, host, "take")).toEqual({ ok: true, count: 7 });
+    const d2 = await data(s, code);
+    expect(d2.claims.filter((c) => c.participantId === d2.participants[0].id)).toHaveLength(7);
+    expect(svc.buildView(d2, { role: "host", participantId: d2.participants[0].id })!.allClaimed).toBe(true);
+  });
+  it("split gives every item with no claimant to everyone who is here", async () => {
+    const s = memoryStore();
+    const { code, host } = await open(s);
+    await guest(s, code, "Diya");
+    await guest(s, code, "Kabir");
+    expect(await svc.claimLeftovers(s, code, host, "split")).toMatchObject({ ok: true, count: 8 });
+    const d = await data(s, code);
+    expect(d.claims).toHaveLength(8 * 3);
+  });
+  it("locking needs everything claimed, stops claims for everyone, and can be undone before anyone pays", async () => {
+    const s = memoryStore();
+    const { code, host } = await open(s);
+    const diya = await guest(s, code, "Diya");
+    expect(await svc.setClaimsLocked(s, code, host, true)).toMatchObject({ ok: false, code: "not_final" });
+    await svc.claimLeftovers(s, code, host, "take");
+    expect(await svc.setClaimsLocked(s, code, diya, true)).toMatchObject({ ok: false, code: "forbidden" });
+    expect(await svc.setClaimsLocked(s, code, host, true)).toMatchObject({ ok: true });
+    const d = await data(s, code);
+    expect(d.bill.claimsLocked).toBe(true);
+    expect(await svc.claim(s, code, diya, d.items[0].id, true)).toMatchObject({ ok: false, code: "locked" });
+    expect(await svc.claimLeftovers(s, code, host, "take")).toMatchObject({ ok: false, code: "locked" });
+    expect(await svc.setClaimsLocked(s, code, host, false)).toMatchObject({ ok: true });
+    expect(await svc.claim(s, code, diya, d.items[0].id, true)).toMatchObject({ ok: true });
+  });
+  it("cannot unlock once someone has said they paid", async () => {
+    const s = memoryStore();
+    const { code, host } = await open(s);
+    const diya = await guest(s, code, "Diya");
+    await svc.claimLeftovers(s, code, host, "split");
+    await svc.setClaimsLocked(s, code, host, true);
+    await svc.markPaid(s, code, diya);
+    expect(await svc.setClaimsLocked(s, code, host, false)).toMatchObject({ ok: false, code: "locked" });
+  });
+});
+
 describe("paying and confirming", () => {
   async function table() {
     const s = memoryStore();

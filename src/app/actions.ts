@@ -1,141 +1,163 @@
 "use server";
 
-import { randomBytes } from "node:crypto";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { admin } from "@/lib/supabase";
+import { headers } from "next/headers";
 import { parseBillImage } from "@/lib/parseBill";
-import { toPaise } from "@/lib/money";
-import { isValidVpa } from "@/lib/upi";
+import { judgeShot, readPaymentScreenshot, type ShotJudgement } from "@/lib/readPayment";
+import type { ShotRead } from "@/lib/model";
+import { parseRupees } from "@/lib/rupees";
+import type { Paise } from "@/lib/money";
+import { allow } from "@/server/ratelimit";
+import * as svc from "@/server/service";
+import { credsFor, setHostCookie, setParticipantCookie } from "@/server/session";
+import { store } from "@/server/store";
 
-const token = (n = 16) => randomBytes(n).toString("base64url");
+type Fail = svc.Fail;
+const SERVER_ERROR: Fail = { ok: false, code: "server", error: "Something went wrong. Try again." };
 
-export async function createBill(_: unknown, form: FormData): Promise<{ error: string }> {
-  const file = form.get("bill") as File | null;
-  const payerName = String(form.get("name") ?? "").trim();
-  const vpa = String(form.get("vpa") ?? "").trim();
-  if (!file || file.size === 0) return { error: "Add a photo of the bill" };
-  if (!payerName) return { error: "Enter your name" };
-  if (!isValidVpa(vpa)) return { error: "That UPI ID doesn't look right (for example name@okaxis)" };
+async function guarded<T>(fn: () => Promise<T>): Promise<T | Fail> {
+  try {
+    return await fn();
+  } catch (e) {
+    if (e && typeof e === "object" && "digest" in e && String((e as { digest: unknown }).digest).startsWith("NEXT_REDIRECT")) throw e;
+    console.error("action failed:", e);
+    return SERVER_ERROR;
+  }
+}
+
+async function ip(): Promise<string> {
+  const h = await headers();
+  return (h.get("x-forwarded-for") ?? "").split(",")[0].trim() || h.get("x-real-ip") || "local";
+}
+
+const MAX_IMAGE = 6 * 1024 * 1024;
+
+async function imageOf(file: FormDataEntryValue | null): Promise<{ base64: string; mediaType: string } | string> {
+  if (!(file instanceof File) || file.size === 0) return "Add a photo of the bill";
+  if (file.size > MAX_IMAGE) return "That photo is too large. Try a smaller one.";
+  if (file.type && !file.type.startsWith("image/")) return "That file is not a photo";
+  return { base64: Buffer.from(await file.arrayBuffer()).toString("base64"), mediaType: file.type || "image/jpeg" };
+}
+
+/* ---------------------------------------------------------------- scan */
+
+/** Photo in, draft bill out. The browser then opens the check screen (it can cancel before that). */
+export async function scanBill(form: FormData): Promise<{ ok: true; code: string } | { ok: false; error: string }> {
+  const name = String(form.get("name") ?? "");
+  const vpa = String(form.get("vpa") ?? "");
+  const thumb = String(form.get("thumb") ?? "") || null;
+  const img = await imageOf(form.get("bill"));
+  if (typeof img === "string") return { ok: false, error: img };
+  const limit = Number(process.env.SCAN_LIMIT_PER_HOUR ?? 20);
+  if (!allow(`scan:${await ip()}`, limit, 60 * 60 * 1000)) return { ok: false, error: "That's a lot of scans. Try again in a little while." };
 
   let parsed;
   try {
-    const b64 = Buffer.from(await file.arrayBuffer()).toString("base64");
-    parsed = await parseBillImage(b64, file.type || "image/jpeg");
-  } catch {
-    return { error: "Couldn't read the bill. Try again with a clearer photo." };
+    parsed = await parseBillImage(img.base64, img.mediaType);
+  } catch (e) {
+    console.error("bill parse failed:", e);
+    const msg = e instanceof Error ? e.message : "";
+    if (msg.startsWith("No vision provider")) return { ok: false, error: "The bill reader isn't set up on this server yet." };
+    return { ok: false, error: "Couldn't read the bill. Try again with a clearer photo." };
   }
+  const r = await guarded(() => svc.createDraft(store(), { payerName: name, payerVpa: vpa, thumb }, parsed));
+  if (!r.ok) return { ok: false, error: r.error };
+  await setHostCookie(r.code, r.hostToken);
+  return { ok: true, code: r.code };
+}
 
-  const db = admin();
-  const code = token(5);
-  const { data: bill, error } = await db
-    .from("bills")
-    .insert({
-      code,
-      merchant: parsed.merchant,
-      total: toPaise(parsed.total),
-      tax: toPaise(parsed.taxes.reduce((s, t) => s + t.amount, 0)),
-      service: toPaise(parsed.serviceCharge),
-      discount: toPaise(parsed.discount),
-      payer_name: payerName,
-      payer_vpa: vpa,
-    })
-    .select("id")
-    .single();
-  if (error || !bill) return { error: "Couldn't save the bill. Try again." };
+/* ---------------------------------------------------------------- host: check the scan */
 
-  const hostToken = token();
-  await db.from("bill_secrets").insert({ bill_id: bill.id, host_token: hostToken });
-  await db.from("items").insert(
-    parsed.items.map((i, position) => ({
-      bill_id: bill.id,
-      name: i.name,
-      qty: i.qty,
-      price: toPaise(i.price),
-      position,
-    })),
-  );
+export async function saveItemAction(code: string, input: { id?: string; name: string; qty: number; price: string }) {
+  return guarded(async () => svc.saveItem(store(), code, await credsFor(code), input));
+}
+export async function removeItemAction(code: string, id: string) {
+  return guarded(async () => svc.removeItem(store(), code, await credsFor(code), id));
+}
+export async function saveChargeAction(code: string, input: { kind: string; label: string; amount: string }) {
+  return guarded(async () => svc.saveCharge(store(), code, await credsFor(code), input));
+}
+export async function removeChargeAction(code: string, id: string) {
+  return guarded(async () => svc.removeCharge(store(), code, await credsFor(code), id));
+}
+export async function publishAction(code: string, anyway: boolean) {
+  return guarded(async () => svc.publish(store(), code, await credsFor(code), { anyway }));
+}
 
-  (await cookies()).set(`host_${code}`, hostToken, {
-    httpOnly: true,
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 30,
-    path: "/",
+/* ---------------------------------------------------------------- guests */
+
+/** The token never reaches the browser's JavaScript: it goes straight into an httpOnly cookie. */
+export async function joinAction(code: string, name: string, takeover: boolean) {
+  return guarded(async () => {
+    if (!allow(`join:${await ip()}`, 60, 60 * 60 * 1000)) return { ok: false as const, code: "rate", error: "Too many tries. Wait a little and try again." };
+    const r = await svc.join(store(), code, name, { takeover });
+    if (!r.ok) return r;
+    await setParticipantCookie(code, r.participantId, r.token);
+    return { ok: true as const, name: r.name, back: r.back };
   });
-  redirect(`/b/${code}`);
 }
 
-async function billByCode(code: string) {
-  const { data } = await admin().from("bills").select("id").eq("code", code).single();
-  return data;
+export async function claimAction(code: string, itemId: string, on: boolean) {
+  return guarded(async () => svc.claim(store(), code, await credsFor(code), itemId, on));
 }
 
-export async function isHost(code: string): Promise<boolean> {
-  const bill = await billByCode(code);
-  const t = (await cookies()).get(`host_${code}`)?.value;
-  if (!bill || !t) return false;
-  const { data } = await admin().from("bill_secrets").select("host_token").eq("bill_id", bill.id).single();
-  return data?.host_token === t;
+export async function lockClaimsAction(code: string, on: boolean) {
+  return guarded(async () => svc.setClaimsLocked(store(), code, await credsFor(code), on));
+}
+export async function claimLeftoversAction(code: string, mode: "take" | "split") {
+  return guarded(async () => svc.claimLeftovers(store(), code, await credsFor(code), mode));
 }
 
-export async function joinBill(code: string, name: string) {
-  const bill = await billByCode(code);
-  const clean = name.trim().slice(0, 40);
-  if (!bill || !clean) throw new Error("Invalid join");
-  const db = admin();
-  const { data: p } = await db
-    .from("participants")
-    .insert({ bill_id: bill.id, name: clean })
-    .select("id")
-    .single();
-  const t = token();
-  await db.from("participant_secrets").insert({ participant_id: p!.id, token: t });
-  return { participantId: p!.id as string, token: t };
+/* ---------------------------------------------------------------- paying */
+
+export interface ShotResult {
+  shot: ShotRead;
+  judgement: ShotJudgement;
+  expected: Paise;
 }
 
-async function authParticipant(participantId: string, t: string) {
-  const { data } = await admin()
-    .from("participant_secrets")
-    .select("token, participants(bill_id)")
-    .eq("participant_id", participantId)
-    .single();
-  if (!data || data.token !== t) throw new Error("Unauthorized");
-  return (data.participants as unknown as { bill_id: string }).bill_id;
+export async function readShotAction(code: string, form: FormData): Promise<svc.Fail | { ok: true; result: ShotResult }> {
+  return guarded(async () => {
+    const s = store();
+    const creds = await credsFor(code);
+    const d = await s.getBillData(code);
+    if (!d || d.bill.status !== "open") return { ok: false as const, code: "not_found", error: "This link doesn't work" };
+    const viewer = await svc.resolveViewer(s, d, creds);
+    if (viewer.role !== "guest") return { ok: false as const, code: "forbidden", error: "Join this bill first" };
+    const view = svc.buildView(d, viewer)!;
+    const expected = view.myPay!.pay.remaining;
+    if (expected <= 0) return { ok: false as const, code: "already_paid", error: "There is nothing left to pay" };
+    const img = await imageOf(form.get("shot"));
+    if (typeof img === "string") return { ok: false as const, code: "bad_input", error: img.replace("photo of the bill", "screenshot") };
+    if (!allow(`shot:${await ip()}`, Number(process.env.SHOT_LIMIT_PER_HOUR ?? 30), 60 * 60 * 1000))
+      return { ok: false as const, code: "rate", error: "That's a lot of screenshots. Try again in a little while." };
+    let shot: ShotRead;
+    try {
+      shot = await readPaymentScreenshot(img.base64, img.mediaType, { amount: expected, vpa: view.payerVpa ?? "" });
+    } catch (e) {
+      console.error("screenshot read failed:", e);
+      return { ok: false as const, code: "unreadable", error: "Couldn't read that screenshot. You can still send without it." };
+    }
+    const judgement = judgeShot(shot, { amount: expected, vpa: view.payerVpa ?? "", hostName: view.hostFullName }, String(form.get("utr") ?? ""));
+    return { ok: true as const, result: { shot, judgement, expected } };
+  });
 }
 
-/** Idempotent set/unset: concurrent taps by different people just add rows; same person can't duplicate. */
-export async function setClaim(participantId: string, t: string, itemId: string, on: boolean) {
-  const billId = await authParticipant(participantId, t);
-  const db = admin();
-  const { data: item } = await db.from("items").select("id").eq("id", itemId).eq("bill_id", billId).single();
-  if (!item) throw new Error("Bad item");
-  if (on) {
-    await db
-      .from("claims")
-      .upsert({ bill_id: billId, item_id: itemId, participant_id: participantId }, { ignoreDuplicates: true });
-  } else {
-    await db.from("claims").delete().eq("item_id", itemId).eq("participant_id", participantId);
-  }
+export async function markPaidAction(code: string, input: { utr?: string; shot?: ShotRead | null; amount?: Paise }) {
+  return guarded(async () => svc.markPaid(store(), code, await credsFor(code), input));
+}
+export async function undoPaidAction(code: string) {
+  return guarded(async () => svc.undoPaid(store(), code, await credsFor(code)));
 }
 
-export async function updateItem(code: string, itemId: string, name: string, priceRupees: number) {
-  if (!(await isHost(code))) throw new Error("Unauthorized");
-  const bill = await billByCode(code);
-  await admin()
-    .from("items")
-    .update({ name: name.trim() || "Item", price: toPaise(priceRupees) })
-    .eq("id", itemId)
-    .eq("bill_id", bill!.id);
-}
+/* ---------------------------------------------------------------- host: ledger */
 
-export async function addItem(code: string) {
-  if (!(await isHost(code))) throw new Error("Unauthorized");
-  const bill = await billByCode(code);
-  await admin().from("items").insert({ bill_id: bill!.id, name: "New item", price: 0, position: 999 });
+export async function decideAction(code: string, paymentId: string, dec: svc.Decision) {
+  return guarded(async () => svc.decide(store(), code, await credsFor(code), paymentId, dec));
 }
-
-export async function deleteItem(code: string, itemId: string) {
-  if (!(await isHost(code))) throw new Error("Unauthorized");
-  const bill = await billByCode(code);
-  await admin().from("items").delete().eq("id", itemId).eq("bill_id", bill!.id);
+export async function recordCashAction(code: string, participantId: string, amountText?: string) {
+  return guarded(async () => {
+    const amount = amountText ? parseRupees(amountText) : undefined;
+    if (amountText && amount === null) return { ok: false as const, code: "bad_input", error: "Use numbers, like 250.00" };
+    return svc.recordCash(store(), code, await credsFor(code), participantId, amount ?? undefined);
+  });
 }

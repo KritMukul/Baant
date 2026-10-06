@@ -33,3 +33,13 @@ export function checkJoinName(
   if (same) return { ok: false, reason: "taken", takenName: same.name, participantId: same.id };
   return { ok: true, name };
 }
+
+/** "Mukul, Diya and Kabir are in." */
+export function whoText(names: string[]): string {
+  const n = names.length;
+  if (!n) return "You’re the first one in.";
+  if (n === 1) return `${names[0]} is in.`;
+  if (n === 2) return `${names[0]} and ${names[1]} are in.`;
+  if (n === 3) return `${names[0]}, ${names[1]} and ${names[2]} are in.`;
+  return `${names[0]}, ${names[1]} and ${n - 2} others are in.`;
+}

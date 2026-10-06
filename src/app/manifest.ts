@@ -4,11 +4,15 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Dibs",
     short_name: "Dibs",
-    description: "Call dibs on what you ate. Split the bill fairly.",
+    description: "Call dibs on what you ate. Photograph the bill, share a link, everyone pays their own share.",
     start_url: "/",
     display: "standalone",
-    background_color: "#f8fafc",
-    theme_color: "#0f766e",
-    icons: [{ src: "/icon", sizes: "512x512", type: "image/png" }],
+    orientation: "portrait",
+    background_color: "#f5f4fb",
+    theme_color: "#f5f4fb",
+    icons: [
+      { src: "/icon", sizes: "512x512", type: "image/png", purpose: "any" },
+      { src: "/icon", sizes: "512x512", type: "image/png", purpose: "maskable" },
+    ],
   };
 }

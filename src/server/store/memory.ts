@@ -45,6 +45,7 @@ export function memoryStore(): Store {
         payerVpa: input.payerVpa,
         thumb: input.thumb,
         shortAtShare: 0,
+        claimsLocked: false,
         createdAt,
         sharedAt: null,
       };

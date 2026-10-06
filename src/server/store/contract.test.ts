@@ -65,6 +65,7 @@ describe.each(stores)("Store contract: %s", (_name, make) => {
       payerVpa: "aarav.k@okaxis",
       thumb: "data:image/jpeg;base64,AAAA",
       shortAtShare: 0,
+      claimsLocked: false,
       sharedAt: null,
     });
     expect(d.bill.ref).toMatch(/^[2-9A-HJKMNP-Z]{3}$/);
@@ -104,6 +105,9 @@ describe.each(stores)("Store contract: %s", (_name, make) => {
     const at = new Date().toISOString();
     await s.patchBill(r.code, { status: "open", sharedAt: at, shortAtShare: -5222 });
     const d = (await s.getBillData(r.code))!;
+    expect(d.bill.claimsLocked).toBe(false);
+    await s.patchBill(r.code, { claimsLocked: true });
+    expect((await s.getBillData(r.code))!.bill.claimsLocked).toBe(true);
     expect(d.bill.status).toBe("open");
     expect(d.bill.shortAtShare).toBe(-5222);
     expect(new Date(d.bill.sharedAt!).toISOString()).toBe(at);

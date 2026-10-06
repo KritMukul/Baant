@@ -1,11 +1,5 @@
-import NewBillForm from "./NewBillForm";
+import HomeScreen from "./HomeScreen";
 
 export default function Home() {
-  return (
-    <>
-      <h1>Dibs</h1>
-      <p className="muted">Photograph the bill. Share the link with your group. Everyone calls dibs on what they ate and pays by UPI.</p>
-      <NewBillForm />
-    </>
-  );
+  return <HomeScreen />;
 }

@@ -19,6 +19,7 @@ const toBill = (r: Row): Bill => ({
   payerVpa: r.payer_vpa,
   thumb: r.thumb ?? null,
   shortAtShare: r.short_at_share,
+  claimsLocked: r.claims_locked ?? false,
   createdAt: iso(r.created_at)!,
   sharedAt: iso(r.shared_at),
 });
@@ -187,6 +188,7 @@ export function postgresStore(db: Pool = pool()): Store {
       if (patch.status !== undefined) cols.status = patch.status;
       if (patch.shortAtShare !== undefined) cols.short_at_share = patch.shortAtShare;
       if (patch.sharedAt !== undefined) cols.shared_at = patch.sharedAt;
+      if (patch.claimsLocked !== undefined) cols.claims_locked = patch.claimsLocked;
       if (patch.merchant !== undefined) cols.merchant = patch.merchant;
       if (patch.total !== undefined) cols.total = patch.total;
       const keys = Object.keys(cols);

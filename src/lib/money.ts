@@ -34,3 +34,7 @@ export function allocate(amount: Paise, weights: number[]): Paise[] {
 
   return parts.map((p) => sign * p);
 }
+
+/** "3,280.00" (no symbol), Indian digit grouping. For mono-spaced amounts next to a ₹ drawn separately. */
+export const formatNum = (paise: Paise): string =>
+  (paise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });

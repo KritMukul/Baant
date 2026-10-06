@@ -1,0 +1,66 @@
+/* Real-app base: what the review pages' chrome used to provide. Loaded before dibs.css. */
+:root {
+  --font-ui: 'Sora Variable', 'Sora', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; background: var(--color-bg); }
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font: var(--fw-body) var(--fs-body)/var(--lh-body) var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+}
+[hidden] { display: none !important; }
+button, input, textarea, select { font: inherit; color: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 2px solid var(--color-accent-edge); outline-offset: 2px; }
+a { color: inherit; }
+
+/* One screen = one phone-sized column. Wider windows centre it (the real wide layouts come later). */
+.page {
+  position: relative;
+  height: 100dvh;
+  max-width: 520px;
+  margin: 0 auto;
+  overflow: hidden;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+.page .scr { position: relative; height: 100%; padding-top: env(safe-area-inset-top); }
+.page .scr .dock { padding-bottom: max(24px, env(safe-area-inset-bottom)); }
+
+/* Toast: shown by adding .on */
+.page .toast { transform: translateY(8px); transition: opacity 165ms var(--ease-out), transform 165ms var(--ease-out); }
+.page .toast.on { opacity: 1; transform: none; transition-duration: var(--dur-toast); }
+
+/* Sheets and dialogs: class-driven enter/exit (the mocks animated these with GSAP) */
+.page .sheetbg { transition: opacity var(--dur-modal) var(--ease-out); }
+.page .sheetbg.on { opacity: 0.35; }
+.page .sheet { transform: translateY(100%); transition: transform var(--dur-sheet) var(--ease-sheet); }
+.page .sheet.on { transform: none; }
+.page .sheet.leaving { transition-duration: 240ms; }
+.page .dlg { opacity: 0; transform: scale(0.95); transition: opacity var(--dur-modal) var(--ease-out), transform var(--dur-modal) var(--ease-out); }
+.page .dlg.on { opacity: 1; transform: none; }
+.page .sheetbg.leaving, .page .dlg.leaving { transition-duration: 160ms; }
+
+/* Screen-reader only */
+.sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ld::after { animation: none; }
+}
+
+/* Home: the scan line sweeps the receipt while the bill is being read */
+@keyframes scanline { from { transform: translateY(0); } to { transform: translateY(190px); } }
+.s-home .scan .line { animation: scanline 1.6s linear infinite alternate; }
+@media (prefers-reduced-motion: reduce) { .s-home .scan .line { animation: none; } }
+
+/* Claim board: an avatar that just arrived pops in; the dock amount swaps with a quick fade */
+@keyframes pop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: none; } }
+@keyframes swap { from { opacity: 0; transform: translateY(4px); filter: blur(2px); } to { opacity: 1; transform: none; filter: blur(0); } }
+.s-claim .av.pop { animation: pop 140ms var(--ease-out); }
+.s-claim .swap { display: inline-block; animation: swap 160ms var(--ease-out); }
+@media (prefers-reduced-motion: reduce) { .s-claim .av.pop, .s-claim .swap { animation: none; } }

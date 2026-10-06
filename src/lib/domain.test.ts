@@ -14,7 +14,7 @@ const ex = JSON.parse(readFileSync("docs/spec/examples/local-diners.json", "utf8
 function fixtureData(scenario: string, status: "draft" | "open" = "open"): BillData {
   const claims = Object.entries<string[]>(ex.scenarios[scenario].claims).flatMap(([itemId, who]) => who.map((participantId) => ({ itemId, participantId })));
   return {
-    bill: { id: "b", code: "c", ref: "7K2", merchant: ex.bill.merchant, total: ex.bill.printedTotal, status, payerName: "Aarav Mehta", payerVpa: "aarav.k@okaxis", thumb: null, shortAtShare: 0, createdAt: "", sharedAt: null },
+    bill: { id: "b", code: "c", ref: "7K2", merchant: ex.bill.merchant, total: ex.bill.printedTotal, status, payerName: "Aarav Mehta", payerVpa: "aarav.k@okaxis", thumb: null, shortAtShare: 0, claimsLocked: false, createdAt: "", sharedAt: null },
     items: ex.items.map((i: { id: string; name: string; qty: number; price: number }, position: number) => ({ ...i, position, flag: null })),
     charges: [
       { id: "t", label: "Tax", kind: "tax", amount: ex.charges.tax, position: 0 },
