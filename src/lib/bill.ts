@@ -1,21 +1,27 @@
 import { z } from "zod";
 import type { Paise } from "./money";
 
+/** Providers return null for fields missing from the bill; treat as absent. */
+const orZero = z.number().nonnegative().nullish().transform((v) => v ?? 0);
+
 export const parsedBillSchema = z.object({
-  merchant: z.string().default(""),
+  merchant: z.string().nullish().transform((v) => v ?? ""),
   items: z
     .array(
       z.object({
         name: z.string().min(1),
-        qty: z.number().int().positive().default(1),
+        qty: z.number().int().positive().nullish().transform((v) => v ?? 1),
         /** Total line price in rupees (qty already multiplied in). */
         price: z.number().nonnegative(),
       }),
     )
     .min(1),
-  taxes: z.array(z.object({ label: z.string(), amount: z.number().nonnegative() })).default([]),
-  serviceCharge: z.number().nonnegative().default(0),
-  discount: z.number().nonnegative().default(0),
+  taxes: z
+    .array(z.object({ label: z.string(), amount: z.number().nonnegative() }))
+    .nullish()
+    .transform((v) => v ?? []),
+  serviceCharge: orZero,
+  discount: orZero,
   total: z.number().positive(),
 });
 export type ParsedBill = z.infer<typeof parsedBillSchema>;
