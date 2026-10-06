@@ -21,6 +21,7 @@
 7. Light accent: Coral #ff6b4a with WHITE label on the primary button (round 2c, "lets go with coral only"). Known AA exception (2.82:1); mitigated by accentEdge #d9431a outline. Do not silently change; offer #e02900 or dark label as the AA fix if asked.
 8. Light ground #f5f4fb, surface #ffffff, accentText #c2371a.
 9. Language: English only. No Hinglish anywhere in the product copy, brand kit or app (user, round 3: "we will not include hinglish only english").
+11. **Logo: mark C** (round 4 of logo exploration, user: "I Like C the most"): a D built from a torn receipt (ink) and half a plate (accent). In the lockup the mark is the capital D, then "ibs" in Sora Bold. Rejected logo directions, never re-propose: three-slice pie, pulled slice, D half-plate with dot, speech bubble, claimed receipt, raised hand, reserved tag, flag in plate, bitten coin, plate-d (d + knife), split D. The "claim dot" (coral dot with soft rings) stays as a brand device for the "you" moment, not a logo.
 10. **Name: Dibs** (renamed from Dibs, round 3). Tagline: "Call dibs. Split the bill." Claim copy: "Call dibs", "You have dibs", "Up for grabs". Rejected names, never re-propose: Quits, Fairplate, Clink, Evenly, Halfsies, TapSplit, SnapSplit, BillSplit, Forkout, GoDutch, Pieceful, WhoAte, Platemates, Checkmates, Bitewise, Billmates, Yourbite, Plink, Halfplate, Bagsy, Chopchop, Carve (not chosen; user picked Dibs).
 
 ## Rejected Directions
@@ -91,6 +92,14 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 **Checks:** tokens.ts compiles under tsc --strict; tokens.json parses; SVGs well-formed; page has no horizontal overflow at 400px or 1200px, no console errors; contrast matrix computed for 14 pairs x 2 themes (1 approved exception).
 **User reaction:** "this is fine but we will not include hinglish only english and we will rename the app"
 **Outcome:** APPROVED with changes: Hinglish removed from kit and app copy; renamed to Dibs ("go with Dibs"). Kit, app, README regenerated.
+
+### Round 3b — 2026-10-06
+
+**Step:** 3 (iteration)
+**Concept:** logo. Eleven concepts over four rounds; user picked C (receipt + half-plate D) even though the designer's pick was the plate-d.
+**Files:** `docs/design/brand-kit/assets/*.svg`, `src/app/icon.tsx` (PWA/favicon), `index.html` logo section regenerated.
+**Checks:** next build clean; /icon returns 200 image/png and renders the mark; kit page no overflow at 400/1100px.
+**Outcome:** APPLIED.
 
 ---
 

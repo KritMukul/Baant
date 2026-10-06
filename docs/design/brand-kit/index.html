@@ -32,8 +32,8 @@ h3{font:600 14px var(--font-ui);margin:28px 0 10px}
 .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}
 .card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow-card);min-width:0}
 .cover{padding-block:72px 56px}
-.cover h1{font:700 clamp(54px,12vw,128px)/.9 var(--font-ui);letter-spacing:-.06em;margin:18px 0 10px;display:flex;align-items:center;gap:.18em;flex-wrap:wrap}
-.cover h1 svg{width:.82em;height:.82em}
+.cover h1{font:700 clamp(54px,12vw,128px)/.9 var(--font-ui);letter-spacing:-.06em;margin:18px 0 10px;display:flex;align-items:baseline;gap:.03em}
+.cover h1 svg{height:.73em;width:auto;flex-shrink:0}
 .cover p{font-size:18px;color:var(--color-text-muted);max-width:44ch;margin:0}
 .pillv{display:inline-block;font:500 11px var(--font-mono);border:1px solid var(--color-border);border-radius:99px;padding:4px 10px;background:var(--color-surface);color:var(--color-text-muted)}
 .manifesto{background:var(--color-accent);color:var(--color-on-accent);border-radius:var(--radius-xl);padding:clamp(28px,6vw,64px);border-bottom:0}
@@ -43,7 +43,7 @@ h3{font:600 14px var(--font-ui);margin:28px 0 10px}
 .lock>div{border-radius:var(--radius-lg);padding:28px;display:grid;place-items:center;border:1px solid var(--color-border);min-width:0}
 .lock svg{max-width:100%;height:56px}
 .lock .l{background:#f5f4fb}.lock .d{background:#0c0d1c}.lock .a{background:var(--color-accent)}
-.lock .cap{font:500 11px var(--font-mono);margin-top:12px;color:var(--color-text-muted)}
+.lock .cap{font:500 11px var(--font-mono);margin-top:12px;color:var(--color-text-muted);text-align:center}
 .rules{display:grid;gap:8px;padding-left:18px;color:var(--color-text-muted);max-width:68ch}
 .swgrp h4{font:500 11px var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--color-text-muted);margin:16px 0 8px}
 .sws{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
@@ -118,7 +118,7 @@ td.note{color:var(--color-text-muted);font-size:11.5px}
 <main>
 <header class="cover">
   <span class="pillv">Brand kit v1.0 · Night Tab · approved</span>
-  <h1><svg viewBox="0 0 64 64" role="img" aria-label="Dibs mark"><path d="M34.25 30.70 L34.25 4.70 A26 26 0 0 1 56.77 43.70 Z" fill="#ff6b4a"/><path d="M32.00 34.60 L54.52 47.60 A26 26 0 0 1 9.48 47.60 Z" fill="#4a5fd0"/><path d="M29.75 30.70 L7.23 43.70 A26 26 0 0 1 29.75 4.70 Z" fill="#0e7f6d"/></svg>Dibs</h1>
+  <h1><svg viewBox="6 6 51 50" role="img" aria-label="D"><path d="M9 8 H25 V56 L21 52 L17 56 L13 52 L9 56 Z" fill="#14152b"/><path d="M30 8 H33 A24 24 0 0 1 33 56 H30 Z" fill="#ff6b4a"/><rect x="13" y="15" width="8" height="3.2" rx="1.6" fill="#f5f4fb" opacity=".85"/><rect x="13" y="22" width="8" height="3.2" rx="1.6" fill="#f5f4fb" opacity=".85"/><rect x="13" y="29" width="5" height="3.2" rx="1.6" fill="#f5f4fb" opacity=".85"/></svg><span>ibs</span></h1>
   <p>Call dibs on what you ate. Split the bill. Pay by UPI. A bill splitter for friends in India.</p>
 </header>
 
@@ -128,14 +128,14 @@ td.note{color:var(--color-text-muted);font-size:11.5px}
 </section>
 
 <section id="logo">
-  <div class="head"><div class="num">01</div><div class="lab">Logo</div><h2>One bill, <em>three slices.</em></h2><p class="body">The mark is a circle split three ways, with a small gap between slices. Coral is you; the other two are friends. The wordmark is Sora Bold, tight.</p></div>
+  <div class="head"><div class="num">01</div><div class="lab">Logo</div><h2>A receipt and half a plate. <em>That's a D.</em></h2><p class="body">The mark is a D built from the two things on every table: the bill (a torn receipt, in ink) and the plate (half a disc, in coral). In the lockup the mark stands in for the capital D, so the name reads Dibs. Coral is the plate you claim.</p></div>
   <div class="lock">
-    <div class="l"><svg viewBox="0 0 166 64" aria-label="Dibs on light"><path d="M34.25 30.70 L34.25 4.70 A26 26 0 0 1 56.77 43.70 Z" fill="#ff6b4a"/><path d="M32.00 34.60 L54.52 47.60 A26 26 0 0 1 9.48 47.60 Z" fill="#4a5fd0"/><path d="M29.75 30.70 L7.23 43.70 A26 26 0 0 1 29.75 4.70 Z" fill="#0e7f6d"/><text x="78" y="43" font-family="Sora,system-ui,sans-serif" font-size="36" font-weight="700" letter-spacing="-1.2" fill="#14152b">Dibs</text></svg><span class="cap" style="color:#5b5f80">on light ground</span></div>
-    <div class="d"><svg viewBox="0 0 166 64" aria-label="Dibs on dark"><path d="M34.25 30.70 L34.25 4.70 A26 26 0 0 1 56.77 43.70 Z" fill="#ffb59a"/><path d="M32.00 34.60 L54.52 47.60 A26 26 0 0 1 9.48 47.60 Z" fill="#8fa4ff"/><path d="M29.75 30.70 L7.23 43.70 A26 26 0 0 1 29.75 4.70 Z" fill="#7fe3d0"/><text x="78" y="43" font-family="Sora,system-ui,sans-serif" font-size="36" font-weight="700" letter-spacing="-1.2" fill="#ecebf8">Dibs</text></svg><span class="cap" style="color:#8e92b3">on dark ground</span></div>
-    <div class="a"><svg viewBox="0 0 64 64" aria-label="Mark on accent"><g fill="#fff" opacity=".96"><circle cx="32" cy="32" r="31"/></g><g><path d="M34.25 30.70 L34.25 4.70 A26 26 0 0 1 56.77 43.70 Z" fill="#ff6b4a"/><path d="M32.00 34.60 L54.52 47.60 A26 26 0 0 1 9.48 47.60 Z" fill="#4a5fd0"/><path d="M29.75 30.70 L7.23 43.70 A26 26 0 0 1 29.75 4.70 Z" fill="#0e7f6d"/></g></svg><span class="cap" style="color:var(--color-on-accent)">mark on coral: sit it on a white disc</span></div>
+    <div class="l"><svg viewBox="0 0 158 64" aria-label="Dibs on light"><path d="M9 8 H25 V56 L21 52 L17 56 L13 52 L9 56 Z" fill="#14152b"/><path d="M30 8 H33 A24 24 0 0 1 33 56 H30 Z" fill="#ff6b4a"/><rect x="13" y="15" width="8" height="3.2" rx="1.6" fill="#f5f4fb" opacity=".85"/><rect x="13" y="22" width="8" height="3.2" rx="1.6" fill="#f5f4fb" opacity=".85"/><rect x="13" y="29" width="5" height="3.2" rx="1.6" fill="#f5f4fb" opacity=".85"/><text x="57" y="56" font-family="Sora,system-ui,sans-serif" font-size="68" font-weight="700" letter-spacing="-2.6" fill="#14152b">ibs</text></svg><span class="cap" style="color:#5b5f80">on light ground</span></div>
+    <div class="d"><svg viewBox="0 0 158 64" aria-label="Dibs on dark"><path d="M9 8 H25 V56 L21 52 L17 56 L13 52 L9 56 Z" fill="#ecebf8"/><path d="M30 8 H33 A24 24 0 0 1 33 56 H30 Z" fill="#ffb59a"/><rect x="13" y="15" width="8" height="3.2" rx="1.6" fill="#0c0d1c" opacity=".85"/><rect x="13" y="22" width="8" height="3.2" rx="1.6" fill="#0c0d1c" opacity=".85"/><rect x="13" y="29" width="5" height="3.2" rx="1.6" fill="#0c0d1c" opacity=".85"/><text x="57" y="56" font-family="Sora,system-ui,sans-serif" font-size="68" font-weight="700" letter-spacing="-2.6" fill="#ecebf8">ibs</text></svg><span class="cap" style="color:#8e92b3">on dark ground</span></div>
+    <div class="a"><svg viewBox="0 0 158 64" aria-label="Dibs on accent"><path d="M9 8 H25 V56 L21 52 L17 56 L13 52 L9 56 Z" style="fill:var(--color-on-accent)"/><path d="M30 8 H33 A24 24 0 0 1 33 56 H30 Z" style="fill:var(--color-on-accent)"/><rect x="13" y="15" width="8" height="3.2" rx="1.6" style="fill:var(--color-accent)"/><rect x="13" y="22" width="8" height="3.2" rx="1.6" style="fill:var(--color-accent)"/><rect x="13" y="29" width="5" height="3.2" rx="1.6" style="fill:var(--color-accent)"/><text x="57" y="56" font-family="Sora, system-ui, sans-serif" font-size="68" font-weight="700" letter-spacing="-2.6" style="fill:var(--color-on-accent)">ibs</text></svg><span class="cap" style="color:var(--color-on-accent)">on the accent colour: one colour, receipt lines cut out</span></div>
   </div>
   <h3>Rules</h3>
-  <ul class="rules"><li><b>Clear space:</b> half the mark's width on every side.</li><li><b>Minimum size:</b> mark 16px, wordmark 72px wide.</li><li><b>Placement:</b> top-left of the host's home screen only. Inside the claim board the bill is the hero, not the logo.</li><li><b>Never</b> recolour the slices, rotate the mark or add a shadow.</li></ul>
+  <ul class="rules"><li><b>Clear space:</b> the width of the receipt stem on every side.</li><li><b>Minimum size:</b> mark 16px, wordmark 72px wide.</li><li><b>Placement:</b> top-left of the host's home screen only. Inside the claim board the bill is the hero, not the logo.</li><li><b>Never</b> swap the two parts' colours, tilt the mark, close the gap between receipt and plate, or add a shadow.</li></ul>
 </section>
 
 <section id="color">
@@ -248,8 +248,8 @@ td.note{color:var(--color-text-muted);font-size:11.5px}
   <tr><td class="mono">docs/design/brand-kit/tokens.css</td><td>CSS variables. Light default, dark by media query, explicit data-theme wins.</td></tr>
   <tr><td class="mono">docs/design/brand-kit/tokens.ts</td><td>Typed tokens for both modes, plus motion.</td></tr>
   <tr><td class="mono">docs/design/brand-kit/tokens.json</td><td>DTCG format for Style Dictionary and Figma plugins.</td></tr>
-  <tr><td class="mono">docs/design/brand-kit/assets/logo-mark.svg, logo-mark-dark.svg</td><td>The three-slice mark.</td></tr>
-  <tr><td class="mono">docs/design/brand-kit/assets/logo-wordmark.svg, logo-wordmark-dark.svg</td><td>Mark plus wordmark (needs Sora loaded).</td></tr>
+  <tr><td class="mono">docs/design/brand-kit/assets/logo-mark.svg, logo-mark-dark.svg</td><td>The D mark (receipt + half plate), tight crop.</td></tr>
+  <tr><td class="mono">docs/design/brand-kit/assets/logo-wordmark.svg, logo-wordmark-dark.svg</td><td>Lockup: mark as the D, plus "ibs" in Sora Bold (needs Sora loaded; outline the text for final export).</td></tr>
   <tr><td class="mono">docs/design/brand-kit/assets/app-icon.svg</td><td>PWA icon source, dark ground.</td></tr>
   <tr><td class="mono">.claude/skills/moodforge/projects/dibs.md</td><td>Design decision log.</td></tr></tbody></table></div>
 </section>

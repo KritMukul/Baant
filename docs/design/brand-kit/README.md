@@ -16,11 +16,11 @@ Open `index.html` in a browser for the visual book. Everything below is generate
 | `tokens.css` | CSS variables. Light is default, dark follows `prefers-color-scheme`, `data-theme` on `<html>` always wins |
 | `tokens.ts` | Typed tokens for both modes, plus motion |
 | `tokens.json` | DTCG format for Style Dictionary and Figma plugins |
-| `assets/` | `logo-mark(.-dark).svg`, `logo-wordmark(.-dark).svg`, `app-icon.svg` |
+| `assets/` | `logo-mark(.-dark).svg`, `logo-wordmark(.-dark).svg` (the lockup), `app-icon.svg` |
 
 ## At a glance
 
-- **Mark** a circle split into three slices: you (coral) and two friends.
+- **Mark** a D built from a torn receipt (ink) and half a plate (coral). In the lockup the mark is the capital D: "Dibs".
 - **Type** Sora for all words, JetBrains Mono for every digit and the ₹ sign.
 - **Light** ground `#f5f4fb`, surface `#ffffff`, accent coral `#ff6b4a`, accent text `#c2371a`.
 - **Dark** ground `#0c0d1c`, surface `#171a30`, accent peach `#ffb59a`.
