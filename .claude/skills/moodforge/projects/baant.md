@@ -69,6 +69,14 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 **User reaction (round 2):** "light me peach thoda off lag rha hai"
 **Outcome:** pending pick. Dark peach #ffb59a stays locked.
 
+### Round 2c — 2026-10-06
+
+**Step:** 2 (iteration)
+**Concept:** user picked Coral (A) and asked for white button text. #ff6b4a + white = 2.82:1 (fails AA). Shown as asked, plus Deep coral #e02900 + white = 4.68:1.
+**File:** `.superpowers/brainstorm/s1/content/round2c-coral-white.html`
+**User reaction (2b):** "coral me text white karna"
+**Outcome:** pending pick between #ff6b4a and #e02900.
+
 ---
 
 ## Permanent artifacts
@@ -77,4 +85,5 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 .superpowers/brainstorm/s1/content/round1-directions.html
 .superpowers/brainstorm/s1/content/round2-night-tab-preview.html
 .superpowers/brainstorm/s1/content/round2b-light-accent.html
+.superpowers/brainstorm/s1/content/round2c-coral-white.html
 ```
