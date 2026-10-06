@@ -95,27 +95,27 @@ export default function ClaimBoard({ code, billId, bill, items, participants, cl
     <>
       <h1>{bill.merchant || "Bill"}</h1>
       <p className="muted">
-        Total {formatINR(bill.total)} · {bill.payerName} ne pay kiya · Link share karo: <b>/b/{code}</b>
+        Total {formatINR(bill.total)} · paid by {bill.payerName} · Share this link: <b>/b/{code}</b>
       </p>
 
       {!validation.ok && (
         <div className="card warn">
-          Items ka sum bill total se match nahi karta ({formatINR(validation.actual)} vs {formatINR(validation.expected)}).
-          {isHost ? " Neeche items edit karke theek karo." : " Host se items check karne ko bolo."}
+          The items don't add up to the bill total ({formatINR(validation.actual)} vs {formatINR(validation.expected)}).
+          {isHost ? " Edit the items below to fix it." : " Ask the host to check the items."}
         </div>
       )}
 
       {!me && (
         <div className="card">
-          <b>Join karo (signup nahi chahiye)</b>
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Tumhara naam" />
+          <b>Join (no signup needed)</b>
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
           <button onClick={join}>Join</button>
         </div>
       )}
 
       {isHost && (
         <button className="ghost" onClick={() => setEditing((e) => !e)}>
-          {editing ? "Edit band karo" : "Items edit karo"}
+          {editing ? "Done editing" : "Edit items"}
         </button>
       )}
 
@@ -134,16 +134,16 @@ export default function ClaimBoard({ code, billId, bill, items, participants, cl
                   <b>{formatINR(i.price)}</b>
                 </div>
                 <div className="chips">
-                  {who.length ? who.map(nameOf).join(", ") + (who.length > 1 ? ` (har ek ${formatINR(Math.ceil(i.price / who.length))})` : "") : "Koi nahi"}
+                  {who.length ? who.map(nameOf).join(", ") + (who.length > 1 ? ` (${formatINR(Math.ceil(i.price / who.length))} each)` : "") : "Nobody yet"}
                 </div>
               </div>
             );
           })}
 
-      {editing && <button className="ghost" onClick={async () => { await addItem(code); router.refresh(); }}>+ Item add karo</button>}
+      {editing && <button className="ghost" onClick={async () => { await addItem(code); router.refresh(); }}>+ Add item</button>}
 
       {unclaimed.length > 0 && !editing && (
-        <p className="muted">{unclaimed.length} item abhi kisi ne claim nahi kiya.</p>
+        <p className="muted">{unclaimed.length} {unclaimed.length === 1 ? "item is" : "items are"} not claimed yet.</p>
       )}
 
       {myShare && (
@@ -151,13 +151,13 @@ export default function ClaimBoard({ code, billId, bill, items, participants, cl
           <div className="row"><span>Items</span><span>{formatINR(myShare.subtotal)}</span></div>
           <div className="row"><span>Tax + service</span><span>{formatINR(myShare.tax + myShare.service)}</span></div>
           {myShare.discount > 0 && <div className="row"><span>Discount</span><span>−{formatINR(myShare.discount)}</span></div>}
-          <div className="row"><b>Tumhara hissa</b><b>{formatINR(myShare.total)}</b></div>
+          <div className="row"><b>Your share</b><b>{formatINR(myShare.total)}</b></div>
           {myShare.total > 0 && me!.participantId && (
             <a
               className="pay"
               href={upiLink({ vpa: bill.payerVpa, name: bill.payerName, amount: myShare.total, note: `Baant ${bill.merchant}`.trim() })}
             >
-              {bill.payerName} ko {formatINR(myShare.total)} pay karo (UPI)
+              Pay {bill.payerName} {formatINR(myShare.total)} (UPI)
             </a>
           )}
         </div>

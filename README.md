@@ -1,36 +1,38 @@
 # Baant
 
-Bill ki photo kheencho, link share karo, sab apne items tap karein, UPI se pay karein.
+Photograph the bill, share a link, everyone taps what they ate, everyone pays by UPI.
 
 ## Flow
-1. Host photo upload karta hai (+ naam, UPI ID). Claude vision bill ko structured JSON mein parse karta hai.
-2. `validateBill` check karta hai: items + tax + service − discount == total. Mismatch pe host ko banner dikhta hai aur wo items edit kar sakta hai.
-3. Link `/b/<code>` group mein share hota hai. Guests naam daal ke join karte hain (no signup).
-4. Items tap karke claim karo; shared items equally split. Supabase Realtime se sabko live dikhta hai.
-5. Tax/service/discount proportional split (largest-remainder, paise exact). Har banda `upi://pay` button dabata hai.
+1. The host uploads a photo and enters their name and UPI ID. A vision model parses the bill into structured JSON.
+2. `validateBill` checks that items + tax + service − discount equals the total. On a mismatch the host sees a banner and can edit the items.
+3. The link `/b/<code>` is shared with the group. Guests join with just a name (no signup).
+4. People tap items to claim them; shared items split equally. Supabase Realtime shows every tap to everyone.
+5. Tax, service charge and discount are split in proportion to each person's items (largest-remainder rounding, exact to the paisa). Each person gets a `upi://pay` button.
 
 ## Code map
 - `src/lib/money.ts` – paise helpers, exact `allocate`
-- `src/lib/split.ts` – item + charge split
-- `src/lib/settle.ts` – greedy min-cash-flow debt simplification (multi-bill trips ke liye; UI abhi connected nahi)
+- `src/lib/split.ts` – item and charge split
+- `src/lib/settle.ts` – greedy min-cash-flow debt simplification (for multi-bill trips; not wired into the UI yet)
 - `src/lib/upi.ts` – UPI deep link
-- `src/lib/parseBill.ts` – vision parsing (tool use for structured output)
+- `src/lib/parseBill.ts` – vision parsing (Claude, OpenAI or Gemini)
 - `src/app/actions.ts` – server actions (create, join, claim, host edit)
 - `supabase/schema.sql` – tables, RLS, realtime publication
+- `docs/design/brand-kit/` – design tokens (light and dark), logo, brand book
 
 ## Setup
 ```
-cp .env.example .env.local   # keys bharo
-# supabase/schema.sql ko Supabase SQL editor mein run karo
+cp .env.example .env.local   # fill in the keys
+# run supabase/schema.sql in the Supabase SQL editor
 npm install && npm run dev
 npm test
 ```
 
-## Security model (MVP)
-Writes sirf server actions se (service role). Host cookie `host_<code>` + `bill_secrets`; guests ke `participant_secrets` tokens. Anon sirf read (Realtime ke liye); bill code unguessable hai.
-
-## Baaki
-Trip/group (multiple bills) UI + `simplifyDebts`, Supabase Auth for host, PWA service worker/offline, per-item qty split, rate limit on `/createBill`.
-
 ## Parse test
-`npm run parse-bills [dir]` (default `fixtures/bills`). Cloud sandbox mein proxy ke saath: `NODE_USE_ENV_PROXY=1 NODE_EXTRA_CA_CERTS=/root/.ccr/ca-bundle.crt npm run parse-bills`.
+`npm run parse-bills [dir]` (default `fixtures/bills`). Inside the cloud sandbox, behind the proxy:
+`NODE_USE_ENV_PROXY=1 NODE_EXTRA_CA_CERTS=/root/.ccr/ca-bundle.crt npm run parse-bills`.
+
+## Security model (MVP)
+Writes only happen in server actions (service role). The host has a `host_<code>` cookie checked against `bill_secrets`; guests have tokens in `participant_secrets`. Anonymous clients are read-only (needed for Realtime); bill codes are unguessable.
+
+## Not done yet
+Trip/group UI using `simplifyDebts`, Supabase Auth for the host, PWA service worker and offline, per-unit quantity splits, rate limiting on bill creation, and wiring the brand-kit tokens and light/dark toggle into the app.

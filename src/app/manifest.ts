@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Baant",
     short_name: "Baant",
-    description: "Bill ki photo kheencho, 30 second mein hisaab settle.",
+    description: "Photograph the bill. Split it fairly in 30 seconds.",
     start_url: "/",
     display: "standalone",
     background_color: "#f8fafc",

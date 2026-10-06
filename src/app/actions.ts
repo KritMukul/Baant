@@ -14,16 +14,16 @@ export async function createBill(_: unknown, form: FormData): Promise<{ error: s
   const file = form.get("bill") as File | null;
   const payerName = String(form.get("name") ?? "").trim();
   const vpa = String(form.get("vpa") ?? "").trim();
-  if (!file || file.size === 0) return { error: "Bill ki photo chahiye" };
-  if (!payerName) return { error: "Apna naam daalo" };
-  if (!isValidVpa(vpa)) return { error: "UPI ID sahi nahi lag rahi (e.g. name@okaxis)" };
+  if (!file || file.size === 0) return { error: "Add a photo of the bill" };
+  if (!payerName) return { error: "Enter your name" };
+  if (!isValidVpa(vpa)) return { error: "That UPI ID doesn't look right (for example name@okaxis)" };
 
   let parsed;
   try {
     const b64 = Buffer.from(await file.arrayBuffer()).toString("base64");
     parsed = await parseBillImage(b64, file.type || "image/jpeg");
   } catch {
-    return { error: "Bill padh nahi paaye. Clear photo ke saath dobara try karo." };
+    return { error: "Couldn't read the bill. Try again with a clearer photo." };
   }
 
   const db = admin();
@@ -42,7 +42,7 @@ export async function createBill(_: unknown, form: FormData): Promise<{ error: s
     })
     .select("id")
     .single();
-  if (error || !bill) return { error: "Bill save nahi hua" };
+  if (error || !bill) return { error: "Couldn't save the bill. Try again." };
 
   const hostToken = token();
   await db.from("bill_secrets").insert({ bill_id: bill.id, host_token: hostToken });

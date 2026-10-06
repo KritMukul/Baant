@@ -19,7 +19,7 @@ export default async function Image({ params }: { params: Promise<{ code: string
         <div style={{ fontSize: 80, fontWeight: 800 }}>{bill?.merchant || "Bill"}</div>
         <div style={{ fontSize: 56 }}>{bill ? formatINR(bill.total) : ""}</div>
         <div style={{ fontSize: 36, marginTop: 24, opacity: 0.9 }}>
-          {count ?? 0} log · {bill?.payer_name} ne pay kiya · tap karke apna hissa lo
+          {count ?? 0} people · paid by {bill?.payer_name} · tap what you ate
         </div>
       </div>
     ),
