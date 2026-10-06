@@ -230,3 +230,33 @@ describe("vision provider choice", () => {
     expect(() => pickProvider({})).toThrow(/No vision provider/);
   });
 });
+
+import { BILL_JSON_SCHEMA } from "./parseBill";
+import { parsedBillSchema } from "./bill";
+
+describe("the bill reader's contract", () => {
+  /** OpenAI strict mode: every object lists all its properties as required and forbids extras, at every level. */
+  const strict = (node: any, at = "$"): string[] => {
+    const bad: string[] = [];
+    if (node && typeof node === "object") {
+      if (node.type === "object" || node.properties) {
+        const keys = Object.keys(node.properties ?? {});
+        if (node.additionalProperties !== false) bad.push(`${at}: additionalProperties must be false`);
+        if (JSON.stringify([...(node.required ?? [])].sort()) !== JSON.stringify(keys.sort())) bad.push(`${at}: every property must be required`);
+      }
+      for (const [k, v] of Object.entries(node)) bad.push(...strict(v, `${at}.${k}`));
+    }
+    return bad;
+  };
+  it("the JSON schema is strict-mode friendly", () => expect(strict(BILL_JSON_SCHEMA)).toEqual([]));
+  it("accepts what models actually send: nulls, missing doubt, missing optional amounts", () => {
+    const base = { merchant: "X", total: 100, taxes: [] };
+    expect(parsedBillSchema.parse({ ...base, items: [{ name: "a", qty: 1, price: 10, doubt: null }], serviceCharge: null, discount: null }).items[0].doubt).toBeNull();
+    expect(parsedBillSchema.parse({ ...base, items: [{ name: "a", qty: null, price: 10 }], serviceCharge: 5, discount: 0 }).items[0]).toMatchObject({ qty: 1, doubt: null });
+    expect(parsedBillSchema.parse({ ...base, merchant: null, items: [{ name: "a", qty: 2, price: 10, doubt: { field: "qty", note: "blurry" } }] }).items[0].doubt).toEqual({ field: "qty", note: "blurry" });
+  });
+  it("rejects a bill with no items or no total", () => {
+    expect(() => parsedBillSchema.parse({ merchant: "X", items: [], total: 10, taxes: [] })).toThrow();
+    expect(() => parsedBillSchema.parse({ merchant: "X", items: [{ name: "a", qty: 1, price: 1 }], taxes: [] })).toThrow();
+  });
+});

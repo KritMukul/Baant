@@ -103,6 +103,14 @@ From your machine, with `DATABASE_URL` set to the same database:
 npm run smoke        # creates a test bill, joins two friends, pays, confirms, settles, deletes it
 ```
 
+If you set a vision key, also check that it can read a real bill (the repo has four photos in `fixtures/bills/`):
+
+```bash
+npm run parse-bills      # prints each bill's items, whether they add up, and any row the model was unsure about
+```
+
+(The key used while building this was revoked, so the reader was last checked against the live model before the "unsure rows" feature was added. This is the first thing to run with your own key.)
+
 Then the real test, on two phones:
 
 1. Phone A (host): open the site, photograph a bill, add your name and UPI ID, **Scan the bill**. Fix anything on the check screen, then **Share link**.
@@ -136,6 +144,6 @@ Friends' links (`/b/...`) stay open. The start page and its scan request live at
 
 ## What is and is not verified
 
-Verified here (see `docs/` and the tests): the rules and money maths (103 tests), the same storage contract on memory and on a real Postgres 16, the full flow on phone-sized browsers with a host and three friends, the standalone production server against Postgres, the QR code decoding back to the link.
+Verified here (see `docs/` and the tests): the rules and money maths (106 tests), the same storage contract on memory and on a real Postgres 16, the full flow on phone-sized browsers with a host and three friends, the standalone production server against Postgres, the QR code decoding back to the link.
 
 **Not verified:** a real Supabase project; `docker compose` itself (Docker was not available here, so the Dockerfile and compose file are untested; the standalone server they run was); real phones and real keyboards; real UPI apps; the vision models on real bills and payment screenshots beyond the earlier parse tests; HTTPS-only features (clipboard, share sheet, install to home screen) on a real certificate.

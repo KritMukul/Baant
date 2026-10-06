@@ -31,7 +31,7 @@ for (const f of files) {
     if (v.ok) sumOk++;
     console.log(`\n${f} (${Date.now() - t0}ms) ${b.merchant || "?"}: ${b.items.length} items, total ${formatINR(toPaise(b.total))}`);
     console.log(v.ok ? "  sum check: OK" : `  sum check: MISMATCH diff ${formatINR(v.diff)}`);
-    b.items.forEach((i) => console.log(`   ${i.qty}x ${i.name}  ${i.price}`));
+    b.items.forEach((i) => console.log(`   ${i.qty}x ${i.name}  ${i.price}${i.doubt ? `   [unsure of ${i.doubt.field}: ${i.doubt.note}]` : ""}`));
     const ep = full.replace(/\.[^.]+$/, ".expected.json");
     if (existsSync(ep)) {
       const exp = JSON.parse(readFileSync(ep, "utf8")) as { total?: number; itemCount?: number };
