@@ -7,6 +7,8 @@ const PROMPT = `Extract this restaurant/shop bill. Amounts are in INR rupees (de
 - "price" is the TOTAL for that line (qty already multiplied).
 - Put GST/CGST/SGST/VAT lines in "taxes", service charge in "serviceCharge", any coupon/discount (positive number) in "discount".
 - "total" is the final payable amount printed on the bill.
+- Item prices must be BEFORE tax. If the bill prints a "Sub Total", the item prices must add up to that Sub Total. Some bills have a per-line "Total" column that already includes tax (it will be larger than rate x qty and won't add up to the Sub Total); in that case use rate x qty instead.
+- Include EVERY tax/charge line printed on the bill in "taxes", even if two lines look alike. Use null for amounts that are not on the bill.
 - Do not invent items. If text is unreadable, make your best guess; the user will correct it.`;
 
 const BILL_JSON_SCHEMA = {

@@ -79,3 +79,19 @@ describe("upiLink", () => {
     expect(l).toBe("upi://pay?pa=me%40okaxis&pn=Mukul%20K&am=123.45&cu=INR&tn=Goa%20trip");
   });
 });
+
+describe("parsedBillSchema", () => {
+  it("accepts nulls for fields absent from the bill", async () => {
+    const { parsedBillSchema } = await import("./bill");
+    const r = parsedBillSchema.parse({
+      merchant: null,
+      items: [{ name: "Tea", qty: null, price: 10 }],
+      taxes: null,
+      serviceCharge: null,
+      discount: null,
+      total: 10,
+    });
+    expect(r).toMatchObject({ merchant: "", serviceCharge: 0, discount: 0, taxes: [] });
+    expect(r.items[0].qty).toBe(1);
+  });
+});
