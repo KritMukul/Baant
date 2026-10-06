@@ -1,0 +1,138 @@
+/**
+ * Baant · Night Tab design tokens (CSS)
+ * v1.0 · generated from one source; do not hand-edit values.
+ *
+ * Theme: light by default, dark via prefers-color-scheme, and an explicit
+ * data-theme="light" | "dark" on <html> always wins (this is the app toggle).
+ */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Sora:wght@400;500;600;700&display=swap');
+
+:root {
+  /* ── Colour: light (default) ── */
+  --color-bg: #f5f4fb;
+  --color-surface: #ffffff;
+  --color-border: #dcdcf0;
+  --color-text: #14152b;
+  --color-text-muted: #5b5f80;
+  --color-accent: #ff6b4a;
+  --color-accent-edge: #d9431a;
+  --color-on-accent: #ffffff;
+  --color-accent-text: #c2371a;
+  --color-link: #4a5fd0;
+  --color-friend1: #4a5fd0;
+  --color-friend2: #7c4fe0;
+  --color-friend3: #0e7f6d;
+  --color-on-friend: #ffffff;
+  --color-me: #ff6b4a;
+  --color-on-me: #1b1020;
+  --color-warn: #b42318;
+  --color-warn-bg: #fdecea;
+  --color-success: #0e7f6d;
+  --color-glow: rgba(255, 107, 74, 0.18);
+
+  /* ── Typography ── */
+  --font-ui: 'Sora', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+  --fs-amount: 42px; --lh-amount: 1.05; --fw-amount: 600; --ls-amount: -0.06em;
+  --fs-amount-sm: 24px; --lh-amount-sm: 1.0; --fw-amount-sm: 600; --ls-amount-sm: -0.04em;
+  --fs-h1: 28px; --lh-h1: 1.1; --fw-h1: 700; --ls-h1: -0.03em;
+  --fs-h2: 20px; --lh-h2: 1.2; --fw-h2: 700; --ls-h2: -0.02em;
+  --fs-h3: 16px; --lh-h3: 1.3; --fw-h3: 600; --ls-h3: -0.01em;
+  --fs-body: 14px; --lh-body: 1.5; --fw-body: 400; --ls-body: 0em;
+  --fs-caption: 12px; --lh-caption: 1.4; --fw-caption: 500; --ls-caption: 0em;
+  --fs-label: 10px; --lh-label: 1.0; --fw-label: 500; --ls-label: 0.1em;
+
+  /* ── Spacing (4px base) ── */
+  --space-xxs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+  --space-xxxl: 64px;
+
+  /* ── Radius ── */
+  --radius-xs: 8px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --radius-phone: 44px;
+  --radius-pill: 9999px;
+
+  /* ── Elevation ── */
+  --shadow-card: 0 1px 2px rgba(20, 21, 43, 0.06), 0 10px 24px -14px rgba(20, 21, 43, 0.22);
+  --ring-mine: 0 0 0 3px var(--color-glow);
+
+  /* ── Motion ── */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-hover: ease;
+  --ease-linear: linear;
+  --dur-press: 140ms;
+  --dur-hover: 150ms;
+  --dur-popover: 180ms;
+  --dur-toast: 220ms;
+  --dur-modal: 240ms;
+  --dur-sheet: 320ms;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: #0c0d1c;
+    --color-surface: #171a30;
+    --color-border: #2b2f55;
+    --color-text: #ecebf8;
+    --color-text-muted: #8e92b3;
+    --color-accent: #ffb59a;
+    --color-accent-edge: #ffb59a;
+    --color-on-accent: #1b1020;
+    --color-accent-text: #ffb59a;
+    --color-link: #8fa4ff;
+    --color-friend1: #8fa4ff;
+    --color-friend2: #c6a7ff;
+    --color-friend3: #7fe3d0;
+    --color-on-friend: #0c0d1c;
+    --color-me: #ffb59a;
+    --color-on-me: #1b1020;
+    --color-warn: #ffb4a8;
+    --color-warn-bg: #3a1620;
+    --color-success: #7fe3d0;
+    --color-glow: rgba(255, 181, 154, 0.27);
+    --shadow-card: none;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #0c0d1c;
+  --color-surface: #171a30;
+  --color-border: #2b2f55;
+  --color-text: #ecebf8;
+  --color-text-muted: #8e92b3;
+  --color-accent: #ffb59a;
+  --color-accent-edge: #ffb59a;
+  --color-on-accent: #1b1020;
+  --color-accent-text: #ffb59a;
+  --color-link: #8fa4ff;
+  --color-friend1: #8fa4ff;
+  --color-friend2: #c6a7ff;
+  --color-friend3: #7fe3d0;
+  --color-on-friend: #0c0d1c;
+  --color-me: #ffb59a;
+  --color-on-me: #1b1020;
+  --color-warn: #ffb4a8;
+  --color-warn-bg: #3a1620;
+  --color-success: #7fe3d0;
+  --color-glow: rgba(255, 181, 154, 0.27);
+  --shadow-card: none;
+  color-scheme: dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-press: 0ms; --dur-hover: 0ms; --dur-popover: 0ms; --dur-toast: 0ms; --dur-modal: 0ms; --dur-sheet: 0ms; }
+}

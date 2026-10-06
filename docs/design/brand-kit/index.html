@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Baant Brand Kit</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+/* Layout: sticky nav with theme toggle, then numbered sections on one spine. Everything reads from tokens.css. */
+*{box-sizing:border-box}
+body{margin:0;background:var(--color-bg);color:var(--color-text);font:var(--fw-body) var(--fs-body)/var(--lh-body) var(--font-ui)}
+code,.mono{font-family:var(--font-mono)}
+.nav{position:sticky;top:0;z-index:30;background:var(--color-bg);border-bottom:1px solid var(--color-border);display:flex;gap:6px 14px;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:10px 16px}
+.nav a{color:var(--color-text-muted);text-decoration:none;font:500 12px var(--font-mono);padding:4px 6px;border-radius:6px}
+.nav a:hover,.nav a:focus-visible{color:var(--color-text);outline:none;background:var(--color-surface)}
+.nav .links{display:flex;flex-wrap:wrap;gap:2px}
+.seg{display:inline-flex;border:1px solid var(--color-border);border-radius:99px;padding:3px;background:var(--color-surface)}
+.seg button{font:600 12px var(--font-ui);border:0;background:transparent;color:var(--color-text-muted);padding:6px 14px;border-radius:99px;cursor:pointer;transition:background var(--dur-hover) ease,color var(--dur-hover) ease,transform var(--dur-press) var(--ease-out)}
+.seg button:active{transform:scale(.97)}
+.seg button[aria-pressed="true"]{background:var(--color-text);color:var(--color-bg)}
+.seg button:focus-visible{outline:2px solid var(--color-accent-edge);outline-offset:2px}
+main{max-width:1080px;margin:0 auto;padding:0 16px 80px}
+section{padding-block:64px;border-bottom:1px solid var(--color-border)}
+.head{display:grid;gap:12px;margin-bottom:32px}
+.head .num{font:600 clamp(72px,14vw,160px)/.8 var(--font-mono);letter-spacing:-.06em;color:var(--color-border)}
+.head .lab{font:500 11px var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent-text);display:flex;gap:10px;align-items:center}
+.head .lab::before{content:'';width:28px;height:1px;background:currentColor}
+h2{font:700 clamp(30px,5vw,52px)/1.02 var(--font-ui);letter-spacing:-.035em;margin:0;text-wrap:balance}
+h2 em{font-style:normal;color:var(--color-accent-text)}
+.body{color:var(--color-text-muted);max-width:60ch;margin:0}
+h3{font:600 14px var(--font-ui);margin:28px 0 10px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}
+.card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow-card);min-width:0}
+.cover{padding-block:72px 56px}
+.cover h1{font:700 clamp(54px,12vw,128px)/.9 var(--font-ui);letter-spacing:-.06em;margin:18px 0 10px;display:flex;align-items:center;gap:.18em;flex-wrap:wrap}
+.cover h1 svg{width:.82em;height:.82em}
+.cover p{font-size:18px;color:var(--color-text-muted);max-width:44ch;margin:0}
+.pillv{display:inline-block;font:500 11px var(--font-mono);border:1px solid var(--color-border);border-radius:99px;padding:4px 10px;background:var(--color-surface);color:var(--color-text-muted)}
+.manifesto{background:var(--color-accent);color:var(--color-on-accent);border-radius:var(--radius-xl);padding:clamp(28px,6vw,64px);border-bottom:0}
+.manifesto q{font:700 clamp(26px,5vw,52px)/1.08 var(--font-ui);letter-spacing:-.035em;display:block;text-wrap:balance;quotes:none}
+.manifesto small{display:block;margin-top:18px;font:500 12px var(--font-mono);opacity:.9}
+.lock{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.lock>div{border-radius:var(--radius-lg);padding:28px;display:grid;place-items:center;border:1px solid var(--color-border);min-width:0}
+.lock svg{max-width:100%;height:56px}
+.lock .l{background:#f5f4fb}.lock .d{background:#0c0d1c}.lock .a{background:var(--color-accent)}
+.lock .cap{font:500 11px var(--font-mono);margin-top:12px;color:var(--color-text-muted)}
+.rules{display:grid;gap:8px;padding-left:18px;color:var(--color-text-muted);max-width:68ch}
+.swgrp h4{font:500 11px var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--color-text-muted);margin:16px 0 8px}
+.sws{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+.sw{display:grid;gap:3px;font-size:12px}
+.sw span{height:46px;border-radius:10px;border:1px solid #0003}
+.sw code{font-size:11px;color:var(--color-text-muted)}
+.two{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+.tbl{overflow-x:auto;border:1px solid var(--color-border);border-radius:var(--radius-lg);background:var(--color-surface)}
+table{border-collapse:collapse;width:100%;font-size:12.5px;min-width:560px}
+th{text-align:left;font:500 10.5px var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-muted);padding:10px 12px;border-bottom:1px solid var(--color-border)}
+td{padding:9px 12px;border-bottom:1px solid var(--color-border);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.note{color:var(--color-text-muted);font-size:11.5px}
+.chip{display:inline-block;width:12px;height:12px;border-radius:4px;border:1px solid #0004;margin-right:6px;vertical-align:-1px}
+.pill{font:600 11px var(--font-mono);padding:3px 8px;border-radius:99px}
+.pill.ok{background:color-mix(in srgb,var(--color-success) 16%,transparent);color:var(--color-success)}
+.pill.bad{background:var(--color-warn-bg);color:var(--color-warn)}
+.callout{background:var(--color-warn-bg);color:var(--color-warn);border:1px solid var(--color-warn);border-radius:var(--radius-lg);padding:14px 16px;margin-top:16px;font-size:13px}
+.callout b{display:block;margin-bottom:4px}
+.trow{display:grid;grid-template-columns:minmax(120px,190px) 1fr;gap:16px;align-items:center;padding:14px 0;border-bottom:1px solid var(--color-border)}
+.trow .meta{display:grid;gap:2px;font-size:12px}.trow .meta span{font:400 11px var(--font-mono);color:var(--color-text-muted)}
+.trow .sample{min-width:0;overflow-wrap:anywhere}
+@media (max-width:560px){.trow{grid-template-columns:1fr;gap:6px}}
+.avrow{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+.av{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;font:700 12px var(--font-ui);color:var(--color-on-friend);border:2px solid var(--color-bg)}
+.av+.av{margin-left:-8px}
+.av.f1{background:var(--color-friend1)}.av.f2{background:var(--color-friend2)}.av.f3{background:var(--color-friend3)}
+.av.me{background:var(--color-me);color:var(--color-on-me)}
+.srow{display:grid;grid-template-columns:90px minmax(0,1fr) 44px;gap:12px;align-items:center;padding:5px 0}
+.srow i{height:12px;border-radius:4px;background:var(--color-accent);display:block;border:1px solid var(--color-accent-edge)}
+.srow span,.rad span{font:400 12px var(--font-mono);color:var(--color-text-muted)}
+.rads{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}
+.rad{display:grid;gap:4px;justify-items:start;font-size:12px}
+.rad i{width:72px;height:48px;background:var(--color-surface);border:2px solid var(--color-accent-edge);display:block}
+/* components */
+.btn{font:700 13.5px var(--font-ui);border:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:space-between;gap:14px;background:var(--color-accent);color:var(--color-on-accent);border-radius:99px;padding:7px 7px 7px 20px;box-shadow:inset 0 0 0 1px var(--color-accent-edge);transition:transform var(--dur-press) var(--ease-out),filter var(--dur-hover) ease}
+.btn::after{content:'→';display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--color-on-accent);color:var(--color-accent-text);font-size:18px}
+.btn:active{transform:scale(.97)}
+.btn:focus-visible,.row-it:focus-visible{outline:2px solid var(--color-accent-edge);outline-offset:3px}
+.btn.sec{background:transparent;color:var(--color-text);box-shadow:inset 0 0 0 1px var(--color-border);padding:12px 20px}
+.btn.sec::after{display:none}
+@media (hover:hover) and (pointer:fine){.btn:hover{filter:brightness(1.05)}}
+.row-it{display:flex;align-items:center;gap:10px;padding:8px 12px;min-height:40px;border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface);cursor:pointer;width:100%;font:inherit;color:inherit;text-align:left;transition:border-color var(--dur-hover) ease,box-shadow var(--dur-hover) ease,transform var(--dur-press) var(--ease-out)}
+.row-it:active{transform:scale(.98)}
+.row-it[aria-pressed="true"]{border-color:var(--color-accent-edge);box-shadow:var(--ring-mine)}
+.row-it .p{margin-left:auto;font:500 12px var(--font-mono)}
+.row-it small{display:block;color:var(--color-text-muted);font-size:10.5px}
+.row-it>span:first-child{min-width:0;overflow-wrap:anywhere}
+.row-it .av{width:22px;height:22px;font-size:9px;flex-shrink:0}
+.row-it>span:last-child{flex-shrink:0}
+.stack{display:grid;gap:10px}
+.field{display:grid;gap:5px}.field label{font:500 10px var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-muted)}
+.field input{font:500 13px var(--font-mono);padding:10px 12px;border-radius:var(--radius-sm);border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-text);width:100%}
+.field input:focus-visible{outline:2px solid var(--color-accent-edge);outline-offset:1px}
+.tag{font:600 11px var(--font-ui);padding:4px 10px;border-radius:99px;border:1px solid var(--color-border);background:var(--color-surface)}
+.tag.warn{background:var(--color-warn-bg);color:var(--color-warn);border-color:var(--color-warn)}
+.demo{position:relative;overflow:hidden;min-height:150px;background:var(--color-bg);border:1px solid var(--color-border);border-radius:var(--radius-lg);display:grid;place-items:center;padding:14px}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--color-surface);border-top:1px solid var(--color-border);border-radius:var(--radius-xl) var(--radius-xl) 0 0;padding:14px 16px;transform:translateY(100%);transition:transform var(--dur-sheet) var(--ease-sheet);font:600 13px var(--font-mono)}
+.sheet.open{transform:none}
+.toast{position:absolute;top:12px;left:50%;background:var(--color-text);color:var(--color-bg);font:600 12px var(--font-ui);padding:9px 14px;border-radius:99px;opacity:0;transform:translate(-50%,-8px) scale(.95);transition:transform var(--dur-toast) var(--ease-out),opacity var(--dur-toast) var(--ease-out)}
+.toast.on{opacity:1;transform:translate(-50%,0) scale(1)}
+@media (prefers-reduced-motion:reduce){.sheet,.toast{transition-property:opacity}.sheet{transform:none;opacity:0}.sheet.open{opacity:1}}
+.ratio-note{font-size:12.5px;color:var(--color-text-muted)}
+.swap td:first-child{color:var(--color-text-muted);text-decoration:line-through;text-decoration-color:var(--color-border)}
+</style>
+</head>
+<body>
+<nav class="nav" aria-label="Sections">
+  <div class="links"><a href="#manifesto">manifesto</a><a href="#logo">logo</a><a href="#color">color</a><a href="#type">type</a><a href="#claims">claims</a><a href="#spacing">spacing</a><a href="#motion">motion</a><a href="#components">components</a><a href="#voice">voice</a><a href="#files">files</a></div>
+  <div class="seg" role="group" aria-label="Theme"><button type="button" data-t="light" aria-pressed="false">Light</button><button type="button" data-t="dark" aria-pressed="false">Dark</button><button type="button" data-t="system" aria-pressed="true">System</button></div>
+</nav>
+<main>
+<header class="cover">
+  <span class="pillv">Brand kit v1.0 · Night Tab · approved</span>
+  <h1><svg viewBox="0 0 64 64" role="img" aria-label="Baant mark"><path d="M34.25 30.70 L34.25 4.70 A26 26 0 0 1 56.77 43.70 Z" fill="#ff6b4a"/><path d="M32.00 34.60 L54.52 47.60 A26 26 0 0 1 9.48 47.60 Z" fill="#4a5fd0"/><path d="M29.75 30.70 L7.23 43.70 A26 26 0 0 1 29.75 4.70 Z" fill="#0e7f6d"/></svg>Baant</h1>
+  <p>Photo kheencho, items tap karo, UPI se pay karo. A bill splitter for friends in India.</p>
+</header>
+
+<section id="manifesto" class="manifesto">
+  <q>Everyone pays for exactly what they ate.</q>
+  <small>— the one rule every screen is checked against</small>
+</section>
+
+<section id="logo">
+  <div class="head"><div class="num">01</div><div class="lab">Logo</div><h2>One bill, <em>three slices.</em></h2><p class="body">The mark is a circle split three ways, with a small gap between slices. Coral is you; the other two are friends. The wordmark is Sora Bold, tight.</p></div>
+  <div class="lock">
+    <div class="l"><svg viewBox="0 0 220 64" aria-label="Baant on light"><path d="M34.25 30.70 L34.25 4.70 A26 26 0 0 1 56.77 43.70 Z" fill="#ff6b4a"/><path d="M32.00 34.60 L54.52 47.60 A26 26 0 0 1 9.48 47.60 Z" fill="#4a5fd0"/><path d="M29.75 30.70 L7.23 43.70 A26 26 0 0 1 29.75 4.70 Z" fill="#0e7f6d"/><text x="78" y="43" font-family="Sora,system-ui,sans-serif" font-size="36" font-weight="700" letter-spacing="-1.2" fill="#14152b">Baant</text></svg><span class="cap" style="color:#5b5f80">on light ground</span></div>
+    <div class="d"><svg viewBox="0 0 220 64" aria-label="Baant on dark"><path d="M34.25 30.70 L34.25 4.70 A26 26 0 0 1 56.77 43.70 Z" fill="#ffb59a"/><path d="M32.00 34.60 L54.52 47.60 A26 26 0 0 1 9.48 47.60 Z" fill="#8fa4ff"/><path d="M29.75 30.70 L7.23 43.70 A26 26 0 0 1 29.75 4.70 Z" fill="#7fe3d0"/><text x="78" y="43" font-family="Sora,system-ui,sans-serif" font-size="36" font-weight="700" letter-spacing="-1.2" fill="#ecebf8">Baant</text></svg><span class="cap" style="color:#8e92b3">on dark ground</span></div>
+    <div class="a"><svg viewBox="0 0 64 64" aria-label="Mark on accent"><g fill="#fff" opacity=".96"><circle cx="32" cy="32" r="26"/></g><g><path d="M34.25 30.70 L34.25 4.70 A26 26 0 0 1 56.77 43.70 Z" fill="#ff6b4a"/><path d="M32.00 34.60 L54.52 47.60 A26 26 0 0 1 9.48 47.60 Z" fill="#4a5fd0"/><path d="M29.75 30.70 L7.23 43.70 A26 26 0 0 1 29.75 4.70 Z" fill="#0e7f6d"/></g></svg><span class="cap" style="color:var(--color-on-accent)">mark on coral: sit it on a white disc</span></div>
+  </div>
+  <h3>Rules</h3>
+  <ul class="rules"><li><b>Clear space:</b> half the mark's width on every side.</li><li><b>Minimum size:</b> mark 16px, wordmark 72px wide.</li><li><b>Placement:</b> top-left of the host's home screen only. Inside the claim board the bill is the hero, not the logo.</li><li><b>Never</b> recolour the slices, rotate the mark or add a shadow.</li></ul>
+</section>
+
+<section id="color">
+  <div class="head"><div class="num">02</div><div class="lab">Color</div><h2>Coral for you, <em>indigo for the night.</em></h2><p class="body">One accent, two themes. Light uses a saturated coral on a lavender-white ground; dark keeps the soft peach on indigo-black. Accent is a fill. For coloured text use <code>accentText</code>.</p></div>
+  <div class="two">
+    <div class="card"><b>Light</b><div class="swgrp"><h4>Ground & surface</h4><div class="sws"><div class="sw"><span style="background:#f5f4fb"></span><b>bg</b><code>#f5f4fb</code></div><div class="sw"><span style="background:#ffffff"></span><b>surface</b><code>#ffffff</code></div><div class="sw"><span style="background:#dcdcf0"></span><b>border</b><code>#dcdcf0</code></div></div></div><div class="swgrp"><h4>Text</h4><div class="sws"><div class="sw"><span style="background:#14152b"></span><b>text</b><code>#14152b</code></div><div class="sw"><span style="background:#5b5f80"></span><b>textMuted</b><code>#5b5f80</code></div><div class="sw"><span style="background:#c2371a"></span><b>accentText</b><code>#c2371a</code></div><div class="sw"><span style="background:#4a5fd0"></span><b>link</b><code>#4a5fd0</code></div></div></div><div class="swgrp"><h4>Accent</h4><div class="sws"><div class="sw"><span style="background:#ff6b4a"></span><b>accent</b><code>#ff6b4a</code></div><div class="sw"><span style="background:#d9431a"></span><b>accentEdge</b><code>#d9431a</code></div><div class="sw"><span style="background:#ffffff"></span><b>onAccent</b><code>#ffffff</code></div><div class="sw"><span style="background:#ff6b4a"></span><b>me</b><code>#ff6b4a</code></div><div class="sw"><span style="background:#1b1020"></span><b>onMe</b><code>#1b1020</code></div></div></div><div class="swgrp"><h4>Friends</h4><div class="sws"><div class="sw"><span style="background:#4a5fd0"></span><b>friend1</b><code>#4a5fd0</code></div><div class="sw"><span style="background:#7c4fe0"></span><b>friend2</b><code>#7c4fe0</code></div><div class="sw"><span style="background:#0e7f6d"></span><b>friend3</b><code>#0e7f6d</code></div><div class="sw"><span style="background:#ffffff"></span><b>onFriend</b><code>#ffffff</code></div></div></div><div class="swgrp"><h4>Status</h4><div class="sws"><div class="sw"><span style="background:#b42318"></span><b>warn</b><code>#b42318</code></div><div class="sw"><span style="background:#fdecea"></span><b>warnBg</b><code>#fdecea</code></div><div class="sw"><span style="background:#0e7f6d"></span><b>success</b><code>#0e7f6d</code></div></div></div></div>
+    <div class="card"><b>Dark</b><div class="swgrp"><h4>Ground & surface</h4><div class="sws"><div class="sw"><span style="background:#0c0d1c"></span><b>bg</b><code>#0c0d1c</code></div><div class="sw"><span style="background:#171a30"></span><b>surface</b><code>#171a30</code></div><div class="sw"><span style="background:#2b2f55"></span><b>border</b><code>#2b2f55</code></div></div></div><div class="swgrp"><h4>Text</h4><div class="sws"><div class="sw"><span style="background:#ecebf8"></span><b>text</b><code>#ecebf8</code></div><div class="sw"><span style="background:#8e92b3"></span><b>textMuted</b><code>#8e92b3</code></div><div class="sw"><span style="background:#ffb59a"></span><b>accentText</b><code>#ffb59a</code></div><div class="sw"><span style="background:#8fa4ff"></span><b>link</b><code>#8fa4ff</code></div></div></div><div class="swgrp"><h4>Accent</h4><div class="sws"><div class="sw"><span style="background:#ffb59a"></span><b>accent</b><code>#ffb59a</code></div><div class="sw"><span style="background:#ffb59a"></span><b>accentEdge</b><code>#ffb59a</code></div><div class="sw"><span style="background:#1b1020"></span><b>onAccent</b><code>#1b1020</code></div><div class="sw"><span style="background:#ffb59a"></span><b>me</b><code>#ffb59a</code></div><div class="sw"><span style="background:#1b1020"></span><b>onMe</b><code>#1b1020</code></div></div></div><div class="swgrp"><h4>Friends</h4><div class="sws"><div class="sw"><span style="background:#8fa4ff"></span><b>friend1</b><code>#8fa4ff</code></div><div class="sw"><span style="background:#c6a7ff"></span><b>friend2</b><code>#c6a7ff</code></div><div class="sw"><span style="background:#7fe3d0"></span><b>friend3</b><code>#7fe3d0</code></div><div class="sw"><span style="background:#0c0d1c"></span><b>onFriend</b><code>#0c0d1c</code></div></div></div><div class="swgrp"><h4>Status</h4><div class="sws"><div class="sw"><span style="background:#ffb4a8"></span><b>warn</b><code>#ffb4a8</code></div><div class="sw"><span style="background:#3a1620"></span><b>warnBg</b><code>#3a1620</code></div><div class="sw"><span style="background:#7fe3d0"></span><b>success</b><code>#7fe3d0</code></div></div></div></div>
+  </div>
+  <h3>Accessibility matrix · light</h3>
+  <div class="tbl"><table><thead><tr><th>Pair</th><th>Foreground</th><th>Background</th><th>Ratio</th><th>Verdict</th><th>Note</th></tr></thead><tbody><tr><td>Body text on ground</td><td class="mono"><i class="chip" style="background:#14152b"></i>#14152b</td><td class="mono"><i class="chip" style="background:#f5f4fb"></i>#f5f4fb</td><td class="mono">16.4:1</td><td><span class="pill ok">✓ AAA</span></td><td class="note"></td></tr>
+<tr><td>Body text on surface</td><td class="mono"><i class="chip" style="background:#14152b"></i>#14152b</td><td class="mono"><i class="chip" style="background:#ffffff"></i>#ffffff</td><td class="mono">17.92:1</td><td><span class="pill ok">✓ AAA</span></td><td class="note"></td></tr>
+<tr><td>Muted text on ground</td><td class="mono"><i class="chip" style="background:#5b5f80"></i>#5b5f80</td><td class="mono"><i class="chip" style="background:#f5f4fb"></i>#f5f4fb</td><td class="mono">5.66:1</td><td><span class="pill ok">✓ AA</span></td><td class="note"></td></tr>
+<tr><td>Muted text on surface</td><td class="mono"><i class="chip" style="background:#5b5f80"></i>#5b5f80</td><td class="mono"><i class="chip" style="background:#ffffff"></i>#ffffff</td><td class="mono">6.19:1</td><td><span class="pill ok">✓ AA</span></td><td class="note"></td></tr>
+<tr><td>Accent text on surface</td><td class="mono"><i class="chip" style="background:#c2371a"></i>#c2371a</td><td class="mono"><i class="chip" style="background:#ffffff"></i>#ffffff</td><td class="mono">5.45:1</td><td><span class="pill ok">✓ AA</span></td><td class="note"></td></tr>
+<tr><td>Link on surface</td><td class="mono"><i class="chip" style="background:#4a5fd0"></i>#4a5fd0</td><td class="mono"><i class="chip" style="background:#ffffff"></i>#ffffff</td><td class="mono">5.47:1</td><td><span class="pill ok">✓ AA</span></td><td class="note"></td></tr>
+<tr><td>Primary button label on accent</td><td class="mono"><i class="chip" style="background:#ffffff"></i>#ffffff</td><td class="mono"><i class="chip" style="background:#ff6b4a"></i>#ff6b4a</td><td class="mono">2.82:1</td><td><span class="pill bad">✗ FAIL</span></td><td class="note">Approved exception (see below)</td></tr>
+<tr><td>Friend initial (1) on friend colour</td><td class="mono"><i class="chip" style="background:#ffffff"></i>#ffffff</td><td class="mono"><i class="chip" style="background:#4a5fd0"></i>#4a5fd0</td><td class="mono">5.47:1</td><td><span class="pill ok">✓ AA</span></td><td class="note"></td></tr>
+<tr><td>Friend initial (2) on friend colour</td><td class="mono"><i class="chip" style="background:#ffffff"></i>#ffffff</td><td class="mono"><i class="chip" style="background:#7c4fe0"></i>#7c4fe0</td><td class="mono">5.18:1</td><td><span class="pill ok">✓ AA</span></td><td class="note"></td></tr>
+<tr><td>Friend initial (3) on friend colour</td><td class="mono"><i class="chip" style="background:#ffffff"></i>#ffffff</td><td class="mono"><i class="chip" style="background:#0e7f6d"></i>#0e7f6d</td><td class="mono">4.91:1</td><td><span class="pill ok">✓ AA</span></td><td class="note"></td></tr>
+<tr><td>Your initial on your colour</td><td class="mono"><i class="chip" style="background:#1b1020"></i>#1b1020</td><td class="mono"><i class="chip" style="background:#ff6b4a"></i>#ff6b4a</td><td class="mono">6.53:1</td><td><span class="pill ok">✓ AA</span></td><td class="note"></td></tr>
+<tr><td>Warning text on warning tint</td><td class="mono"><i class="chip" style="background:#b42318"></i>#b42318</td><td class="mono"><i class="chip" style="background:#fdecea"></i>#fdecea</td><td class="mono">5.75:1</td><td><span class="pill ok">✓ AA</span></td><td class="note"></td></tr>
+<tr><td>Accent fill vs ground (shape)</td><td class="mono"><i class="chip" style="background:#ff6b4a"></i>#ff6b4a</td><td class="mono"><i class="chip" style="background:#f5f4fb"></i>#f5f4fb</td><td class="mono">2.58:1</td><td><span class="pill bad">✗ FAIL</span></td><td class="note">Edge token carries the boundary</td></tr>
+<tr><td>Accent edge vs ground (shape)</td><td class="mono"><i class="chip" style="background:#d9431a"></i>#d9431a</td><td class="mono"><i class="chip" style="background:#f5f4fb"></i>#f5f4fb</td><td class="mono">4.03:1</td><td><span class="pill ok">✓ AA</span></td><td class="note"></td></tr></tbody></table></div>
+  <h3>Accessibility matrix · dark</h3>
+  <div class="tbl"><table><thead><tr><th>Pair</th><th>Foreground</th><th>Background</th><th>Ratio</th><th>Verdict</th><th>Note</th></tr></thead><tbody><tr><td>Body text on ground</td><td class="mono"><i class="chip" style="background:#ecebf8"></i>#ecebf8</td><td class="mono"><i class="chip" style="background:#0c0d1c"></i>#0c0d1c</td><td class="mono">16.34:1</td><td><span class="pill ok">✓ AAA</span></td><td class="note"></td></tr>
+<tr><td>Body text on surface</td><td class="mono"><i class="chip" style="background:#ecebf8"></i>#ecebf8</td><td class="mono"><i class="chip" style="background:#171a30"></i>#171a30</td><td class="mono">14.51:1</td><td><span class="pill ok">✓ AAA</span></td><td class="note"></td></tr>
+<tr><td>Muted text on ground</td><td class="mono"><i class="chip" style="background:#8e92b3"></i>#8e92b3</td><td class="mono"><i class="chip" style="background:#0c0d1c"></i>#0c0d1c</td><td class="mono">6.34:1</td><td><span class="pill ok">✓ AA</span></td><td class="note"></td></tr>
+<tr><td>Muted text on surface</td><td class="mono"><i class="chip" style="background:#8e92b3"></i>#8e92b3</td><td class="mono"><i class="chip" style="background:#171a30"></i>#171a30</td><td class="mono">5.63:1</td><td><span class="pill ok">✓ AA</span></td><td class="note"></td></tr>
+<tr><td>Accent text on surface</td><td class="mono"><i class="chip" style="background:#ffb59a"></i>#ffb59a</td><td class="mono"><i class="chip" style="background:#171a30"></i>#171a30</td><td class="mono">10.05:1</td><td><span class="pill ok">✓ AAA</span></td><td class="note"></td></tr>
+<tr><td>Link on surface</td><td class="mono"><i class="chip" style="background:#8fa4ff"></i>#8fa4ff</td><td class="mono"><i class="chip" style="background:#171a30"></i>#171a30</td><td class="mono">7.27:1</td><td><span class="pill ok">✓ AAA</span></td><td class="note"></td></tr>
+<tr><td>Primary button label on accent</td><td class="mono"><i class="chip" style="background:#1b1020"></i>#1b1020</td><td class="mono"><i class="chip" style="background:#ffb59a"></i>#ffb59a</td><td class="mono">10.8:1</td><td><span class="pill ok">✓ AAA</span></td><td class="note"></td></tr>
+<tr><td>Friend initial (1) on friend colour</td><td class="mono"><i class="chip" style="background:#0c0d1c"></i>#0c0d1c</td><td class="mono"><i class="chip" style="background:#8fa4ff"></i>#8fa4ff</td><td class="mono">8.19:1</td><td><span class="pill ok">✓ AAA</span></td><td class="note"></td></tr>
+<tr><td>Friend initial (2) on friend colour</td><td class="mono"><i class="chip" style="background:#0c0d1c"></i>#0c0d1c</td><td class="mono"><i class="chip" style="background:#c6a7ff"></i>#c6a7ff</td><td class="mono">9.52:1</td><td><span class="pill ok">✓ AAA</span></td><td class="note"></td></tr>
+<tr><td>Friend initial (3) on friend colour</td><td class="mono"><i class="chip" style="background:#0c0d1c"></i>#0c0d1c</td><td class="mono"><i class="chip" style="background:#7fe3d0"></i>#7fe3d0</td><td class="mono">12.66:1</td><td><span class="pill ok">✓ AAA</span></td><td class="note"></td></tr>
+<tr><td>Your initial on your colour</td><td class="mono"><i class="chip" style="background:#1b1020"></i>#1b1020</td><td class="mono"><i class="chip" style="background:#ffb59a"></i>#ffb59a</td><td class="mono">10.8:1</td><td><span class="pill ok">✓ AAA</span></td><td class="note"></td></tr>
+<tr><td>Warning text on warning tint</td><td class="mono"><i class="chip" style="background:#ffb4a8"></i>#ffb4a8</td><td class="mono"><i class="chip" style="background:#3a1620"></i>#3a1620</td><td class="mono">9.38:1</td><td><span class="pill ok">✓ AAA</span></td><td class="note"></td></tr>
+<tr><td>Accent fill vs ground (shape)</td><td class="mono"><i class="chip" style="background:#ffb59a"></i>#ffb59a</td><td class="mono"><i class="chip" style="background:#0c0d1c"></i>#0c0d1c</td><td class="mono">11.31:1</td><td><span class="pill ok">✓ AAA</span></td><td class="note"></td></tr>
+<tr><td>Accent edge vs ground (shape)</td><td class="mono"><i class="chip" style="background:#ffb59a"></i>#ffb59a</td><td class="mono"><i class="chip" style="background:#0c0d1c"></i>#0c0d1c</td><td class="mono">11.31:1</td><td><span class="pill ok">✓ AAA</span></td><td class="note"></td></tr></tbody></table></div>
+  <div class="callout"><b>Approved exception: white label on coral (2.8:1, below the 4.5:1 for small text).</b>The design owner chose a white label on the light-mode primary button. It is the only text pair in the kit that fails. Mitigations built in: label is 13.5px / 700, the amount is repeated in the button label, an arrow disc sits at the end, the button is 52px tall, and a darker <code>accentEdge</code> outline gives the shape 4:1 against the ground. To pass AA without changing the look, set light <code>onAccent</code> to <code>#1b1020</code> (6.5:1), or deepen the fill to <code>#e02900</code> (white at 4.7:1).</div>
+</section>
+
+<section id="type">
+  <div class="head"><div class="num">03</div><div class="lab">Type</div><h2>Two voices. <em>One job each.</em></h2><p class="body"><b>Sora</b> sets every word: headings, labels, buttons. <b>JetBrains Mono</b> sets every digit and the ₹ sign, so amounts always line up and read as money. Never swap their jobs.</p></div>
+  <div class="card"><div class="trow"><div class="meta"><b>amount</b><span>42/44 · 600 · mono</span></div><div class="sample" style="font:600 42px/1.05 var(--font-mono);letter-spacing:-0.06em;">₹1,000.10</div></div><div class="trow"><div class="meta"><b>amountSm</b><span>24/24 · 600 · mono</span></div><div class="sample" style="font:600 24px/1.0 var(--font-mono);letter-spacing:-0.04em;">₹786.67</div></div><div class="trow"><div class="meta"><b>h1</b><span>28/30 · 700 · Sora</span></div><div class="sample" style="font:700 28px/1.1 var(--font-ui);letter-spacing:-0.03em;">Baant lo, seedha.</div></div><div class="trow"><div class="meta"><b>h2</b><span>20/24 · 700 · Sora</span></div><div class="sample" style="font:700 20px/1.2 var(--font-ui);letter-spacing:-0.02em;">Your share</div></div><div class="trow"><div class="meta"><b>h3</b><span>16/20 · 600 · Sora</span></div><div class="sample" style="font:600 16px/1.3 var(--font-ui);letter-spacing:-0.01em;">Long Island Elec ×2</div></div><div class="trow"><div class="meta"><b>body</b><span>14/21 · 400 · Sora</span></div><div class="sample" style="font:400 14px/1.5 var(--font-ui);letter-spacing:0em;">Opens your UPI app with the amount filled in. No fees.</div></div><div class="trow"><div class="meta"><b>caption</b><span>12/16 · 500 · Sora</span></div><div class="sample" style="font:500 12px/1.4 var(--font-ui);letter-spacing:0em;">split 3 ways · Aarav paid</div></div><div class="trow"><div class="meta"><b>label</b><span>10/10 · 500 · mono</span></div><div class="sample" style="font:500 10px/1.0 var(--font-mono);letter-spacing:0.1em;text-transform:uppercase;">Items unclaimed</div></div></div>
+</section>
+
+<section id="claims">
+  <div class="head"><div class="num">04</div><div class="lab">Claims</div><h2>Your colour is <em>always coral.</em></h2><p class="body">Baant has no mascot. Its brand element is the claim: a coloured initial per friend, and a coral ring on anything you have taken. You are coral on every screen; friends take indigo, violet and green.</p></div>
+  <div class="card avrow"><span><i class="av f1">A</i><i class="av f2">D</i><i class="av f3">K</i><i class="av me">M</i></span><span class="ratio-note">Friends overlap by 8px. You (<b>M</b>) always come last and always in coral.</span></div>
+</section>
+
+<section id="spacing">
+  <div class="head"><div class="num">05</div><div class="lab">Spacing</div><h2>Four-pixel <em>grid.</em></h2><p class="body">Every gap is a multiple of 4. Screen padding is 16, list gap is 5 to 8, card padding 12 to 16.</p></div>
+  <div class="two"><div class="card"><div class="srow"><code>space-xxs</code><i style="width:8px;max-width:100%"></i><span>4px</span></div><div class="srow"><code>space-xs</code><i style="width:16px;max-width:100%"></i><span>8px</span></div><div class="srow"><code>space-sm</code><i style="width:24px;max-width:100%"></i><span>12px</span></div><div class="srow"><code>space-md</code><i style="width:32px;max-width:100%"></i><span>16px</span></div><div class="srow"><code>space-lg</code><i style="width:48px;max-width:100%"></i><span>24px</span></div><div class="srow"><code>space-xl</code><i style="width:64px;max-width:100%"></i><span>32px</span></div><div class="srow"><code>space-xxl</code><i style="width:96px;max-width:100%"></i><span>48px</span></div><div class="srow"><code>space-xxxl</code><i style="width:128px;max-width:100%"></i><span>64px</span></div></div><div class="card"><div class="rads"><div class="rad"><i style="border-radius:8px"></i><code>xs</code><span>8px</span></div><div class="rad"><i style="border-radius:10px"></i><code>sm</code><span>10px</span></div><div class="rad"><i style="border-radius:14px"></i><code>md</code><span>14px</span></div><div class="rad"><i style="border-radius:16px"></i><code>lg</code><span>16px</span></div><div class="rad"><i style="border-radius:22px"></i><code>xl</code><span>22px</span></div><div class="rad"><i style="border-radius:28px"></i><code>pill</code><span>9999px</span></div></div></div></div>
+</section>
+
+<section id="motion">
+  <div class="head"><div class="num">06</div><div class="lab">Motion</div><h2>Fast. Honest. <em>Interruptible.</em></h2><p class="body">Press, claim, sheet, toast. Nothing over 320ms, nothing bounces, only transform and opacity move. Keyboard actions never animate. Reduced motion keeps opacity and drops movement.</p></div>
+  <div class="two">
+    <div class="tbl"><table><thead><tr><th>Duration</th><th>Value</th><th>Use</th></tr></thead><tbody><tr><td class="mono">press</td><td class="mono">140ms</td><td>Button press feedback</td></tr><tr><td class="mono">hover</td><td class="mono">150ms</td><td>Hover and colour changes</td></tr><tr><td class="mono">popover</td><td class="mono">180ms</td><td>Tooltip, small popovers</td></tr><tr><td class="mono">toast</td><td class="mono">220ms</td><td>Toast in/out</td></tr><tr><td class="mono">modal</td><td class="mono">240ms</td><td>Dialog</td></tr><tr><td class="mono">sheet</td><td class="mono">320ms</td><td>Pay sheet, bottom drawers</td></tr></tbody></table></div>
+    <div class="tbl"><table><thead><tr><th>Easing</th><th>CSS</th><th>GSAP</th></tr></thead><tbody><tr><td class="mono">out</td><td class="mono">cubic-bezier(0.23, 1, 0.32, 1)</td><td class="mono">CustomEase.create("baantOut", "0.23,1,0.32,1")</td></tr><tr><td class="mono">inOut</td><td class="mono">cubic-bezier(0.77, 0, 0.175, 1)</td><td class="mono">CustomEase.create("baantInOut", "0.77,0,0.175,1")</td></tr><tr><td class="mono">sheet</td><td class="mono">cubic-bezier(0.32, 0.72, 0, 1)</td><td class="mono">CustomEase.create("baantSheet", "0.32,0.72,0,1")</td></tr><tr><td class="mono">hover</td><td class="mono">ease</td><td class="mono">"power1.out"</td></tr><tr><td class="mono">linear</td><td class="mono">linear</td><td class="mono">"none"</td></tr></tbody></table></div>
+  </div>
+  <h3>Live</h3>
+  <div class="grid">
+    <div class="demo"><button class="btn" type="button">Pay ₹1,000.10</button></div>
+    <div class="demo"><button class="row-it" type="button" aria-pressed="false" style="max-width:260px"><span>Surf N Turf<small>tap to claim</small></span><span class="p">₹360.00</span></button></div>
+    <div class="demo" id="sheetDemo"><button class="btn sec" type="button" id="sheetBtn">Open pay sheet</button><div class="sheet" id="sheet">You owe Aarav ₹1,000.10</div></div>
+    <div class="demo" id="toastDemo"><button class="btn sec" type="button" id="toastBtn">Copy UPI ID</button><div class="toast" id="toast" role="status">Copied aarav.k@okaxis</div></div>
+  </div>
+  <p class="ratio-note" style="margin-top:12px">Exit is about 75% of enter. Complex sequences (scroll reveals, staggered lists) use GSAP with the same eases; simple states stay in CSS.</p>
+</section>
+
+<section id="components">
+  <div class="head"><div class="num">07</div><div class="lab">Components</div><h2>Built from tokens, <em>mapped to shadcn.</em></h2><p class="body">Each piece below is plain CSS on tokens. In the Next.js app, wrap the matching shadcn/ui primitive and bind its CSS variables to these tokens.</p></div>
+  <div class="grid">
+    <div class="card stack"><b>Primary button</b><button class="btn" type="button">Pay Aarav · UPI</button><button class="btn sec" type="button">Copy UPI ID</button></div>
+    <div class="card stack"><b>Claim row</b><button class="row-it" type="button" aria-pressed="true"><span>Assorted Satay<small>split 3 ways</small></span><span class="p">₹260.00</span><span><i class="av f1">A</i><i class="av me">M</i></span></button><button class="row-it" type="button" aria-pressed="false"><span>Crunchy Salad<small>tap to claim</small></span><span class="p">₹160.00</span></button></div>
+    <div class="card stack"><b>Field and tags</b><div class="field"><label for="n">Item name</label><input id="n" value="Hyderabadi Murg Biryani"></div><div><span class="tag warn">₹52.22 short</span> <span class="tag">1 item unclaimed</span></div></div>
+  </div>
+  <h3>shadcn/ui mapping</h3>
+  <div class="tbl"><table><thead><tr><th>Baant</th><th>shadcn primitive</th><th>Token bindings</th></tr></thead><tbody>
+  <tr><td>Primary / secondary button</td><td class="mono">Button</td><td class="mono">--primary → color-accent · --primary-foreground → color-on-accent · radius pill</td></tr>
+  <tr><td>Claim row</td><td class="mono">Toggle (pressed state)</td><td class="mono">border → color-border · pressed ring → ring-mine</td></tr>
+  <tr><td>Friend initials</td><td class="mono">Avatar + AvatarGroup</td><td class="mono">color-friend1..3 · color-me</td></tr>
+  <tr><td>Pay sheet</td><td class="mono">Drawer / Sheet (bottom)</td><td class="mono">--card → color-surface · ease-sheet · dur-sheet</td></tr>
+  <tr><td>Toast</td><td class="mono">Sonner</td><td class="mono">ease-out · dur-toast</td></tr>
+  <tr><td>Item name / price</td><td class="mono">Input</td><td class="mono">--input → color-border · font-mono for prices</td></tr>
+  <tr><td>Mismatch banner</td><td class="mono">Alert (destructive)</td><td class="mono">color-warn · color-warn-bg</td></tr>
+  <tr><td>Unclaimed / short tags</td><td class="mono">Badge</td><td class="mono">color-border · color-warn</td></tr>
+  <tr><td>Theme toggle</td><td class="mono">ToggleGroup (Light · Dark · System)</td><td class="mono">sets data-theme on html</td></tr></tbody></table></div>
+</section>
+
+<section id="voice">
+  <div class="head"><div class="num">08</div><div class="lab">Voice</div><h2>Plain English, <em>a little Hinglish.</em></h2><p class="body">Say what happens. Keep Hinglish for small moments of delight (empty states, success). Never for money, errors or permissions.</p></div>
+  <div class="tbl swap"><table><thead><tr><th>Don't say</th><th>Say</th></tr></thead><tbody>
+  <tr><td>Participants</td><td>Friends</td></tr>
+  <tr><td>Payment initiated</td><td>Opening GPay with ₹1,000.10…</td></tr>
+  <tr><td>OCR extraction failed</td><td>Couldn't read this bill. Try a clearer photo.</td></tr>
+  <tr><td>Item total does not reconcile</td><td>₹52.22 short of the bill total. A charge may be missing.</td></tr>
+  <tr><td>Unallocated items</td><td>1 item nobody has claimed</td></tr>
+  <tr><td>Settlement complete</td><td>Sab barabar. 🎉 (the only emoji)</td></tr></tbody></table></div>
+  <ul class="rules" style="margin-top:18px"><li>Buttons name the action and the amount: <b>Pay Aarav · UPI</b>.</li><li>Errors say what to do next, never apologise.</li><li>Use friends' first names, never "user".</li></ul>
+</section>
+
+<section id="files" style="border-bottom:0">
+  <div class="head"><div class="num">09</div><div class="lab">Files</div><h2>Where the <em>files live.</em></h2></div>
+  <div class="tbl"><table><thead><tr><th>Path</th><th>What</th></tr></thead><tbody>
+  <tr><td class="mono">docs/design/brand-kit/tokens.css</td><td>CSS variables. Light default, dark by media query, explicit data-theme wins.</td></tr>
+  <tr><td class="mono">docs/design/brand-kit/tokens.ts</td><td>Typed tokens for both modes, plus motion.</td></tr>
+  <tr><td class="mono">docs/design/brand-kit/tokens.json</td><td>DTCG format for Style Dictionary and Figma plugins.</td></tr>
+  <tr><td class="mono">docs/design/brand-kit/assets/logo-mark.svg, logo-mark-dark.svg</td><td>The three-slice mark.</td></tr>
+  <tr><td class="mono">docs/design/brand-kit/assets/logo-wordmark.svg, logo-wordmark-dark.svg</td><td>Mark plus wordmark (needs Sora loaded).</td></tr>
+  <tr><td class="mono">docs/design/brand-kit/assets/app-icon.svg</td><td>PWA icon source, dark ground.</td></tr>
+  <tr><td class="mono">.claude/skills/moodforge/projects/baant.md</td><td>Design decision log.</td></tr></tbody></table></div>
+</section>
+</main>
+<script>
+(function(){
+  var root=document.documentElement,btns=document.querySelectorAll('[data-t]');
+  function set(t){if(t==='system')root.removeAttribute('data-theme');else root.setAttribute('data-theme',t);btns.forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.t===t))})}
+  btns.forEach(function(b){b.addEventListener('click',function(){set(b.dataset.t)})});
+  document.querySelectorAll('.row-it').forEach(function(r){r.addEventListener('click',function(){r.setAttribute('aria-pressed',String(r.getAttribute('aria-pressed')!=='true'))})});
+  var sheet=document.getElementById('sheet'),sb=document.getElementById('sheetBtn');
+  sb.addEventListener('click',function(){var o=sheet.classList.toggle('open');sb.textContent=o?'Close pay sheet':'Open pay sheet'});
+  var toast=document.getElementById('toast'),tb=document.getElementById('toastBtn'),tm;
+  tb.addEventListener('click',function(){toast.classList.add('on');clearTimeout(tm);tm=setTimeout(function(){toast.classList.remove('on')},1600)});
+})();
+</script>
+</body>
+</html>

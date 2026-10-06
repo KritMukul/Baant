@@ -1,7 +1,7 @@
 # Baant · Design State
 
 **Last updated:** 2026-10-06
-**Current phase:** Step 2 — Screen Preview (waiting for approval)
+**Current phase:** Step 3 — Brand Kit (waiting for approval)
 **Status:** in_progress
 
 ---
@@ -18,6 +18,8 @@
 4. Both themes ship; the app gets a Light · Dark · System toggle.
 5. Dark palette is locked as shown in round 1: #0c0d1c ground, #171a30 surface, #ffb59a peach, #8fa4ff periwinkle.
 6. Fonts: Sora (UI), JetBrains Mono (all digits and ₹).
+7. Light accent: Coral #ff6b4a with WHITE label on the primary button (round 2c, "lets go with coral only"). Known AA exception (2.82:1); mitigated by accentEdge #d9431a outline. Do not silently change; offer #e02900 or dark label as the AA fix if asked.
+8. Light ground #f5f4fb, surface #ffffff, accentText #c2371a.
 
 ## Rejected Directions
 
@@ -75,7 +77,18 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 **Concept:** user picked Coral (A) and asked for white button text. #ff6b4a + white = 2.82:1 (fails AA). Shown as asked, plus Deep coral #e02900 + white = 4.68:1.
 **File:** `.superpowers/brainstorm/s1/content/round2c-coral-white.html`
 **User reaction (2b):** "coral me text white karna"
-**Outcome:** pending pick between #ff6b4a and #e02900.
+**User reaction:** "lets go with coral only"
+**Outcome:** APPROVED Coral #ff6b4a, white label (A).
+
+### Round 3 — 2026-10-06
+
+**Step:** 3 (Brand Kit)
+**Skills loaded:** moodforge, artifact-design
+**Concept:** Night Tab brand kit, both themes, one generated token source.
+**File:** `docs/design/brand-kit/index.html` (+ tokens.css/ts/json, README.md, assets/)
+**Checks:** tokens.ts compiles under tsc --strict; tokens.json parses; SVGs well-formed; page has no horizontal overflow at 400px or 1200px, no console errors; contrast matrix computed for 14 pairs x 2 themes (1 approved exception).
+**User reaction:** pending
+**Outcome:** pending
 
 ---
 
@@ -86,4 +99,5 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 .superpowers/brainstorm/s1/content/round2-night-tab-preview.html
 .superpowers/brainstorm/s1/content/round2b-light-accent.html
 .superpowers/brainstorm/s1/content/round2c-coral-white.html
+docs/design/brand-kit/  (index.html, tokens.css, tokens.ts, tokens.json, README.md, assets/)
 ```
