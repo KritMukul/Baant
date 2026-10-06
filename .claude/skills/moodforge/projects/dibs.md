@@ -133,6 +133,8 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 **Checks:** 12 phones exercised headlessly (claim, conflict split 1,000.10 -> 771.27, leftovers, lock, offline retry, loading finish, in-app theme); no JS errors; no overflow at 400px. Bugs fixed on the way: toast SVG rendered 312px (missing CSS), a Provisional chip on a Rs 0.00 share, duplicate Nudge copy. Not tested on a real phone.
 **Open decisions (asked):** Pay stays off until all claimed (alternative: warn); qty lines claimed whole; no undo timer.
 **User question during this round:** "can we make sure somehow that the payment is done" -> answered in docs/PLATFORMS.md ("Can Dibs make sure a payment happened?"). Recommended levels 0-3 (I've paid + reference code + optional UTR/screenshot check + host confirms). Gateway (level 4) is a separate business decision. Pay screen (3) and a host Settle ledger depend on the answer.
+**Bug reported by user (5.2):** "when I select an item my avatar animates and disappears and stops rendering". Cause: a stale CSS rule `.it .who .av.me{opacity:0}` came back after GSAP `clearProps:'all'` removed the inline opacity at the end of the claim animation. My earlier checks asserted share and aria-pressed, not the avatar's computed opacity. Fixed (rule removed; visibility is the `hidden` attribute) and a regression assertion added: after the animation, and after release + re-claim, in both themes, the avatar's computed opacity must be 1 and its width non-zero. Verified the test fails with the old rule and passes with the fix.
+**Lesson (do not repeat):** whenever GSAP animates with `clearProps`, check the element's computed style AFTER the tween, not only app state.
 **User reaction:** pending
 **Outcome:** pending
 
