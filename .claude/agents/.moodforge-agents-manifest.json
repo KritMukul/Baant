@@ -1,0 +1,20 @@
+{
+  "name": "moodforge-agent-team",
+  "source": "local:C:\\Users\\gamin\\AppData\\Local\\npm-cache\\_npx\\0a86ba358c987819\\node_modules\\moodforge\\skill-source\\agents",
+  "installedAt": "2026-10-04T10:20:11.958Z",
+  "installer": "moodforge",
+  "agents": [
+    "moodforge-brand-architect.md",
+    "moodforge-conventions.md",
+    "moodforge-figma-pusher.md",
+    "moodforge-handoff-engineer.md",
+    "moodforge-inspiration-scout.md",
+    "moodforge-motion-director.md",
+    "moodforge-preview-server.md",
+    "moodforge-queen.md",
+    "moodforge-screen-designer.md",
+    "moodforge-state-keeper.md",
+    "moodforge-theme-explorer.md",
+    "moodforge-theme-iterator.md"
+  ]
+}

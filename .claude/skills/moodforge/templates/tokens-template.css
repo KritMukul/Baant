@@ -1,0 +1,148 @@
+/**
+ * <Project> · <Theme Name>
+ * CSS Custom Properties
+ * v1.0
+ *
+ * Drop-in stylesheet. Import into your root stylesheet
+ * and reference via var(--color-primary) etc.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Bricolage+Grotesque:wght@400;500;700;800;900&family=DM+Mono:wght@400;500&family=Caveat:wght@700&display=swap');
+
+:root {
+  /* ══ Colors — surfaces ══ */
+  --color-base:     #f3eddd;
+  --color-surface:  #ebe3ce;
+  --color-elevated: #ffffff;
+  --color-ink:      #1a1f15;
+
+  /* ══ Colors — primary ══ */
+  --color-primary:      #2a4a2b;
+  --color-primary-deep: #1a3a1c;
+  --color-primary-soft: #5a7d4f;
+
+  /* ══ Colors — accent ══ */
+  --color-accent:      #c89530;
+  --color-accent-deep: #9a7020;
+  --color-accent-soft: #f0d78a;
+
+  /* ══ Colors — semantic ══ */
+  --color-success: #5a7d4f;
+  --color-warning: #c89530;
+  --color-danger:  #8a3324;
+
+  /* ══ Colors — neutrals ══ */
+  --color-border:      #d5ccb3;
+  --color-border-soft: #e0d7bf;
+  --color-muted:       #a8bca0;
+
+  /* ══ Colors — text ══ */
+  --color-text-primary:   #1a1f15;
+  --color-text-secondary: rgba(26, 31, 21, 0.72);
+  --color-text-tertiary:  rgba(26, 31, 21, 0.5);
+  --color-text-inverse:   #f3eddd;
+
+  /* ══ Typography ══ */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body:    'Bricolage Grotesque', system-ui, sans-serif;
+  --font-hand:    'Caveat', cursive;
+  --font-mono:    'DM Mono', 'SF Mono', monospace;
+
+  /* ══ Type scale ══ */
+  --fs-display: 76px;
+  --fs-h1:      44px;
+  --fs-h2:      28px;
+  --fs-h3:      20px;
+  --fs-numeric: 48px;
+  --fs-body:    16px;
+  --fs-caption: 13px;
+  --fs-label:   10px;
+
+  /* ══ Spacing (4px base) ══ */
+  --space-xxs:  4px;
+  --space-xs:   8px;
+  --space-sm:   12px;
+  --space-md:   16px;
+  --space-lg:   24px;
+  --space-xl:   32px;
+  --space-xxl:  48px;
+  --space-xxxl: 64px;
+  --space-huge: 96px;
+
+  /* ══ Radius ══ */
+  --radius-xs:   6px;
+  --radius-sm:   12px;
+  --radius-md:   18px;
+  --radius-lg:   22px;
+  --radius-xl:   28px;
+  --radius-pill: 9999px;
+
+  /* ══ Shadows (warm, tinted with primary — never cold black) ══ */
+  --shadow-card:  0 4px 12px rgba(42, 74, 43, 0.08);
+  --shadow-modal: 0 20px 50px rgba(42, 74, 43, 0.25);
+
+  /* ══ Motion ══ */
+  --ease-default: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-exit:    cubic-bezier(0.4, 0, 1, 1);
+  --dur-fast:     200ms;
+  --dur-normal:   300ms;
+  --dur-slow:     500ms;
+}
+
+/* Base body */
+body {
+  background: var(--color-base);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Helper type classes */
+.t-display {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 900;
+  font-size: var(--fs-display);
+  line-height: 0.88;
+  letter-spacing: -4px;
+}
+.t-h1 {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: var(--fs-h1);
+  letter-spacing: -1.5px;
+}
+.t-body {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+.t-mono {
+  font-family: var(--font-mono);
+  font-size: var(--fs-numeric);
+  letter-spacing: -1.5px;
+}
+
+/* Helper components */
+.card {
+  background: var(--color-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-card);
+}
+.btn-primary {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  border-radius: var(--radius-pill);
+  padding: 14px 28px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  border: none;
+  cursor: pointer;
+}

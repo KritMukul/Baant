@@ -1,0 +1,247 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://moodforge.dev/schemas/state-1.0.json",
+  "title": "Moodforge project state",
+  "description": "Canonical machine-readable state for a moodforge design pipeline project. Owned by the moodforge-queen and moodforge-state-keeper agents. Every worker reads this before doing anything.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "project", "created_at", "last_updated", "current_phase", "status"],
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "description": "Schema version. Bump only on breaking changes."
+    },
+    "project": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,63}$",
+      "description": "Kebab-case project slug."
+    },
+    "product_name": {
+      "type": "string",
+      "description": "Human-readable product name."
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "last_updated": { "type": "string", "format": "date-time" },
+    "current_phase": {
+      "enum": ["discovery", "screen-preview", "brand-kit", "animation-review", "all-screens", "production", "figma", "shipped"]
+    },
+    "status": {
+      "enum": ["active", "blocked", "approved", "shipped"]
+    },
+    "current_direction": {
+      "type": ["string", "null"],
+      "description": "Locked theme name in two-word slug form, or null if undecided."
+    },
+    "locked": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Non-negotiable decisions. Once a key lands here, no worker may propose alternatives. Hard Rule #3.",
+      "properties": {
+        "theme_id": { "type": ["string", "null"] },
+        "palette": {
+          "type": "object",
+          "additionalProperties": { "type": "string", "pattern": "^#[0-9A-Fa-f]{3,8}$" },
+          "description": "Map of token name → hex. e.g. {bg: '#F0EADC', ink: '#1A1A1A', accent: '#FF3EA5'}"
+        },
+        "typography": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "display": { "type": "string" },
+            "body": { "type": "string" },
+            "mono": { "type": "string" },
+            "serif_accent": { "type": "string" }
+          }
+        },
+        "type_scale_px": {
+          "type": "array",
+          "items": { "type": "number" },
+          "description": "Sorted ascending: [7, 9, 12, 15, 22, 30, 48, 78, 180]"
+        },
+        "spacing_scale": {
+          "type": "array",
+          "items": { "type": "number" }
+        },
+        "stroke_weights": {
+          "type": "object",
+          "properties": {
+            "hair": { "type": "number" },
+            "rule": { "type": "number" },
+            "emph": { "type": "number" },
+            "double": { "type": "number" }
+          }
+        },
+        "radius": {
+          "type": "object",
+          "properties": {
+            "pill": { "type": "number" },
+            "icon": { "type": "number" },
+            "card": { "type": "number" }
+          }
+        },
+        "motion": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "ease_out":    { "type": "string" },
+            "ease_in_out": { "type": "string" },
+            "ease_drawer": { "type": "string" },
+            "dur_press":    { "type": "integer" },
+            "dur_tooltip":  { "type": "integer" },
+            "dur_dropdown": { "type": "integer" },
+            "dur_drawer":   { "type": "integer" },
+            "dur_modal":    { "type": "integer" }
+          }
+        },
+        "mascot": {
+          "type": ["object", "null"],
+          "properties": {
+            "name": { "type": "string" },
+            "states": { "type": "array", "items": { "type": "string" } },
+            "asset_path": { "type": "string" }
+          }
+        },
+        "manifesto": { "type": "string", "maxLength": 280 },
+        "voice_tone": {
+          "type": "object",
+          "properties": {
+            "voice_words": { "type": "array", "items": { "type": "string" } },
+            "word_swaps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "from": { "type": "string" },
+                  "to":   { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "rejected": {
+      "type": "array",
+      "description": "Verbatim user rejections. Hard Rule #4 — never re-propose anything in this list.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["round", "name", "reason", "verbatim", "rejected_at"],
+        "properties": {
+          "round": { "type": "integer", "minimum": 1 },
+          "letter": { "type": "string", "maxLength": 4 },
+          "name": { "type": "string" },
+          "reason": { "type": "string", "description": "Short structured reason: 'too dark', 'wrong vibe', 'mascot felt corporate'" },
+          "verbatim": { "type": "string", "description": "Exact words the user used" },
+          "rejected_at": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "preserved": {
+      "type": "array",
+      "description": "Liked-but-not-picked directions, saved for potential future use.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "round": { "type": "integer" },
+          "name": { "type": "string" },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "preview_server": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "url": { "type": "string", "format": "uri" },
+        "pid": { "type": ["integer", "null"] },
+        "started_at": { "type": "string", "format": "date-time" },
+        "served_dir": { "type": "string" }
+      }
+    },
+    "figma": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mcp_available": { "type": "boolean" },
+        "file_url": { "type": ["string", "null"] },
+        "pages_complete": { "type": "array", "items": { "type": "string" } },
+        "pages_pending":  { "type": "array", "items": { "type": "string" } },
+        "rate_limit_status": { "type": ["string", "null"] }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "description": "Every file the pipeline has produced. Hash-verified — if a file's sha256 doesn't match disk, the state-keeper repairs.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "round", "phase", "role", "summary", "sha256", "size_bytes", "created_at", "worker"],
+        "properties": {
+          "path": { "type": "string", "description": "Path relative to project root" },
+          "round": { "type": "integer", "minimum": 1 },
+          "phase": { "type": "string" },
+          "role": {
+            "enum": ["inspiration", "themes", "showcase", "brand-kit", "motion", "screens-wireframe", "screens-production", "spec", "figma-checkpoint", "other"]
+          },
+          "version": { "type": "string", "description": "v1, v2, v3 for iterations" },
+          "worker": { "type": "string" },
+          "summary": { "type": "string", "maxLength": 240 },
+          "tokens_used": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Design tokens this artifact references — agents grep this to know what's been used"
+          },
+          "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "size_bytes": { "type": "integer", "minimum": 0 },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "rounds": {
+      "type": "array",
+      "description": "Append-only round log. Each round is one worker invocation.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["round", "phase", "worker", "outcome", "started_at"],
+        "properties": {
+          "round": { "type": "integer", "minimum": 1 },
+          "phase": { "type": "string" },
+          "worker": { "type": "string" },
+          "skills_loaded": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "started_at": { "type": "string", "format": "date-time" },
+          "ended_at":   { "type": "string", "format": "date-time" },
+          "files":      { "type": "array", "items": { "type": "string" } },
+          "user_reaction_verbatim": { "type": "string" },
+          "outcome": {
+            "enum": ["locked", "iterating", "rejected", "approved", "skipped", "failed", "in-progress"]
+          },
+          "decisions_locked_this_round": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "summary": { "type": "string", "maxLength": 320 }
+        }
+      }
+    },
+    "permanent_artifacts": {
+      "type": "array",
+      "description": "Files copied out of brainstorm cache into docs/design/ — survive cache wipes.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      }
+    }
+  }
+}

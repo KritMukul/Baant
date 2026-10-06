@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "project": "REPLACE-WITH-SLUG",
+  "product_name": "REPLACE WITH PRODUCT NAME",
+  "created_at": "REPLACE-WITH-ISO-TIMESTAMP",
+  "last_updated": "REPLACE-WITH-ISO-TIMESTAMP",
+  "current_phase": "discovery",
+  "status": "active",
+  "current_direction": null,
+  "locked": {},
+  "rejected": [],
+  "preserved": [],
+  "open_questions": [],
+  "preview_server": null,
+  "figma": {
+    "mcp_available": false,
+    "file_url": null,
+    "pages_complete": [],
+    "pages_pending": [],
+    "rate_limit_status": null
+  },
+  "artifacts": [],
+  "rounds": [],
+  "permanent_artifacts": []
+}
