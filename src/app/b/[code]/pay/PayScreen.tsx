@@ -322,7 +322,7 @@ export default function PayScreen({ code, initial }: { code: string; initial: Bi
           </div>
           <div className="card brk">
             <div className="r"><span>UTR</span><span>{first?.utr ?? "not added"}</span></div>
-            <div className="r"><span>Screenshot</span><span>{first?.shot ? (first.shot.amount === first.said ? "amount matched" : "amount mismatch") : "not added"}</span></div>
+            <div className="r"><span>Screenshot</span><span>{first?.shot ? (first.shot.amount == null ? "added, amount not readable" : `shows ${formatINR(first.shot.amount)}`) : "not added"}</span></div>
           </div>
         </div>
         <div className="dock">

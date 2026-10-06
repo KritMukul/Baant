@@ -16,8 +16,6 @@ type Item = BillView["items"][number];
 type ItemDraft = { id?: string; name: string; qty: number; price: string; flag: Item["flag"]; eName?: boolean; ePrice?: boolean; err?: string };
 type ChargeDraft = { kind: "tax" | "service" | "discount"; label: string; amount: string; eLabel?: boolean; eAmount?: boolean; err?: string };
 
-const KIND = { tax: "Tax", service: "Service charge", discount: "Discount" } as const;
-
 export default function CheckScreen({ code, initial }: { code: string; initial: BillView }) {
   const router = useRouter();
   const { view, refresh } = useLive(code, initial);

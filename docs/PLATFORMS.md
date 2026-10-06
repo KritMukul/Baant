@@ -4,7 +4,7 @@
 
 | Surface | Status | Role |
 |---|---|---|
-| Web (Next.js) | **Building** | **Mobile first**, installable as a PWA. Tablet and desktop adapt the layout. Payments by UPI button on phones; a QR appears on wider screens as an enhancement |
+| Web (Next.js) | **Built (v0.1, for test deploys)** | **Mobile first**, installable as a PWA. The eight approved phone screens work end to end. Tablet and desktop layouts are not built yet (wider windows show the phone column centred). Payments by UPI link on phones; the QR on the Share screen is for joining |
 | Android (Kotlin, Compose) | On hold | Parked. `docs/design/brand-kit/tokens.kt` and the shared vectors are kept so it can restart quickly |
 | iOS (Swift, SwiftUI) | On hold | Later, if ever |
 
@@ -12,7 +12,7 @@ Earlier today the plan was web for desktop/tablet plus a native Android app. Tha
 
 ## Architecture
 
-> **Today** the web app talks to Supabase directly and uses Next.js Server Actions. The multi-client REST layer below is the **parked** design for when a native app restarts.
+> **Today** the web app uses Next.js Server Actions over a `Store` (in-memory for development, Postgres via `DATABASE_URL` for real: Supabase's connection string or any Postgres). All reads and writes go through the server; the database has row-level security on with no policies, so the anon key reads nothing. Open screens poll `/api/b/{code}/state` every 3 seconds (no Realtime). The multi-client REST layer below is the **parked** design for when a native app restarts.
 
 ```
  Android (Kotlin)          Web (Next.js)           iOS (later)
@@ -21,13 +21,13 @@ Earlier today the plan was web for desktop/tablet plus a native Android app. Tha
                           |
                   Next.js route handlers  ──►  Vision LLM (parse)
                           |
-                 Supabase: Postgres + Realtime  ◄── clients subscribe (read-only anon)
+                 Postgres (Supabase or your own)  ◄── clients poll /state
 ```
 
-- **One backend.** Supabase for data and Realtime; Next.js route handlers for everything that needs a secret.
+- **One backend.** Postgres for data; Next.js route handlers for everything that needs a secret.
 - **Server Actions become REST.** Today `src/app/actions.ts` uses Server Actions, which native apps cannot call. Move the logic into plain functions, expose them as `/api/v1/*` route handlers, and keep the Server Actions as thin wrappers for the web UI.
 - **Auth stays capability-based.** Host token and participant token (already in `bill_secrets` and `participant_secrets`), sent as `Authorization: Bearer`. Android keeps them in DataStore with encryption. No accounts.
-- **Realtime.** Clients subscribe to `claims`, `participants`, `items` filtered by `bill_id`, as the web does. Android uses supabase-kt.
+- **Live updates.** The web polls `GET /api/b/{code}/state` (about 3 seconds, paused when the tab is hidden). A native app would poll the same endpoint, or Realtime/SSE could be added later.
 
 ### API surface (v1)
 
@@ -101,8 +101,8 @@ Installable (manifest and icon exist), a service worker for the app shell, the W
 
 0. **Contract** — shared vectors. *Done, kept for a future native app.*
 1. **Real-device UPI test** — see the risks above. Cheap, and may change the payment design. **Include an iPhone** if any user will be on iOS.
-2. **Design, Step 5** — phone screens, one at a time: home/scan, host fixes the scan, claim board, pay, join, paid/settled, empty and error states. Then one pass to adapt them for tablet and desktop (centred column, optional QR panel).
-3. **Web implementation** — layouts, QR (`qrcode.react`), payment status table, PWA.
+2. **Design, Step 5** — phone screens, one at a time: home/scan, host fixes the scan, claim board, pay, join, paid/settled, settings. *Done and approved (eight screens).* The pass that adapts them for tablet and desktop (centred column, optional QR panel) is **paused** until the phone build has been tested on real phones.
+3. **Web implementation** — *Built:* all eight phone screens, QR (the `qrcode` package), payments table with the I've-paid / confirm flow, screenshot reading, theme toggle, manifest. *Not yet:* service worker, wide layouts. See `docs/DEPLOY.md`.
 4. *(Paused)* API extraction to `/api/v1/*`, Android, iOS. Server Actions stay as they are until a native app restarts.
 
 ## Open decisions

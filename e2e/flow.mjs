@@ -146,6 +146,7 @@ async function join(name, expectWho) {
   eq(await txt(P, '[data-k="who"]'), expectWho, `${name}: who is in`);
   has(await txt(P, ".bcard"), "The Local Diners", `${name}: bill card`);
   has(await txt(P, ".bcard"), "₹3,280.00", `${name}: total`);
+  has(await txt(P, ".bcard"), "8 items · 4 charges", `${name}: printed charges only, not the automatic round-off`);
   await P.fill("input[name=name]", name);
   await P.press("input[name=name]", "Enter");
   await P.waitForSelector(".mh");
@@ -153,6 +154,8 @@ async function join(name, expectWho) {
   return f;
 }
 const diya = await join("Diya", "You’re the first one in.");
+eq(await txt(diya.page, '[data-k="amtv"]'), "0.00", "a fresh share is ₹0.00, not a slice of the tax");
+eq(await diya.page.locator(".dock .chip").count(), 0, "no 'provisional' chip on an empty share");
 await shot(diya.page, "04-board-new");
 await noOverflow(diya.page, "board");
 const kabir = await join("Kabir", "Diya is in.");
@@ -246,6 +249,8 @@ near(shares.D, 73313, "Diya's share (design ₹733.13)");
 near(shares.K, 83907, "Kabir's share (design ₹839.07)");
 near(shares.H, 70771, "Aarav's share (design ₹707.71)");
 eq(shares.M + shares.D + shares.K + shares.H, 328000, "the four shares add up to the printed total, to the paisa");
+eq(await M.evaluate(() => getComputedStyle(document.querySelector(".dock a.btn")).textDecorationLine), "none", "the pay button is not underlined");
+check((await M.locator(".amtrow .amt").boundingBox()).height < 44, "the amount stays on one line");
 has(await txt(M, ".dock .btn"), `Pay Aarav · ₹${(shares.M / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}`, "Pay shows the exact amount");
 has(await txt(M, 'button.it:has-text("Assorted Satay") .sub'), "Split 3 ways", "shared item says how many ways");
 await shot(M, "08-board-final");

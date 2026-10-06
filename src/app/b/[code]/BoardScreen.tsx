@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { claimAction, claimLeftoversAction, lockClaimsAction } from "@/app/actions";
 import { formatINR, formatNum } from "@/lib/money";
 import { splitFromParts } from "@/lib/view";
@@ -22,7 +21,6 @@ const TILE: Record<Category, string> = { drink: "t1", salad: "t2", starter: "t3"
 const AVC = ["f1", "f2", "f3"];
 
 export default function BoardScreen({ code, initial, origin }: { code: string; initial: BillView; origin: string }) {
-  const router = useRouter();
   const { view, refresh, offline } = useLive(code, initial);
   const [toast, say] = useToast();
   const me = view.me!;

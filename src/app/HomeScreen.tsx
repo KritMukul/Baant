@@ -9,7 +9,6 @@ import { prepareImage } from "@/ui/image";
 import { loadProfile, saveProfile } from "@/ui/profile";
 import { firstName } from "@/lib/names";
 import { isValidVpa } from "@/lib/upi";
-import { useToast } from "@/ui/hooks";
 
 interface Photo {
   blob: Blob;
@@ -29,7 +28,6 @@ const size = (b: number) => (b >= 1024 * 1024 ? `${(b / 1024 / 1024).toFixed(1)}
 
 export default function HomeScreen() {
   const router = useRouter();
-  const [toast, say] = useToast();
   const [photo, setPhoto] = useState<Photo | null>(null);
   const [name, setName] = useState("");
   const [vpa, setVpa] = useState("");
@@ -253,7 +251,6 @@ export default function HomeScreen() {
           </>
         )}
       </div>
-      {toast}
     </div>
   );
 }

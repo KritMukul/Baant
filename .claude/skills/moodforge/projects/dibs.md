@@ -1,7 +1,7 @@
 # Dibs · Design State
 
 **Last updated:** 2026-10-06
-**Current phase:** Step 5 phone screens 1-8 all approved (decisions 13-20). User paused the tablet/desktop adaptation ("dont build the widescreens yet") and asked for the real Next.js app to be built so they can run it and deploy it on their own server for testing. Implementation of the approved phone design is under way (see docs/ and the repo). Widescreen adaptation and the Step 6 handoff resume later. Phone first; see locked decisions 13-17
+**Current phase:** Step 5 phone screens 1-8 all approved (decisions 13-20). The user paused the tablet/desktop adaptation ("dont build the widescreens yet") and asked for the real Next.js app so they can run and deploy it on their own server. **The app is built** (Round 6 below): all eight phone screens, Postgres or in-memory storage, deploy kit. Next: the user deploys and tests on real phones and real UPI apps; then widescreen adaptation, then the Step 6 handoff. Phone first; see locked decisions 13-17
 **Status:** in_progress
 
 ---
@@ -217,6 +217,19 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 **Checks:** 12 phones, theme switching by click and arrow keys in both rows, System resolution per row, dirty/Save/Saved labels, blur-only errors, 8 invalid and 4 valid UPI IDs, normalisation on save, Enter saves, first-time save, invalid save refused with focus on the field, disclosure open/close, forget dialog (focus start, Tab trap, Escape, Keep, backdrop, Forget, focus return, inert background), guest, visibility + negative + geometry (touch targets at least 44px, nothing outside phone width) in both themes, reduced motion, no JS errors, no overflow at 400px. Not tested on a real phone.
 **User reaction:** "approved, build the next screen" (all three proposed decisions accepted: appearance cards with System default, remembered host on the phone only, Settings stays small)
 **Outcome:** approved
+
+---
+
+### Round 6 — 2026-10-06 (implementation, not a design round)
+
+**What was built:** the eight approved phone screens as a real Next.js app (`src/app/`), with the mocks' CSS ported mechanically and scoped per screen (`src/app/dibs.css`), so spacing, type and colour are the approved values. Storage behind a `Store` interface: in-memory (dev, tests) and Postgres via `DATABASE_URL` (Supabase's connection string or Docker Postgres). Rules in `src/server/service.ts`. Polling every 3 seconds instead of Realtime. Deploy kit: Dockerfile, compose (app + Postgres + Caddy), `docs/DEPLOY.md`.
+**Deviations from the approved mocks (all small, all noted for review):** (1) the theme icon in app bars became a Settings gear (Settings holds the toggle, as approved in decision 20); (2) host app bar on the board has Share and "Who has paid" icons to reach the Share and Settle screens, which the mocks did not connect; (3) host box on the board has a "Fix a mistake on the bill" link (the Share screen's note points there); (4) no "place" line on the bill card (the scan does not produce one); (5) "Close the bill" is gone: a bill settles by itself when every friend is confirmed; (6) a bill's Round-off row is hidden from the charge list and counts; (7) the board shows "Waiting to sync" and queues taps when offline, as designed, but the offline path was tested only by reasoning, not on a phone.
+**Bugs found by testing the built app (and fixed):** shares for people who had claimed nothing showed a slice of tax and service (engine fix + new shared vector "nothing claimed yet"); my optimistic merge listed the current user twice on shared items; a fallback timer could pull someone back from the proof screen; the Join card counted the automatic round-off as a printed charge; "All 1 friends confirmed"; the waiting screen said "amount matched" for a short screenshot; the pay button was underlined; a large amount wrapped its rupee sign; small chip text missed WCAG AA in the light theme (4.2 and 3.6:1), fixed with chip tokens.
+**Known and accepted:** white label on the coral button is 2.81:1 in the light theme (the owner chose white on coral); every other screen passes an automated WCAG 2.1 AA scan in both themes.
+**Checks:** 103 unit/contract tests (same storage contract on memory and a real Postgres 16); three end-to-end scripts on phone-sized browsers (full flow with host + 3 friends, a short payment, accessibility) pass on both stores; the production standalone server runs against Postgres.
+**Not verified:** a real Supabase project; `docker compose` (no Docker available); real phones; real UPI apps (the biggest open risk); the vision models on new bills and screenshots; HTTPS-only features on a real certificate.
+**User reaction:** pending (they will deploy and test)
+**Outcome:** pending
 
 ---
 

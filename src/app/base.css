@@ -74,3 +74,17 @@ a { color: inherit; }
 .page a.btn, .page a.link { text-decoration: none; }
 .s-claim .amtrow .amt { white-space: nowrap; flex-shrink: 0; }
 .s-claim .amtrow > div:first-child { min-width: 0; }
+
+/* Small status chips: the brand colours are too light for 11px text on their tinted backgrounds in the light theme
+   (3.6 to 4.2:1). These tokens darken the text there to 4.7:1 or better; the dark theme keeps the brand colours. */
+:root { --chip-ok: #0c6c5d; --chip-hot: #a52f16; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --chip-ok: var(--color-success); --chip-hot: var(--color-accent-text); --chip-quiet: #d0d0e3; }
+}
+:root[data-theme="dark"] { --chip-ok: var(--color-success); --chip-hot: var(--color-accent-text); --chip-quiet: #d0d0e3; }
+:root { --chip-quiet: var(--color-text-muted); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --chip-quiet: #d0d0e3; } }
+:root[data-theme="dark"] { --chip-quiet: #d0d0e3; }
+.page.s-claim .chip.prov, .page.s-b .chip.wait, .page.s-b .chip.sa { color: var(--chip-hot); }
+.page.s-claim .chip.fin, .page.s-b .chip.fin, .page.s-b .chip.co, .page.s-b .pill2.ok { color: var(--chip-ok); }
+.page.s-b .chip.un { color: var(--chip-quiet); }

@@ -45,7 +45,8 @@ export function readPaymentScreenshot(base64: string, mediaType: string, hint?: 
     prompt: PROMPT,
     schema: SHOT_JSON_SCHEMA,
     parse: (j) => shotSchema.parse(j),
-    stub: () => ({ amount: hint?.amount ?? null, payee: hint?.vpa ?? null, status: "success", paidAt: null, utr: "408129375518" }),
+    // DIBS_STUB_SHOT_AMOUNT (paise) lets the end-to-end test pretend a friend paid only part of it
+    stub: () => ({ amount: process.env.DIBS_STUB_SHOT_AMOUNT ? Number(process.env.DIBS_STUB_SHOT_AMOUNT) : (hint?.amount ?? null), payee: hint?.vpa ?? null, status: "success", paidAt: "8:57 pm", utr: "408129375518" }),
   };
   return visionJson(task, { base64, mediaType });
 }

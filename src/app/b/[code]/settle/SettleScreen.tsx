@@ -121,8 +121,8 @@ export default function SettleScreen({ code, initial, origin }: { code: string; 
               <h1>Everyone&rsquo;s settled. 🎉</h1>
               <p>
                 {waived > 0
-                  ? `All ${owing.length} friends confirmed. You received ${formatINR(done)}, which is ${formatINR(waived)} less than owed.`
-                  : `All ${owing.length} friends confirmed ${formatINR(L.owedTotal)} for ${view.merchant}.`}
+                  ? `All ${owing.length} ${owing.length === 1 ? "friend" : "friends"} confirmed. You received ${formatINR(done)}, which is ${formatINR(waived)} less than owed.`
+                  : `All ${owing.length} ${owing.length === 1 ? "friend" : "friends"} confirmed ${formatINR(L.owedTotal)} for ${view.merchant}.`}
               </p>
             </div>
           ) : (
