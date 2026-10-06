@@ -1,13 +1,13 @@
 /**
  * Run the real vision parser over photos in fixtures/bills (or a dir passed as argv[2]).
- * Usage: ANTHROPIC_API_KEY=... npx tsx scripts/parse-bills.ts [dir]
+ * Usage: ANTHROPIC_API_KEY=... npx tsx scripts/parse-bills.mts [dir]
  * Optional ground truth: <name>.expected.json = { "total": 1234.5, "itemCount": 7 }
  */
 import { readdirSync, readFileSync, existsSync } from "node:fs";
 import path from "node:path";
-import { parseBillImage } from "../src/lib/parseBill";
-import { validateBill } from "../src/lib/bill";
-import { toPaise, formatINR } from "../src/lib/money";
+import { parseBillImage } from "../src/lib/parseBill.ts";
+import { validateBill } from "../src/lib/bill.ts";
+import { toPaise, formatINR } from "../src/lib/money.ts";
 
 const dir = process.argv[2] ?? "fixtures/bills";
 const MIME: Record<string, string> = { ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".webp": "image/webp" };

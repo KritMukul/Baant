@@ -31,3 +31,6 @@ Writes sirf server actions se (service role). Host cookie `host_<code>` + `bill_
 
 ## Baaki
 Trip/group (multiple bills) UI + `simplifyDebts`, Supabase Auth for host, PWA service worker/offline, per-item qty split, rate limit on `/createBill`.
+
+## Parse test
+`npm run parse-bills [dir]` (default `fixtures/bills`). Cloud sandbox mein proxy ke saath: `NODE_USE_ENV_PROXY=1 NODE_EXTRA_CA_CERTS=/root/.ccr/ca-bundle.crt npm run parse-bills`.

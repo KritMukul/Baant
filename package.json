@@ -8,7 +8,7 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "parse-bills": "tsx scripts/parse-bills.ts"
+    "parse-bills": "tsx scripts/parse-bills.mts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",
