@@ -1,7 +1,7 @@
 # Dibs · Design State
 
 **Last updated:** 2026-10-06
-**Current phase:** Step 5 — All Screens (phone first; see locked decisions 13 and 14)
+**Current phase:** Step 5 — All Screens, screen 1 (Home) awaiting approval (phone first; see locked decisions 13 and 14)
 **Status:** in_progress
 
 ---
@@ -114,6 +114,17 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 **User reaction:** "all this is fine"
 **Outcome:** APPROVED. Scope then changed (locked decision 12).
 
+### Round 5.1 — 2026-10-06
+
+**Step:** 5 (screen 1: Home / scan, phone, light + dark)
+**Planned screen order:** 1 Home/scan, 2 Claim board, 3 Pay, 4 Host fixes the scan, 5 Share (link + QR), 6 Join (guest), 7 Settled, 8 Settings (theme toggle, remembered host). Tablet and desktop adaptation after the phone set.
+**Concept:** five live states per theme (empty, ready/returning, field errors, scanning, couldn't read it). One action per state; disabled CTA explains itself; UPI validated live, error after blur; scanning is steps + skeleton rows matching the claim board; error is a row with tips.
+**File:** `.superpowers/brainstorm/s1/content/round5-home.html`
+**Checks:** 10 phones exercised headlessly (photo, typing, validation, scan success + toast, cancel, retake, in-app theme toggle, reduced motion); no JS errors; no overflow at 400px. Fixed on the way: classList.toggle with undefined force flipped error styles on untouched fields. Not tested on a real phone.
+**Open decisions (asked):** remember host on device (recommended yes); no How-it-works strip; gallery upload stays.
+**User reaction:** pending
+**Outcome:** pending
+
 ---
 
 ## Permanent artifacts
@@ -124,5 +135,6 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 .superpowers/brainstorm/s1/content/round2b-light-accent.html
 .superpowers/brainstorm/s1/content/round2c-coral-white.html
 .superpowers/brainstorm/s1/content/round4-animations.html
+.superpowers/brainstorm/s1/content/round5-home.html
 docs/design/brand-kit/  (index.html, tokens.css, tokens.ts, tokens.json, README.md, assets/)
 ```
