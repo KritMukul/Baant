@@ -1,7 +1,7 @@
 # Dibs · Design State
 
 **Last updated:** 2026-10-06
-**Current phase:** Step 5 — All Screens, screen 7 (Join, guest) awaiting approval. Screens 1-6 approved (Settle + corrected Pay approved together; Check the scan approved with decision 17; Share approved with decision 18). Phone first; see locked decisions 13-17
+**Current phase:** Step 5 — All Screens, screen 8 (Settings) awaiting approval; it is the last phone screen. Screens 1-7 approved (Settle + corrected Pay approved together; Check the scan approved with decision 17; Share with 18; Join with 19). After approval: tablet and desktop adaptation, then Step 6 handoff. Phone first; see locked decisions 13-17
 **Status:** in_progress
 
 ---
@@ -196,10 +196,25 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 **Step:** 5 (screen 7: Join, guest first open of the link, phone, light + dark)
 **Concept:** what a friend sees the first time they tap the WhatsApp link. "Aarav invited you" / "Pick what you had." / one sentence of what happens next; a bill card (merchant, total, item and charge counts, host, who is already in); one field (first name); primary "Join and pick items" with "No sign-up. Your name is only used on this bill." States: (1) first open, (2) name entered, (3) name already on the bill ("mukul" matches Mukul: "Is that you?" -> That's me / Use another name), (4) name missing, (5) joining, (6) link does not work, (7) bill already settled. Name rules: trim + collapse spaces, case-insensitive match, 24 characters, host's first or full name cannot be used (no takeover), empty = one sentence next to the field; typing clears the error; Enter submits except while a takeover question is open. Input is built for phones: `autocomplete=given-name`, `autocapitalize=words`, `enterkeyhint=go`, `maxlength=24`, label tied to input, `aria-describedby` helper, `aria-invalid` on errors, 50px tall. Guests see only a summary before joining; the item list appears after. Returning guests (cookie) skip this screen. No theme toggle here (follows the phone); toggle lives in Settings and the board's menu.
 **File:** `.superpowers/brainstorm/s1/content/round5-join.html`
-**Proposed decisions (19, pending approval):** (a) Name only, no accounts; returning guests skip the screen. (b) "That's me" takes over an existing name (needed after switching browsers; payments are still confirmed by the host in the bank app); the host's name is blocked. Alternative: always create "Mukul 2". (c) No theme toggle on this screen.
+**Decision 19 (approved):** (a) Name only, no accounts; returning guests skip the screen. (b) "That's me" takes over an existing name (needed after switching browsers; payments are still confirmed by the host in the bank app); the host's name is blocked. Alternative: always create "Mukul 2". (c) No theme toggle on this screen.
 **Build requirements noted:** use `interactive-widget=resizes-content` (or visualViewport) so the Join button stays above the on-screen keyboard; server must treat names case-insensitively and trim/collapse whitespace; takeover must replace the participant secret; closed-link states must be distinct for not-found and settled.
 **Bugs found and fixed in this round:** none surfaced by the tests, so I proved the assertions can fail with four deliberate breaks: host name allowed (4 failures), case-sensitive matching (3), `autocomplete` removed (2), `maxlength` removed (3). All caught, then restored. Visual: avatar stack overlap eased (-8px to -5px) after the screenshot showed the first initial half hidden.
 **Checks:** 14 phones, validation flows (empty submit with focus move, typing clears the error, Enter submits, click submits, takeover with canonical casing, whitespace and caps match, Use another name focuses and selects, host first and full name blocked, spaces only, 24 character cap, Enter ignored while the takeover question is open, own-bill link does not navigate), `whoText` unit cases 0 to 5, visibility + negative + geometry (no content outside phone width, touch targets at least 44px, dock clear of body) in both themes, reduced motion, no JS errors, no overflow at 400px. Not tested on a real phone or with a real on-screen keyboard.
+**User reaction:** "approved, build the next screen" (all three proposed decisions accepted: name-only join with returning guests skipping the screen, "That's me" takeover with host name blocked, no theme toggle on Join)
+**Outcome:** approved
+
+---
+
+### Round 5.8 — 2026-10-06
+
+**Step:** 5 (screen 8: Settings, phone, light + dark; last phone screen)
+**Concept:** two things to set and nothing else. (1) Appearance: three picture cards (Light, Dark, System), System by default, applied at once and remembered on the phone, read before first paint in the build so there is no flash. A line under the cards says what System currently is ("System follows your phone. It is Light right now.") because choosing System changes nothing visible. Arrow keys move through the radio group, focus follows selection. (2) Remembered host: name + UPI ID stored on this phone only, prefilled by Home. Same labels, `name@bank` regex and messages as Home; errors appear after blur or Save, never while typing, and clear when fixed; Save reads "Saved" (disabled) when clean, "Save changes" when dirty, "Save details" first time; UPI ID is trimmed and lowercased on save. "Forget me on this phone" opens a dialog (safe choice "Keep them" is the filled button and gets focus; Escape, backdrop and Tab trap work; background is inert; focus returns to the link). About: "How payments work" (disclosure: Dibs never holds money, host confirms each payment in the bank app), "Privacy and terms" (pages do not exist yet, needed before public launch), Version 0.1.0 from package.json. Guests get Appearance + About only. Left out on purpose: notifications, language, currency, account.
+**States (light row = phone set to light; dark row = phone set to dark):** 1 saved + following the phone, 2 the other theme picked (screen flips at once), 3 first time (nothing saved, no Forget), 4 UPI ID does not look right, 5 Forget dialog, 6 guest.
+**File:** `.superpowers/brainstorm/s1/content/round5-settings.html`
+**Proposed decisions (20, pending approval):** (a) Appearance = Light, Dark, System as picture cards, System default, applied at once, remembered on the phone. (b) Remembered host = name + UPI ID on this phone only (no account); the UPI ID reaches the server only when a bill is shared; Forget clears the phone and leaves shared bills alone. (c) Settings stays this small; privacy and terms pages must be written before a public launch.
+**Build requirements noted:** inline script in `<head>` sets `data-theme` from localStorage before paint; `System` listens to `prefers-color-scheme` changes live; the board's menu opens the guest variant; Home must read the same saved profile; format check only (the account cannot be verified).
+**Bugs found and fixed in this round:** none in the product mock; two test-harness issues (a `.sect2` count assumption and `elementFromPoint` needing the dialog scrolled into view). Proved the assertions can fail with four deliberate breaks: regex allowing spaces (UPI table fails), Escape handler removed (3 failures), theme not applied (4), Forget not clearing inputs (3). All caught, then restored. `.link` carries a -14px block margin from an earlier screen, so Forget uses its own `.fgt` class with margin 0 inside the body.
+**Checks:** 12 phones, theme switching by click and arrow keys in both rows, System resolution per row, dirty/Save/Saved labels, blur-only errors, 8 invalid and 4 valid UPI IDs, normalisation on save, Enter saves, first-time save, invalid save refused with focus on the field, disclosure open/close, forget dialog (focus start, Tab trap, Escape, Keep, backdrop, Forget, focus return, inert background), guest, visibility + negative + geometry (touch targets at least 44px, nothing outside phone width) in both themes, reduced motion, no JS errors, no overflow at 400px. Not tested on a real phone.
 **User reaction:** pending
 **Outcome:** pending
 
@@ -220,6 +235,7 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 .superpowers/brainstorm/s1/content/round5-scan.html
 .superpowers/brainstorm/s1/content/round5-share.html
 .superpowers/brainstorm/s1/content/round5-join.html
+.superpowers/brainstorm/s1/content/round5-settings.html
 docs/spec/examples/local-diners.json
 docs/design/brand-kit/  (index.html, tokens.css, tokens.ts, tokens.json, README.md, assets/)
 ```
