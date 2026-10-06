@@ -3,7 +3,7 @@
 Call dibs on what you ate. Photograph the bill, share a link, everyone taps their items, everyone pays by UPI.
 
 ## Platforms
-One responsive Next.js app for phone, tablet and desktop (installable as a PWA). Phones pay with a UPI button; tablets and desktops show a UPI QR for a friend to scan. Native Android and iOS are on hold. See `docs/PLATFORMS.md`.
+One Next.js app, **primarily mobile-focused** (PWA). Tablet and desktop adapt the same screens and add an optional UPI QR for a friend to scan. Native Android and iOS are on hold. See `docs/PLATFORMS.md`.
 
 ## Flow
 1. The host uploads a photo and enters their name and UPI ID. A vision model parses the bill into structured JSON.

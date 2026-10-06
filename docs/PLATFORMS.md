@@ -1,14 +1,14 @@
 # Dibs · Platforms
 
-**Current scope (updated 2026-10-06): one responsive Next.js web app, for phone, tablet and desktop.** Native apps are on hold.
+**Current scope (updated 2026-10-06): one Next.js web app, primarily mobile-focused.** Phone is the design target. Tablet and desktop adapt the same screens; they are not separate products. Native apps are on hold.
 
 | Surface | Status | Role |
 |---|---|---|
-| Web (Next.js) | **Building** | Phone, tablet and desktop in one responsive app, installable as a PWA. Payments by UPI button on phones, **QR on tablet and desktop** |
+| Web (Next.js) | **Building** | **Mobile first**, installable as a PWA. Tablet and desktop adapt the layout. Payments by UPI button on phones; a QR appears on wider screens as an enhancement |
 | Android (Kotlin, Compose) | On hold | Parked. `docs/design/brand-kit/tokens.kt` and the shared vectors are kept so it can restart quickly |
 | iOS (Swift, SwiftUI) | On hold | Later, if ever |
 
-Earlier today the plan was web for desktop/tablet plus a native Android app. That was changed the same day: the web app now also covers phones, so the "phone web is only a fallback" rule no longer applies. Phone is a first-class layout again.
+Earlier today the plan was web for desktop/tablet plus a native Android app. That was changed the same day: the web app now also covers phones, so the "phone web is only a fallback" rule no longer applies. Phone is the primary layout.
 
 ## Architecture
 
@@ -64,13 +64,15 @@ UPI apps apply their own risk checks. A link or QR to a **personal VPA with a pr
 
 ## Layouts
 
+**Design and test on a phone first.** Every screen is drawn at about 390px wide. Wider screens reuse the same components and add only what space allows.
+
 | Width | Layout | Pay |
 |---|---|---|
-| < 768px (phone) | Single column. Claim board, then a bottom pay sheet | **UPI button** (opens the user's UPI app). A QR is not shown: a phone cannot scan its own screen |
-| 768–1199px (tablet) | Two panes: claim board left, Pay panel right (a side sheet below 900px) | **QR** for a friend to scan, plus the UPI button if the tablet has UPI apps |
-| ≥ 1200px (desktop) | Two panes: bill and claim board left, **Pay panel** right with a person picker and a large QR. Join QR in the header | **QR** |
+| < 768px (phone) | Single column. Claim board, then a bottom pay sheet. **This is the product.** | **UPI button** (opens the user's UPI app). No QR: a phone cannot scan its own screen |
+| 768–1199px (tablet) | Same single column, centred at a comfortable width (about 560px), or two panes when landscape and wide enough | UPI button, plus an optional **Show QR** for a friend to scan |
+| ≥ 1200px (desktop) | Centred column with the Pay panel beside it; join QR in the header | **QR** (a desktop has no UPI app) |
 
-All of it uses one token set (`tokens.css`). Light and dark both ship; the toggle is Light · Dark · System.
+Rules: no feature exists only on large screens, touch targets stay 44px and up everywhere, and the large-screen QR is a convenience layered on top of the phone flow. All of it uses one token set (`tokens.css`); light and dark both ship, with a Light · Dark · System toggle.
 
 ## PWA (matters more now that phones use the web app)
 
@@ -80,11 +82,11 @@ Installable (manifest and icon exist), a service worker for the app shell, the W
 
 0. **Contract** — shared vectors. *Done, kept for a future native app.*
 1. **Real-device UPI test** — see the risks above. Cheap, and may change the payment design. **Include an iPhone** if any user will be on iOS.
-2. **Design, Step 5** — responsive screens, one at a time: home/scan, host fixes the scan, claim board, pay (button and QR variants), join, paid/settled, empty and error states. Phone first, then tablet and desktop.
+2. **Design, Step 5** — phone screens, one at a time: home/scan, host fixes the scan, claim board, pay, join, paid/settled, empty and error states. Then one pass to adapt them for tablet and desktop (centred column, optional QR panel).
 3. **Web implementation** — layouts, QR (`qrcode.react`), payment status table, PWA.
 4. *(Paused)* API extraction to `/api/v1/*`, Android, iOS. Server Actions stay as they are until a native app restarts.
 
 ## Open decisions
 
 - Production domain (needed for share links and the PWA).
-- Whether the QR panel appears on tablets by default or only after tapping "Show QR".
+- Whether the QR panel appears on tablets by default or only after tapping "Show QR" (current plan: only after tapping).
