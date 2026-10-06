@@ -3,7 +3,7 @@
 Call dibs on what you ate. Photograph the bill, share a link, everyone taps their items, everyone pays by UPI.
 
 ## Platforms
-Desktop and tablet web (this Next.js app, payments by QR), then a native Android app in Kotlin, then iOS in Swift if there is time. The web app stays usable on phones as the no-signup fallback. See `docs/PLATFORMS.md`.
+One responsive Next.js app for phone, tablet and desktop (installable as a PWA). Phones pay with a UPI button; tablets and desktops show a UPI QR for a friend to scan. Native Android and iOS are on hold. See `docs/PLATFORMS.md`.
 
 ## Flow
 1. The host uploads a photo and enters their name and UPI ID. A vision model parses the bill into structured JSON.
@@ -20,8 +20,8 @@ Desktop and tablet web (this Next.js app, payments by QR), then a native Android
 - `src/lib/parseBill.ts` – vision parsing (Claude, OpenAI or Gemini)
 - `src/app/actions.ts` – server actions (create, join, claim, host edit)
 - `supabase/schema.sql` – tables, RLS, realtime publication
-- `docs/design/brand-kit/` – design tokens (CSS, TS, JSON, Kotlin), logo, brand book
-- `docs/spec/vectors.json` – shared test vectors the Kotlin and Swift ports must match (`scripts/gen-vectors.mts`)
+- `docs/design/brand-kit/` – design tokens (CSS, TS, JSON; Kotlin parked), logo, brand book
+- `docs/spec/vectors.json` – shared test vectors for any future native port (`scripts/gen-vectors.mts`)
 - `docs/PLATFORMS.md` – platform plan, API, QR payments, build order
 
 ## Setup

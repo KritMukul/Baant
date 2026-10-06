@@ -1,7 +1,7 @@
 # Dibs · Design State
 
 **Last updated:** 2026-10-06
-**Current phase:** Step 5 — All Screens (scope changed; see locked decision 12)
+**Current phase:** Step 5 — All Screens (web only; see locked decision 13)
 **Status:** in_progress
 
 ---
@@ -21,7 +21,8 @@
 7. Light accent: Coral #ff6b4a with WHITE label on the primary button (round 2c, "lets go with coral only"). Known AA exception (2.82:1); mitigated by accentEdge #d9431a outline. Do not silently change; offer #e02900 or dark label as the AA fix if asked.
 8. Light ground #f5f4fb, surface #ffffff, accentText #c2371a.
 9. Language: English only. No Hinglish anywhere in the product copy, brand kit or app (user, round 3: "we will not include hinglish only english").
-12. **Platforms (2026-10-06, user: "all this is fine so I am changing the scope a little"):** Next.js web for desktops and tablets, with payments by QR scanned from a phone; native Android app in Kotlin first; iOS in Swift later if there is time. Phone web stays as the no-signup fallback. Step 4 (motion) approved as shown. Step 5 splits into 5a desktop and tablet screens (host console with QR pay panel, join QR, claim board, edit scan) and 5b Android screens. Details: `docs/PLATFORMS.md`.
+13. **Scope narrowed (2026-10-06, later the same day; user: "hold off the android app and next app hi rakhte hai for now, mobile me bhi vhi rakh lenge"):** ONE responsive Next.js app for phone, tablet and desktop. Android and iOS are on hold (tokens.kt and shared vectors kept, parked). Phone web is first-class again, installable as a PWA. Pay: UPI button on phones, QR on tablet and desktop. Step 5 is one responsive set of screens, phone first. Supersedes the platform split in decision 12.
+12. **Platforms (superseded by 13) (2026-10-06, user: "all this is fine so I am changing the scope a little"):** Next.js web for desktops and tablets, with payments by QR scanned from a phone; native Android app in Kotlin first; iOS in Swift later if there is time. Phone web stays as the no-signup fallback. Step 4 (motion) approved as shown. Step 5 splits into 5a desktop and tablet screens (host console with QR pay panel, join QR, claim board, edit scan) and 5b Android screens. Details: `docs/PLATFORMS.md`.
 11. **Logo: mark C** (round 4 of logo exploration, user: "I Like C the most"): a D built from a torn receipt (ink) and half a plate (accent). In the lockup the mark is the capital D, then "ibs" in Sora Bold. Rejected logo directions, never re-propose: three-slice pie, pulled slice, D half-plate with dot, speech bubble, claimed receipt, raised hand, reserved tag, flag in plate, bitten coin, plate-d (d + knife), split D. The "claim dot" (coral dot with soft rings) stays as a brand device for the "you" moment, not a logo.
 10. **Name: Dibs** (renamed from Dibs, round 3). Tagline: "Call dibs. Split the bill." Claim copy: "Call dibs", "You have dibs", "Up for grabs". Rejected names, never re-propose: Quits, Fairplate, Clink, Evenly, Halfsies, TapSplit, SnapSplit, BillSplit, Forkout, GoDutch, Pieceful, WhoAte, Platemates, Checkmates, Bitewise, Billmates, Yourbite, Plink, Halfplate, Bagsy, Chopchop, Carve (not chosen; user picked Dibs).
 

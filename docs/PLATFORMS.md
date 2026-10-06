@@ -1,16 +1,18 @@
 # Dibs · Platforms
 
-**Decision, 2026-10-06.** Dibs ships on three surfaces, in this order:
+**Current scope (updated 2026-10-06): one responsive Next.js web app, for phone, tablet and desktop.** Native apps are on hold.
 
-| Surface | Stack | Role |
+| Surface | Status | Role |
 |---|---|---|
-| Web | Next.js (existing) | Desktop and tablet. Host console, claim board, **payments by QR** scanned with a phone |
-| Android | Kotlin, Jetpack Compose | Phone app, built first. Native UPI intent, App Links to open shared bills |
-| iOS | Swift, SwiftUI | Later, if there is time |
+| Web (Next.js) | **Building** | Phone, tablet and desktop in one responsive app, installable as a PWA. Payments by UPI button on phones, **QR on tablet and desktop** |
+| Android (Kotlin, Compose) | On hold | Parked. `docs/design/brand-kit/tokens.kt` and the shared vectors are kept so it can restart quickly |
+| iOS (Swift, SwiftUI) | On hold | Later, if ever |
 
-**One rule that follows from this:** the web app must still work on a phone. A guest taps a link with no signup, and on iOS (until the Swift app exists) and on Android without the app installed, that link opens the web claim page. The desktop and tablet layouts are where design effort goes; the phone layout stays as the fallback.
+Earlier today the plan was web for desktop/tablet plus a native Android app. That was changed the same day: the web app now also covers phones, so the "phone web is only a fallback" rule no longer applies. Phone is a first-class layout again.
 
 ## Architecture
+
+> **Today** the web app talks to Supabase directly and uses Next.js Server Actions. The multi-client REST layer below is the **parked** design for when a native app restarts.
 
 ```
  Android (Kotlin)          Web (Next.js)           iOS (later)
@@ -41,7 +43,7 @@
 
 Server stays the authority for parsing and validation. Clients compute shares locally from the same inputs.
 
-## Logic parity (Kotlin and Swift must match TypeScript)
+## Logic parity (parked: for a future Kotlin or Swift port)
 
 The money logic is small and exact: `allocate`, `splitBill`, `simplifyDebts`, `balancesFromBills`, `upiLink`, `validateBill`. It lives in `src/lib/` (TypeScript). Ports are checked against **`docs/spec/vectors.json`**, generated from the TypeScript by `scripts/gen-vectors.mts`; `src/lib/vectors.test.ts` keeps TypeScript honest. A Kotlin port is done when a unit test reading the same JSON passes unchanged. Money is always integer paise.
 
@@ -52,38 +54,37 @@ The money logic is small and exact: `allocate`, `splitBill`, `simplifyDebts`, `b
 Payments are UPI deep links and QR codes. No gateway, no fees, and **no confirmation**: Dibs cannot see whether a transfer happened.
 
 - **Pay by QR (web, desktop and tablet).** The host console shows, per person, a large QR that encodes the same `upi://pay?pa=…&pn=…&am=…&cu=INR&tn=…` string as the phone button. The friend scans it with their phone's UPI app or camera. It cannot be scanned by the same device it is shown on, so on a phone the web page shows the button, not a QR.
-- **Join by QR.** The console header shows a QR of `/b/{code}`. A friend scans it: Android opens the app via an App Link if installed, otherwise the web claim page.
-- **Android.** `ACTION_VIEW` on the `upi://` URI opens the system UPI chooser. Some apps return a status; treat it as a hint, never as proof.
+- **Join by QR.** The console header shows a QR of `/b/{code}`. A friend scans it with the camera and lands on the web claim page.
+- **Phone web.** The UPI button is a plain `upi://pay?...` link. On Android it opens the system chooser. On iOS it may or may not (see risks).
 - **Paid state.** Add a `payments` table (`participant_id`, `status`, `paid_at`). The friend taps "I've paid", the host confirms with "Mark paid" after checking their bank app.
 
 ### Biggest product risk: verify on real devices before building more
 
-UPI apps apply their own risk checks. A link or QR to a **personal VPA with a preset amount** may be declined, capped, or shown with a warning by some apps or banks, and behaviour differs between GPay, PhonePe, Paytm, BHIM and by bank. I have not tested this and cannot from here. Do a quick test with small real amounts (₹1 to ₹10 and one near ₹1,000) through each app, via both the intent link on a phone and a QR from a second screen, before investing in the payment screens.
+UPI apps apply their own risk checks. A link or QR to a **personal VPA with a preset amount** may be declined, capped, or shown with a warning by some apps or banks, and behaviour differs between GPay, PhonePe, Paytm, BHIM and by bank. I have not tested this and cannot from here. On **iPhone**, a plain `upi://` link in Safari is less reliable than on Android: it depends on which UPI apps are installed and how they register their schemes. That matters more now that the phone experience is the web app. Do a quick test with small real amounts (₹1 to ₹10 and one near ₹1,000) through each app, via both the intent link on a phone and a QR from a second screen, before investing in the payment screens.
 
 ## Layouts
 
-| Width | Where | Layout |
+| Width | Layout | Pay |
 |---|---|---|
-| ≥ 1200px | Desktop web | Two panes. Left: bill and claim board. Right: **Pay** panel with a person picker and a large QR, plus the join QR in the header |
-| 768–1199px | Tablet web | Same two panes, narrower; the Pay panel collapses to a side sheet below 900px |
-| < 768px | Phone web (fallback) | Single column, as designed in Step 2 |
-| Phone | Android (and iOS later) | Native, single column; the pay sheet is a bottom sheet with the UPI button |
+| < 768px (phone) | Single column. Claim board, then a bottom pay sheet | **UPI button** (opens the user's UPI app). A QR is not shown: a phone cannot scan its own screen |
+| 768–1199px (tablet) | Two panes: claim board left, Pay panel right (a side sheet below 900px) | **QR** for a friend to scan, plus the UPI button if the tablet has UPI apps |
+| ≥ 1200px (desktop) | Two panes: bill and claim board left, **Pay panel** right with a person picker and a large QR. Join QR in the header | **QR** |
 
-All of it uses one token set. The web reads `tokens.css`, Android reads `tokens.kt` (generated from the same source as the CSS, TS and JSON). Light and dark both ship; the app toggle is Light · Dark · System.
+All of it uses one token set (`tokens.css`). Light and dark both ship; the toggle is Light · Dark · System.
 
-## Build order
+## PWA (matters more now that phones use the web app)
 
-0. **Contract** — shared vectors. *Done.*
-1. **API extraction** — plain functions, `/api/v1/*`, token auth, tests. Unblocks everything else.
-2. **Real-device UPI test** — see the risk above. Cheap, and may change the payment design.
-3. **Design, Step 5a** — desktop and tablet screens (host console with QR pay panel, join QR, claim board, edit scan).
-4. **Web implementation** — layouts, QR (`qrcode.react`), payment status.
-5. **Design, Step 5b** — Android screens.
-6. **Android** — Gradle project, theme from `tokens.kt`, API client, claim board, pay sheet, App Links.
-7. **iOS** — later.
+Installable (manifest and icon exist), a service worker for the app shell, the Web Share API for sending the bill link, and `theme-color` per theme. Offline is not a goal: claiming needs the network.
+
+## Build order (web only)
+
+0. **Contract** — shared vectors. *Done, kept for a future native app.*
+1. **Real-device UPI test** — see the risks above. Cheap, and may change the payment design. **Include an iPhone** if any user will be on iOS.
+2. **Design, Step 5** — responsive screens, one at a time: home/scan, host fixes the scan, claim board, pay (button and QR variants), join, paid/settled, empty and error states. Phone first, then tablet and desktop.
+3. **Web implementation** — layouts, QR (`qrcode.react`), payment status table, PWA.
+4. *(Paused)* API extraction to `/api/v1/*`, Android, iOS. Server Actions stay as they are until a native app restarts.
 
 ## Open decisions
 
-- Android application ID and domain for App Links (placeholder `app.dibs`; needs a real domain).
-- Minimum Android version (suggest API 26+).
-- Whether the web phone fallback gets any further design work, or stays as is until the iOS app exists.
+- Production domain (needed for share links and the PWA).
+- Whether the QR panel appears on tablets by default or only after tapping "Show QR".
