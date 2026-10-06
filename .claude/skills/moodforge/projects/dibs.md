@@ -1,7 +1,7 @@
 # Dibs · Design State
 
 **Last updated:** 2026-10-06
-**Current phase:** Step 5 — All Screens, screen 2 (Claim board) awaiting approval; payment-verification approach pending (phone first; see locked decisions 13, 14)
+**Current phase:** Step 5 — All Screens, screen 3 (Pay) awaiting approval (phone first; see locked decisions 13, 14, 15)
 **Status:** in_progress
 
 ---
@@ -21,6 +21,7 @@
 7. Light accent: Coral #ff6b4a with WHITE label on the primary button (round 2c, "lets go with coral only"). Known AA exception (2.82:1); mitigated by accentEdge #d9431a outline. Do not silently change; offer #e02900 or dark label as the AA fix if asked.
 8. Light ground #f5f4fb, surface #ffffff, accentText #c2371a.
 9. Language: English only. No Hinglish anywhere in the product copy, brand kit or app (user, round 3: "we will not include hinglish only english").
+15. **Payment verification = levels 0-3 (user: "approved, levels 0-3")**: friend taps I've paid; reference code in the UPI note (Dibs 7K2 Mukul); optional UTR (12 digits) and/or screenshot read by the vision model (amount, payee, status, time); host confirms in their bank app. Per person: Unpaid / Says paid / Confirmed; bill is Settled only when everyone is Confirmed. Gateway (level 4) NOT chosen. Claim board approved with: Pay off until all claimed, qty lines claimed whole, no undo timer.
 14. **Mobile first (user: "next app bhi primarily mobile focused hi rahegi"):** the Next.js app is primarily mobile-focused. Phone is the design target (about 390px); tablet and desktop only adapt the same screens (centred column, optional QR panel). No feature exists only on large screens. Refines decision 13.
 13. **Scope narrowed (2026-10-06, later the same day; user: "hold off the android app and next app hi rakhte hai for now, mobile me bhi vhi rakh lenge"):** ONE responsive Next.js app for phone, tablet and desktop. Android and iOS are on hold (tokens.kt and shared vectors kept, parked). Phone web is first-class again, installable as a PWA. Pay: UPI button on phones, QR on tablet and desktop. Step 5 is one responsive set of screens, phone first. Supersedes the platform split in decision 12.
 12. **Platforms (superseded by 13) (2026-10-06, user: "all this is fine so I am changing the scope a little"):** Next.js web for desktops and tablets, with payments by QR scanned from a phone; native Android app in Kotlin first; iOS in Swift later if there is time. Phone web stays as the no-signup fallback. Step 4 (motion) approved as shown. Step 5 splits into 5a desktop and tablet screens (host console with QR pay panel, join QR, claim board, edit scan) and 5b Android screens. Details: `docs/PLATFORMS.md`.
@@ -135,6 +136,16 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 **User question during this round:** "can we make sure somehow that the payment is done" -> answered in docs/PLATFORMS.md ("Can Dibs make sure a payment happened?"). Recommended levels 0-3 (I've paid + reference code + optional UTR/screenshot check + host confirms). Gateway (level 4) is a separate business decision. Pay screen (3) and a host Settle ledger depend on the answer.
 **Bug reported by user (5.2):** "when I select an item my avatar animates and disappears and stops rendering". Cause: a stale CSS rule `.it .who .av.me{opacity:0}` came back after GSAP `clearProps:'all'` removed the inline opacity at the end of the claim animation. My earlier checks asserted share and aria-pressed, not the avatar's computed opacity. Fixed (rule removed; visibility is the `hidden` attribute) and a regression assertion added: after the animation, and after release + re-claim, in both themes, the avatar's computed opacity must be 1 and its width non-zero. Verified the test fails with the old rule and passes with the fix.
 **Lesson (do not repeat):** whenever GSAP animates with `clearProps`, check the element's computed style AFTER the tween, not only app state.
+**User reaction (5.2):** "approved, levels 0-3, build the Pay screen"
+**Outcome:** APPROVED. Claim board locked.
+
+### Round 5.3 — 2026-10-06
+
+**Step:** 5 (screen 3: Pay + payment proof, phone, light + dark)
+**Concept:** eight connected, live states: ready to pay; back from the UPI app (one question); add proof (UTR + screenshot, optional); screenshot matches; screenshot short (offers exact fix, never blocks); Says paid; Confirmed; no UPI app opened (copy rows). Screen never says paid by itself.
+**File:** `.superpowers/brainstorm/s1/content/round5-pay.html`
+**Checks:** 16 phones; full flow Pay -> sheet -> proof -> check -> Says paid -> Confirmed, mismatch path (pay missing 900.00), fallback copy, undo, in-app theme. NEW: asserted computed visibility (effective opacity product, size, display) of the key element in every state and after every transition, both themes (lesson from the avatar bug). No JS errors, no overflow at 400px. Not tested on a real phone. The screenshot check shown is a design mock; the real one needs the vision call and a payments table.
+**Next screen:** host Settle ledger (Unpaid / Says paid / Confirmed, Mark paid), then Host fixes the scan, Share, Join, Settled, Settings.
 **User reaction:** pending
 **Outcome:** pending
 
@@ -150,5 +161,6 @@ Bill splitter for Indian friend groups. Host photographs bill, guests (no signup
 .superpowers/brainstorm/s1/content/round4-animations.html
 .superpowers/brainstorm/s1/content/round5-home.html
 .superpowers/brainstorm/s1/content/round5-claim-board.html
+.superpowers/brainstorm/s1/content/round5-pay.html
 docs/design/brand-kit/  (index.html, tokens.css, tokens.ts, tokens.json, README.md, assets/)
 ```
