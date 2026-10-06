@@ -65,7 +65,35 @@ async function parseWithOpenAI(base64: string, mediaType: string): Promise<Parse
   return parsedBillSchema.parse(JSON.parse(content));
 }
 
+/** Google Gemini (free tier via AI Studio key). JSON mode + zod validation. */
+async function parseWithGemini(base64: string, mediaType: string): Promise<ParsedBill> {
+  const model = process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY ?? "" },
+    body: JSON.stringify({
+      contents: [
+        {
+          parts: [
+            { text: `${PROMPT}\nReply with JSON only, matching this JSON Schema:\n${JSON.stringify(BILL_JSON_SCHEMA)}` },
+            { inline_data: { mime_type: mediaType, data: base64 } },
+          ],
+        },
+      ],
+      generationConfig: { responseMimeType: "application/json", temperature: 0 },
+    }),
+  });
+  if (!res.ok) throw new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 200)}`);
+  const json = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
+  const text = json.candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("");
+  if (!text) throw new Error("Bill could not be read");
+  return parsedBillSchema.parse(JSON.parse(text));
+}
+
 export async function parseBillImage(base64: string, mediaType: string): Promise<ParsedBill> {
+  const pick = process.env.BILL_PARSER;
+  if (pick === "gemini" || (!pick && !process.env.ANTHROPIC_API_KEY && !process.env.OPENAI_API_KEY && process.env.GEMINI_API_KEY))
+    return parseWithGemini(base64, mediaType);
   const useOpenAI =
     process.env.BILL_PARSER === "openai" || (!process.env.BILL_PARSER && !process.env.ANTHROPIC_API_KEY && !!process.env.OPENAI_API_KEY);
   if (useOpenAI) return parseWithOpenAI(base64, mediaType);
