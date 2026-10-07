@@ -12,7 +12,8 @@
     "e2e": "node e2e/flow.mjs",
     "e2e:full": "bash scripts/e2e.sh",
     "db:init": "tsx scripts/db-init.mts",
-    "smoke": "tsx scripts/smoke.mts"
+    "smoke": "tsx scripts/smoke.mts",
+    "ship": "bash scripts/ship.sh"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",

@@ -30,6 +30,7 @@ DIBS_STORE=memory BILL_PARSER=stub npm run dev      # http://localhost:3000
 | `npm run dev` / `build` / `start` | The app |
 | `npm test` | Rules, money maths, shared vectors, storage contract (memory; add `DIBS_TEST_DATABASE_URL=postgres://...` to run it on a real Postgres too) |
 | `npm run typecheck` | TypeScript |
+| `npm run ship -- user@server` | Build the Docker image on your laptop and send it to a server that never builds (see `docs/DEPLOY.md`) |
 | `npm run db:init` | Create the tables in the database from `DATABASE_URL` |
 | `npm run smoke` | Walk a test bill through a whole evening against your database |
 | `npm run e2e:full` | Build, start on an in-memory store, run the whole flow on phone-sized browsers (set `CHROMIUM_PATH` if needed) |

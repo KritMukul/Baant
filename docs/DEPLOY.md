@@ -12,7 +12,66 @@ You need:
 - A domain (you have `krit.website`) pointing at the server: an **A record** to its public IPv4 address. Ports **80 and 443** open.
 - One API key for reading photos: Anthropic, OpenAI or Gemini. (Or none, with `BILL_PARSER=stub`, to click through with a built-in sample bill.)
 
-## Option A: Docker Compose (recommended)
+## Build on your laptop, run on the server (best for small servers)
+
+`next build` is the heavy step: it can use more than a gigabyte of memory, which a small EC2 instance may not have. **Running** the app is light (about 95 MB idle and 130 MB under a burst of requests, measured; Postgres and Caddy add a little more). So build the Docker image on your laptop and send the finished image to the server. The server never builds.
+
+**On the server, once**
+
+1. An Ubuntu 22.04 or 24.04 instance. In its security group allow inbound **22** (your IP only), **80** and **443**. Give it an Elastic IP and point your domain's A record at it.
+2. Install Docker with the compose plugin, then log out and back in:
+   ```bash
+   curl -fsSL https://get.docker.com | sudo sh
+   sudo usermod -aG docker $USER
+   docker compose version     # after logging back in
+   ```
+   (Amazon Linux 2023: `sudo dnf install -y docker && sudo systemctl enable --now docker && sudo usermod -aG docker ec2-user`, then install the compose plugin from Docker's releases page. Steps drift, so check Docker's current docs.)
+
+**On your laptop**
+
+1. Install Docker Desktop (Mac or Windows) or Docker Engine (Linux). On Windows, run the commands from a WSL2 terminal.
+2. Get the code: `git clone https://github.com/KritMukul/Baant.git dibs && cd dibs && git checkout claude/stoic-cray-tzscj3`.
+3. Send it:
+   ```bash
+   SSH_OPTS="-i ~/.ssh/your-key.pem" scripts/ship.sh ubuntu@<server-ip>
+   ```
+   (`SSH_OPTS` is whatever you normally pass to `ssh`; leave it out if you log in without a key file.)
+
+   The script asks the server which CPU it has and builds for that (an M-chip Mac building for an Intel server works, just slower), sends the image over ssh, and copies `docker-compose.yml`, the Caddyfile and the schema next to it.
+4. The first time it stops and tells you to fill in the server's settings:
+   ```bash
+   ssh ubuntu@<server-ip>
+   cd dibs && nano .env       # DOMAIN, APP_URL, POSTGRES_PASSWORD and one vision key (see the table below)
+   docker compose up -d --no-build
+   curl https://krit.website/api/health
+   ```
+5. To update later: `git pull && scripts/ship.sh ubuntu@<server-ip>`. It keeps your `.env` and restarts the app on the new image.
+
+The same thing by hand, if you prefer to see each step:
+
+```bash
+docker buildx build --platform linux/amd64 -t dibs:latest --load .      # linux/arm64 for Graviton (t4g) servers
+docker save dibs:latest | gzip | ssh ubuntu@<server-ip> 'gunzip | docker load'
+tar czf - docker-compose.yml deploy/Caddyfile supabase/schema.sql .env.example | ssh ubuntu@<server-ip> 'mkdir -p dibs && tar xzf - -C dibs'
+```
+
+**With a registry instead of ssh** (Docker Hub, GitHub's `ghcr.io`, or AWS ECR): `docker buildx build --platform linux/amd64 -t ghcr.io/<you>/dibs:latest --push .`, set `DIBS_IMAGE=ghcr.io/<you>/dibs:latest` in the server's `.env`, then there `docker compose pull && docker compose up -d --no-build`. The server needs `docker login ghcr.io` once if the image is private.
+
+**Without Docker on the server:** build on the laptop (`npm ci && npm run build`), copy `.next/standalone/` to the server, put `.next/static` inside it at `.next/static` and `public/` beside it, and run `node server.js` with the settings from `.env` as environment variables (Node 22 on the server; you also need a Postgres to point `DATABASE_URL` at). The standalone folder is plain JavaScript, so building on a Mac and running on Linux works.
+
+If something goes wrong:
+
+| What you see | Why | Fix |
+|---|---|---|
+| `exec format error` when the container starts | Built for the wrong CPU | Run again with `PLATFORM=linux/amd64` or `linux/arm64` to match `uname -m` on the server (`x86_64` is amd64, `aarch64` is arm64) |
+| `docker buildx` is not found, or the cross-CPU build fails on a Linux laptop | No emulation set up | `docker run --privileged --rm tonistiivi/binfmt --install all`, then run the script again |
+| `permission denied` talking to Docker on the server | Your user is not in the docker group yet | `sudo usermod -aG docker $USER`, log out and back in |
+| The script hangs at "Sending it" | Slow upload or an ssh prompt | It is about 100 MB; check you can `ssh` to the server without a password prompt |
+| `set POSTGRES_PASSWORD in .env` | `.env` is missing a value | Edit `.env` on the server, then `docker compose up -d --no-build` |
+
+## Option A: Docker Compose, building on the server
+
+Use this if the server has 2 GB of memory or more (or you add swap). Otherwise use the laptop route above.
 
 ```bash
 git clone https://github.com/KritMukul/Baant.git dibs && cd dibs
@@ -146,4 +205,4 @@ Friends' links (`/b/...`) stay open. The start page and its scan request live at
 
 Verified here (see `docs/` and the tests): the rules and money maths (106 tests), the same storage contract on memory and on a real Postgres 16, the full flow on phone-sized browsers with a host and three friends, the standalone production server against Postgres, the QR code decoding back to the link.
 
-**Not verified:** a real Supabase project; `docker compose` itself (Docker was not available here, so the Dockerfile and compose file are untested; the standalone server they run was); real phones and real keyboards; real UPI apps; the vision models on real bills and payment screenshots beyond the earlier parse tests; HTTPS-only features (clipboard, share sheet, install to home screen) on a real certificate.
+**Not verified:** a real Supabase project; `docker compose` and `scripts/ship.sh` themselves (Docker was not available here: the script was syntax-checked and dry-run only, and the Dockerfile and compose file are untested; the standalone server they run was); real phones and real keyboards; real UPI apps; the vision models on real bills and payment screenshots beyond the earlier parse tests; HTTPS-only features (clipboard, share sheet, install to home screen) on a real certificate.

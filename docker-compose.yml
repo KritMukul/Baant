@@ -22,6 +22,9 @@ services:
       retries: 20
 
   app:
+    # Built on your laptop and shipped with scripts/ship.sh (the server never builds), or built here with
+    # `docker compose up -d --build` if the server has 2 GB or more of memory.
+    image: ${DIBS_IMAGE:-dibs:latest}
     build: .
     restart: unless-stopped
     depends_on:

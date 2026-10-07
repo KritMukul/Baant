@@ -1,8 +1,10 @@
+# syntax=docker/dockerfile:1
 # Dibs: Next.js app. Build once, run anywhere with Node.
 FROM node:22-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci
+# the cache mount makes rebuilds on your laptop much faster (needs BuildKit, which Docker Desktop has by default)
+RUN --mount=type=cache,target=/root/.npm npm ci
 COPY . .
 RUN npm run build
 
