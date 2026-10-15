@@ -70,6 +70,15 @@ If something goes wrong:
 | `set POSTGRES_PASSWORD in .env` | `.env` is missing a value | Edit `.env` on the server, then `docker compose up -d --no-build` |
 | The browser tab still shows an old icon (a teal ₹ is the very first version) | Browsers cache tab icons per site, apart from the page | Hard-reload (Ctrl/Cmd+Shift+R). If it sticks, clear this site's data or open the site in a private window. Confirm the server is on the new image: `curl -sI https://krit.website/favicon.ico` should return 200, not 404 |
 
+## A server that already has nginx
+
+If nginx (or any other proxy) already owns ports 80 and 443, Caddy cannot start, and does not need to. Let your nginx do the HTTPS and forward to the app:
+
+1. In the server's `.env` set `COMPOSE_PROFILES=` (empty, so Caddy stays off) and `APP_PORT=` to the port your nginx forwards to (default `3100`). Keep `APP_URL=https://krit.website`.
+2. `docker compose up -d --no-build`. The app now listens only on `127.0.0.1:APP_PORT`, so it is not reachable from outside except through nginx. Check from the server: `curl http://127.0.0.1:3100/api/health`.
+3. Point nginx at it. `deploy/nginx.conf.example` is a ready server block (it is copied to the server next to `docker-compose.yml`); the important lines are `proxy_pass http://127.0.0.1:<APP_PORT>;`, `client_max_body_size 10m;` for bill photos, a 90 s `proxy_read_timeout` for the vision model, and `X-Forwarded-For` set to `$remote_addr` so the per-IP scan limit cannot be faked. If nginx already has a block for the domain, only change its `proxy_pass` to the port above.
+4. `sudo nginx -t && sudo systemctl reload nginx`, and if the domain has no certificate yet, `sudo certbot --nginx -d krit.website`.
+
 ## Option A: Docker Compose, building on the server
 
 Use this if the server has 2 GB of memory or more (or you add swap). Otherwise use the laptop route above.

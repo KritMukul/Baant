@@ -53,11 +53,11 @@ else
   docker save "$IMAGE" | gzip | ssh_ 'gunzip | docker load'
 fi
 
-say "3/4 Copying the compose file, Caddyfile and schema"
+say "3/4 Copying the compose file, proxy configs and schema"
 if [ "${DRY_RUN:-}" = "1" ]; then
-  echo "+ tar czf - docker-compose.yml deploy/Caddyfile supabase/schema.sql .env.example | ssh $SERVER 'mkdir -p $REMOTE_DIR && tar xzf - -C $REMOTE_DIR'"
+  echo "+ tar czf - docker-compose.yml deploy/Caddyfile deploy/nginx.conf.example supabase/schema.sql .env.example | ssh $SERVER 'mkdir -p $REMOTE_DIR && tar xzf - -C $REMOTE_DIR'"
 else
-  tar czf - docker-compose.yml deploy/Caddyfile supabase/schema.sql .env.example | ssh_ "mkdir -p '$REMOTE_DIR' && tar xzf - -C '$REMOTE_DIR'"
+  tar czf - docker-compose.yml deploy/Caddyfile deploy/nginx.conf.example supabase/schema.sql .env.example | ssh_ "mkdir -p '$REMOTE_DIR' && tar xzf - -C '$REMOTE_DIR'"
 fi
 
 say "4/4 Starting it"
@@ -75,6 +75,9 @@ The image is on the server. One thing left: the server has no settings yet.
   ssh ${SSH_OPTS:+$SSH_OPTS }$SERVER
   cd $REMOTE_DIR && nano .env          # set DOMAIN, APP_URL, POSTGRES_PASSWORD and one vision key
   docker compose up -d --no-build
+
+If the server already runs nginx (or anything else) on ports 80/443, also set COMPOSE_PROFILES= (empty)
+in .env, then follow "A server that already has nginx" in docs/DEPLOY.md (it uses deploy/nginx.conf.example).
 
 Next time, just run scripts/ship.sh again: it keeps your .env and restarts the app on the new image.
 MSG

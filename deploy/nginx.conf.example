@@ -1,0 +1,29 @@
+# nginx in front of Dibs, for a server where nginx already owns ports 80 and 443.
+# Needs COMPOSE_PROFILES= (empty) in .env, so Caddy stays off and the app listens on 127.0.0.1:APP_PORT.
+#
+#   sudo cp deploy/nginx.conf.example /etc/nginx/sites-available/krit.website
+#   sudo ln -s /etc/nginx/sites-available/krit.website /etc/nginx/sites-enabled/
+#   sudo nginx -t && sudo systemctl reload nginx
+#   sudo certbot --nginx -d krit.website        # adds the certificate and the http -> https redirect
+#
+# Change 3100 below if you changed APP_PORT, and krit.website if you use another domain.
+server {
+    listen 80;
+    listen [::]:80;
+    server_name krit.website;
+
+    # bill photos: the app shrinks them before upload and refuses anything over 8 MB itself
+    client_max_body_size 10m;
+
+    location / {
+        proxy_pass http://127.0.0.1:3100;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        # set (not append) so a visitor cannot fake their address and dodge the per-IP scan limit
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        # reading a bill photo with the vision model can take most of a minute
+        proxy_read_timeout 90s;
+    }
+}
