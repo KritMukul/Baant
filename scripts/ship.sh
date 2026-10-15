@@ -17,6 +17,8 @@
 #   DIBS_IMAGE=dibs:latest image name
 #   PLATFORM=linux/amd64   skip the CPU check (linux/amd64 for Intel/AMD servers, linux/arm64 for Graviton)
 #   SSH_OPTS="-i ~/.ssh/key.pem"   extra ssh options (the same ones you use to log in)
+#   BUILD_FLAGS="..."      extra flags for docker buildx build, e.g. "--network host --progress plain"
+#   SKIP_BUILD=1           do not build; send the image that is already on this machine
 #   DRY_RUN=1              only print what would run
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -44,7 +46,12 @@ fi
 echo "Building for $PLATFORM"
 
 say "1/4 Building the image here"
-run docker buildx build --platform "$PLATFORM" -t "$IMAGE" --load .
+if [ "${SKIP_BUILD:-}" = "1" ]; then
+  echo "Skipping the build: using the $IMAGE already on this machine"
+else
+  # shellcheck disable=SC2086
+  run docker buildx build --platform "$PLATFORM" ${BUILD_FLAGS:-} -t "$IMAGE" --load .
+fi
 
 say "2/4 Sending it to $SERVER (roughly 100 MB compressed)"
 if [ "${DRY_RUN:-}" = "1" ]; then

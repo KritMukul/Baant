@@ -65,6 +65,7 @@ If something goes wrong:
 |---|---|---|
 | `exec format error` when the container starts | Built for the wrong CPU | Run again with `PLATFORM=linux/amd64` or `linux/arm64` to match `uname -m` on the server (`x86_64` is amd64, `aarch64` is arm64) |
 | `docker buildx` is not found, or the cross-CPU build fails on a Linux laptop | No emulation set up | `docker run --privileged --rm tonistiivi/binfmt --install all`, then run the script again |
+| The build sits on `npm ci` for minutes (it should take about 30 seconds) | Docker's own network is slow or broken (DNS, IPv6, a VPN, MTU), or the laptop's CPU is not what the build targets | Test: `time docker run --rm node:22-alpine npm view next version` (should take a few seconds). Try `BUILD_FLAGS="--network host --progress plain" scripts/ship.sh ...`; turn off any VPN; in Docker Desktop > Settings > Docker Engine add `"dns": ["8.8.8.8", "1.1.1.1"]`, then Apply & restart. A built image can be sent without rebuilding: `SKIP_BUILD=1 scripts/ship.sh ...` |
 | `permission denied` talking to Docker on the server | Your user is not in the docker group yet | `sudo usermod -aG docker $USER`, log out and back in |
 | The script hangs at "Sending it" | Slow upload or an ssh prompt | It is about 100 MB; check you can `ssh` to the server without a password prompt |
 | `set POSTGRES_PASSWORD in .env` | `.env` is missing a value | Edit `.env` on the server, then `docker compose up -d --no-build` |
