@@ -6,7 +6,7 @@ import { markPaidAction, readShotAction, undoPaidAction, type ShotResult } from 
 import { allocate, formatINR, formatNum } from "@/lib/money";
 import type { ShotRead } from "@/lib/model";
 import { upiLink } from "@/lib/upi";
-import { Back, Camera, Check, Clock, Warn, X } from "@/ui/icons";
+import { Back, Camera, Check, Clock, Copy, Warn, X } from "@/ui/icons";
 import { copyText } from "@/ui/clipboard";
 import { useLive, useToast } from "@/ui/hooks";
 import { prepareImage } from "@/ui/image";
@@ -266,9 +266,9 @@ export default function PayScreen({ code, initial }: { code: string; initial: Bi
           <div className="amtblock"><div className="eyebrow">You owe {host}</div><div className="big"><span className="c">₹</span>{formatNum(amount)}</div></div>
           <div className="note2 warn" role="alert"><Warn /><div><b>No UPI app opened.</b>On some phones the link needs an app that is not installed. Copy the details and pay from your UPI app.</div></div>
           <div className="card" style={{ padding: "4px 14px" }}>
-            <div className="copyrow"><div><span className="l">Pay to</span><b>{vpa}</b></div><button className="link" type="button" onClick={() => void copy("UPI ID", vpa)}>Copy</button></div>
-            <div className="copyrow"><div><span className="l">Amount</span><b>{(amount / 100).toFixed(2)}</b></div><button className="link" type="button" onClick={() => void copy("Amount", (amount / 100).toFixed(2))}>Copy</button></div>
-            <div className="copyrow"><div><span className="l">Note</span><b>{mp.note}</b></div><button className="link" type="button" onClick={() => void copy("Note", mp.note)}>Copy</button></div>
+            <div className="copyrow"><div><span className="l">Pay to</span><b>{vpa}</b></div><button className="link ico" type="button" aria-label="Copy UPI ID" title="Copy UPI ID" onClick={() => void copy("UPI ID", vpa)}><Copy /></button></div>
+            <div className="copyrow"><div><span className="l">Amount</span><b>{(amount / 100).toFixed(2)}</b></div><button className="link ico" type="button" aria-label="Copy Amount" title="Copy Amount" onClick={() => void copy("Amount", (amount / 100).toFixed(2))}><Copy /></button></div>
+            <div className="copyrow"><div><span className="l">Note</span><b>{mp.note}</b></div><button className="link ico" type="button" aria-label="Copy Note" title="Copy Note" onClick={() => void copy("Note", mp.note)}><Copy /></button></div>
           </div>
         </div>
         <div className="dock">
@@ -353,11 +353,11 @@ export default function PayScreen({ code, initial }: { code: string; initial: Bi
           <div className="card payee">
             <i className="av f1">{host.charAt(0).toUpperCase()}</i>
             <div><b>{view.hostFullName}</b><span className="m">{vpa}</span></div>
-            <button className="link" type="button" onClick={() => void copy("UPI ID", vpa)}>Copy</button>
+            <button className="link ico" type="button" aria-label="Copy UPI ID" title="Copy UPI ID" onClick={() => void copy("UPI ID", vpa)}><Copy /></button>
           </div>
           <div className="card ref">
             <div><span className="l">Reference code</span><b>{mp.note}</b></div>
-            <button className="link" type="button" onClick={() => void copy("Reference code", mp.note)}>Copy</button>
+            <button className="link ico" type="button" aria-label="Copy Reference code" title="Copy Reference code" onClick={() => void copy("Reference code", mp.note)}><Copy /></button>
             <p>Sent as the payment note, so {host} can match it in his bank app.</p>
           </div>
         </div>

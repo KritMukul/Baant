@@ -86,6 +86,20 @@ export const Copy = svg(
   </>,
   1.9,
 );
+export const Lock = svg(
+  <>
+    <rect x="5" y="11" width="14" height="9" rx="2.5" />
+    <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+  </>,
+  1.9,
+);
+export const Unlock = svg(
+  <>
+    <rect x="5" y="11" width="14" height="9" rx="2.5" />
+    <path d="M8 11V8a4 4 0 0 1 7.5-1.9" />
+  </>,
+  1.9,
+);
 export const Qr = svg(
   <>
     <rect x="4" y="4" width="6.5" height="6.5" rx="1.2" />
@@ -127,7 +141,7 @@ export const ReceiptDone = svg(
 /** Logo lockup in theme colours: a D made from a torn receipt and half a plate, then "ibs". */
 export function Lockup() {
   return (
-    <svg viewBox="6 0 148 64" role="img" aria-label="Dibs">
+    <svg viewBox="6 0 160 64" overflow="visible" role="img" aria-label="Dibs">
       <path d="M9 8 H25 V56 L21 52 L17 56 L13 52 L9 56 Z" style={{ fill: "var(--color-text)" }} />
       <path d="M30 8 H33 A24 24 0 0 1 33 56 H30 Z" style={{ fill: "var(--color-accent)" }} />
       <rect x="13" y="15" width="8" height="3.2" rx="1.6" style={{ fill: "var(--color-bg)" }} opacity=".85" />

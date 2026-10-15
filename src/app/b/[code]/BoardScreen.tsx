@@ -7,7 +7,7 @@ import { formatINR, formatNum } from "@/lib/money";
 import { splitFromParts } from "@/lib/view";
 import { categoryOf, type Category } from "@/ui/category";
 import { copyText } from "@/ui/clipboard";
-import { Check, Gear, Info, List, Lockup, Offline, Share } from "@/ui/icons";
+import { Check, Gear, Info, List, Lock, Lockup, Offline, Share, Unlock } from "@/ui/icons";
 import { useLive, useToast } from "@/ui/hooks";
 import type { BillView } from "@/server/service";
 
@@ -29,6 +29,7 @@ export default function BoardScreen({ code, initial, origin }: { code: string; i
 
   /** itemId -> what I just tapped (true = claimed). Stays until the server has confirmed it. */
   const [pend, setPend] = useState<Record<string, boolean>>({});
+  const [showLeft, setShowLeft] = useState(false);
   /** Taps that could not reach the server yet. */
   const [stuck, setStuck] = useState<Record<string, boolean>>({});
   const flushing = useRef(false);
@@ -146,6 +147,7 @@ export default function BoardScreen({ code, initial, origin }: { code: string; i
   }
 
   const waiting = Object.keys(stuck).length > 0;
+  const hasPayments = !!view.ledger?.rows.some((r) => r.payments.some((p) => p.status !== "rejected"));
   const sub = (id: string, qty: number, price: number) => {
     const w = holders(id);
     const q = qty > 1 ? `${qty} × ${formatINR(Math.round(price / qty))} · ` : "";
@@ -239,17 +241,22 @@ export default function BoardScreen({ code, initial, origin }: { code: string; i
             {locked ? (
               <div className="hostbox">
                 <div className="t"><b>Claims are locked.</b> Everyone&rsquo;s share is final and friends can pay.</div>
-                {!view.ledger?.rows.some((r) => r.payments.some((p) => p.status !== "rejected")) ? (
-                  <button className="link" type="button" style={{ margin: 0 }} onClick={() => void lock(false)}>Reopen claims</button>
-                ) : null}
               </div>
             ) : unclaimed.length ? (
               <div className="hostbox">
-                <div className="t"><b>{unclaimed.length} item{unclaimed.length > 1 ? "s" : ""} nobody has claimed:</b> {unclaimed.map((i) => i.name).join(", ")}</div>
-                <div className="two">
-                  <button className="btn sec" type="button" style={{ minHeight: 44, padding: "0 10px" }} onClick={() => void leftovers("take")}>Take them</button>
-                  <button className="btn sec" type="button" style={{ minHeight: 44, padding: "0 10px" }} onClick={() => void leftovers("split")}>Split equally</button>
+                <div className="lo">
+                  <span className="t"><b>{unclaimed.length} unclaimed</b></span>
+                  <button className="link ico" type="button" aria-expanded={showLeft} aria-label={showLeft ? "Hide unclaimed items" : "Show unclaimed items"} title="Which items?" onClick={() => setShowLeft((v) => !v)}>
+                    <Info />
+                  </button>
                 </div>
+                {showLeft ? <div className="t">{unclaimed.map((i) => i.name).join(", ")}</div> : null}
+                {showLeft ? (
+                  <div className="two">
+                    <button className="btn sec" type="button" style={{ minHeight: 44, padding: "0 10px" }} onClick={() => void leftovers("take")}>Take them</button>
+                    <button className="btn sec" type="button" style={{ minHeight: 44, padding: "0 10px" }} onClick={() => void leftovers("split")}>Split equally</button>
+                  </div>
+                ) : null}
               </div>
             ) : (
               <div className="hostbox"><div className="t"><b>Everything is claimed.</b> Lock claims to make shares final.</div></div>
@@ -300,9 +307,16 @@ export default function BoardScreen({ code, initial, origin }: { code: string; i
             <span className="amt"><span className="c">₹</span><span key={mine.total} className="swap" data-k="amtv">{formatNum(mine.total)}</span></span>
           </div>
           {isHost ? (
-            <button className="btn" type="button" disabled={(!allClaimed && !locked) || offline} onClick={() => void lock(!locked)}>
-              {locked ? "Claims locked" : "Lock claims"}
-            </button>
+            locked ? (
+              <button className="btn sec cam" type="button" disabled={hasPayments || offline} onClick={() => void lock(false)}>
+                {hasPayments ? <Lock /> : <Unlock />}
+                {hasPayments ? "Claims locked · payments started" : "Reopen claims"}
+              </button>
+            ) : (
+              <button className="btn" type="button" disabled={!allClaimed || offline} onClick={() => void lock(true)}>
+                Lock claims
+              </button>
+            )
           ) : myPaid ? (
             <Link className="btn" href={`/b/${code}/pay`}>Payment status</Link>
           ) : canPay ? (

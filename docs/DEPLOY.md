@@ -2,7 +2,7 @@
 
 This gets the app running on a server you control, at an address like `https://krit.website`, so you can test it on real phones.
 
-**What runs:** one Node app (Next.js), one Postgres database, and Caddy in front for automatic HTTPS. Nothing else. No Supabase account is needed (you can still use Supabase's database if you prefer: see Option C).
+**What runs:** one Node app (Next.js), one Postgres database, and nginx on the host in front (HTTPS via certbot). Nothing else. No Supabase account is needed (you can still use Supabase's database if you prefer: see Option C).
 
 ## Before you start
 
@@ -37,7 +37,7 @@ You need:
    ```
    (`SSH_OPTS` is whatever you normally pass to `ssh`; leave it out if you log in without a key file.)
 
-   The script asks the server which CPU it has and builds for that (an M-chip Mac building for an Intel server works, just slower), sends the image over ssh, and copies `docker-compose.yml`, the Caddyfile and the schema next to it.
+   The script asks the server which CPU it has and builds for that (an M-chip Mac building for an Intel server works, just slower), sends the image over ssh, and copies `docker-compose.yml`, nginx.conf and the schema next to it.
 4. The first time it stops and tells you to fill in the server's settings:
    ```bash
    ssh ubuntu@<server-ip>
@@ -52,7 +52,7 @@ The same thing by hand, if you prefer to see each step:
 ```bash
 docker buildx build --platform linux/amd64 -t dibs:latest --load .      # linux/arm64 for Graviton (t4g) servers
 docker save dibs:latest | gzip | ssh ubuntu@<server-ip> 'gunzip | docker load'
-tar czf - docker-compose.yml deploy/Caddyfile supabase/schema.sql .env.example | ssh ubuntu@<server-ip> 'mkdir -p dibs && tar xzf - -C dibs'
+tar czf - docker-compose.yml deploy/nginx.conf supabase/schema.sql .env.example | ssh ubuntu@<server-ip> 'mkdir -p dibs && tar xzf - -C dibs'
 ```
 
 **With a registry instead of ssh** (Docker Hub, GitHub's `ghcr.io`, or AWS ECR): `docker buildx build --platform linux/amd64 -t ghcr.io/<you>/dibs:latest --push .`, set `DIBS_IMAGE=ghcr.io/<you>/dibs:latest` in the server's `.env`, then there `docker compose pull && docker compose up -d --no-build`. The server needs `docker login ghcr.io` once if the image is private.
@@ -84,7 +84,7 @@ Set at least these in `.env`:
 
 | Variable | Example | Meaning |
 |---|---|---|
-| `DOMAIN` | `krit.website` | Caddy gets a certificate for this by itself. Use `:80` to test over plain http by IP first |
+| `DOMAIN` | `krit.website` | Unused with nginx (set the domain in nginx and certbot instead) |
 | `APP_URL` | `https://krit.website` | The address people open. Used for links, QR codes and secure cookies |
 | `POSTGRES_PASSWORD` | a long random string | The database password (only the app can reach the database) |
 | `GEMINI_API_KEY` (or `ANTHROPIC_API_KEY` / `OPENAI_API_KEY`) | `...` | Reads bills and payment screenshots |
@@ -190,7 +190,7 @@ What you find here decides whether the payment screen needs a different design.
 
 ## While you are testing publicly
 
-Anyone who finds the address can scan a bill, and every scan costs a vision API call. Dibs limits scans to 20 per IP per hour (`SCAN_LIMIT_PER_HOUR`), but while it is a test you can also put a password on the host's start page. In `deploy/Caddyfile`, inside the site block, before `reverse_proxy`:
+Anyone who finds the address can scan a bill, and every scan costs a vision API call. Dibs limits scans to 20 per IP per hour (`SCAN_LIMIT_PER_HOUR`), but while it is a test you can also put a password on the host's start page. In `deploy/nginx.conf`, inside the site block, before `reverse_proxy`:
 
 ```
 	@start path /

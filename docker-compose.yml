@@ -1,4 +1,4 @@
-# Dibs on one server: the app, its own Postgres, and Caddy for automatic HTTPS.
+# Dibs on one server: the app, its own Postgres, behind nginx on the host (deploy/nginx.conf).
 #   cp .env.example .env     (fill it in)
 #   docker compose up -d --build
 # Nothing here needs a Supabase account. To use Supabase instead, drop the `db` service and point
@@ -27,6 +27,8 @@ services:
     image: ${DIBS_IMAGE:-dibs:latest}
     build: .
     restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"   # only nginx on this machine can reach it
     depends_on:
       db:
         condition: service_healthy
@@ -43,22 +45,5 @@ services:
       SCAN_LIMIT_PER_HOUR: ${SCAN_LIMIT_PER_HOUR:-20}
       SHOT_LIMIT_PER_HOUR: ${SHOT_LIMIT_PER_HOUR:-30}
 
-  caddy:
-    image: caddy:2-alpine
-    restart: unless-stopped
-    depends_on:
-      - app
-    ports:
-      - "80:80"
-      - "443:443"
-    environment:
-      DOMAIN: ${DOMAIN:?set DOMAIN in .env, for example krit.website (or :80 to test over plain http)}
-    volumes:
-      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddydata:/data
-      - caddyconfig:/config
-
 volumes:
   dbdata:
-  caddydata:
-  caddyconfig:

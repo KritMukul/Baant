@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { scanBill } from "./actions";
-import { Camera, Check, Gear, Lockup, Warn } from "@/ui/icons";
+import { Camera, Check, Gear, Lockup, Upload, Warn } from "@/ui/icons";
 import { prepareImage } from "@/ui/image";
 import { loadProfile, saveProfile } from "@/ui/profile";
 import { firstName } from "@/lib/names";
@@ -29,6 +29,14 @@ const size = (b: number) => (b >= 1024 * 1024 ? `${(b / 1024 / 1024).toFixed(1)}
 export default function HomeScreen() {
   const router = useRouter();
   const [photo, setPhoto] = useState<Photo | null>(null);
+  // the 160px thumb is what gets saved; on screen we show the real (resized) photo from memory, which is never stored
+  const [preview, setPreview] = useState<string | null>(null);
+  useEffect(() => {
+    if (!photo) return setPreview(null);
+    const url = URL.createObjectURL(photo.blob);
+    setPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [photo]);
   const [name, setName] = useState("");
   const [vpa, setVpa] = useState("");
   const [touched, setTouched] = useState({ name: false, vpa: false });
@@ -126,7 +134,7 @@ export default function HomeScreen() {
               <p>Usually 5 to 15 seconds. Keep this open.</p>
             </div>
             <div className="scan">
-              <div className="thumb">{photo?.thumb ? <img src={photo.thumb} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : null}</div>
+              <div className="thumb">{preview ?? photo?.thumb ? <img src={preview ?? photo?.thumb ?? ""} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : null}</div>
               <span className="line" />
             </div>
             <div className="steps" aria-live="polite">
@@ -196,6 +204,7 @@ export default function HomeScreen() {
         ) : (
           <>
             {appbar}
+            <div className="body">
             <div className="hero">
               <div className="eyebrow">{returning ? `Welcome back, ${returning}` : "New bill"}</div>
               <h1>Call dibs on what you ate.</h1>
@@ -203,11 +212,11 @@ export default function HomeScreen() {
             </div>
             {photo ? (
               <div className="capture has">
-                <div className="thumb">{photo.thumb ? <img src={photo.thumb} alt="Your bill" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : null}</div>
+                <div className="thumb">{preview ?? photo.thumb ? <img src={preview ?? photo.thumb ?? ""} alt="Your bill" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : null}</div>
                 <div className="fi">
                   <span className="n">{photo.name.length > 22 ? photo.name.slice(0, 19) + "…" : photo.name} · {size(photo.bytes)}</span>
                   <span className="d">Photographed {photo.when}</span>
-                  <button className="link" type="button" onClick={() => setPhoto(null)}>Retake</button>
+                  <button className="link ico" type="button" aria-label="Retake photo" title="Retake photo" onClick={() => setPhoto(null)}><Camera /></button>
                 </div>
               </div>
             ) : (
@@ -217,11 +226,13 @@ export default function HomeScreen() {
                   <path d="M18 16h12M18 23h12M18 30h7" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
                 </svg>
                 <div className="t">Add the bill</div>
-                <button className="btn cam" type="button" onClick={() => camera.current?.click()}>
-                  <Camera />
-                  Photograph the bill
-                </button>
-                <button className="link" type="button" onClick={() => gallery.current?.click()}>or choose from gallery</button>
+                <div className="camrow">
+                  <button className="btn cam" type="button" onClick={() => camera.current?.click()}>
+                    <Camera />
+                    Photograph the bill
+                  </button>
+                  <button className="link ico alt" type="button" aria-label="Choose from gallery" title="Choose from gallery" onClick={() => gallery.current?.click()}><Upload /></button>
+                </div>
               </div>
             )}
             <div className="fields">
@@ -242,7 +253,7 @@ export default function HomeScreen() {
                 <div className="h" id="home-upi-h">{vErr ? (vpa.trim() ? "That UPI ID doesn't look right (for example name@okaxis)" : "Enter your UPI ID") : "Friends pay this ID. Dibs never touches the money."}</div>
               </div>
             </div>
-            <div className="spacer" />
+            </div>
             <div className="cta">
               <p className={`why${can ? " hid" : ""}`}>{why}</p>
               <button className="btn" type="button" disabled={!can} onClick={() => void start()}>Scan the bill</button>

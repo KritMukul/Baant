@@ -87,12 +87,12 @@ export default function ShareScreen({ code, initial, origin }: { code: string; i
           <div className="lk">
             <span className="lab">Link</span>
             <div className="url" data-k="url"><span className="d">{prefix}</span>{code}</div>
-            <div className="acts" style={{ gridTemplateColumns: `repeat(${canShare ? 3 : 2},1fr)` }}>
-              <button className={`act${copied ? " done" : ""}`} type="button" onClick={() => void copy()}>
-                <span>{copied ? <><Check />Copied</> : <><Copy />Copy link</>}</span>
+            <div className="acts" style={{ gridTemplateColumns: canShare ? "1fr 1fr 2fr" : "1fr 1fr" }}>
+              <button className={`act${copied ? " done" : ""}`} type="button" aria-label={copied ? "Link copied" : "Copy link"} title="Copy link" onClick={() => void copy()}>
+                <span>{copied ? <Check /> : <Copy />}</span>
               </button>
-              <button className="act" type="button" onClick={() => setQr(true)}>
-                <span><Qr />Show QR</span>
+              <button className="act" type="button" aria-label="Show QR code" title="Show QR code" onClick={() => setQr(true)}>
+                <span><Qr /></span>
               </button>
               {canShare ? (
                 <button className="act" type="button" onClick={() => void more()}>

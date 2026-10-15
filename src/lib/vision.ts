@@ -42,7 +42,7 @@ async function withOpenAI<T>(task: VisionTask<T>, img: VisionImage): Promise<T> 
     method: "POST",
     headers: { "content-type": "application/json", authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
     body: JSON.stringify({
-      model: process.env.OPENAI_MODEL ?? "gpt-4o",
+      model: process.env.OPENAI_MODEL || "gpt-4o",
       messages: [
         {
           role: "user",
@@ -63,7 +63,7 @@ async function withOpenAI<T>(task: VisionTask<T>, img: VisionImage): Promise<T> 
 }
 
 async function withGemini<T>(task: VisionTask<T>, img: VisionImage): Promise<T> {
-  const model = process.env.GEMINI_MODEL ?? "gemini-3.5-flash-lite";
+  const model = process.env.GEMINI_MODEL || "gemini-flash-lite-latest";
   const res = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
     method: "POST",
     headers: { "content-type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY ?? "" },
@@ -89,7 +89,7 @@ async function withGemini<T>(task: VisionTask<T>, img: VisionImage): Promise<T> 
 async function withClaude<T>(task: VisionTask<T>, img: VisionImage): Promise<T> {
   const client = new Anthropic();
   const res = await client.messages.create({
-    model: process.env.ANTHROPIC_MODEL ?? "claude-sonnet-5-5",
+    model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5-5",
     max_tokens: 2048,
     tools: [{ name: "record", description: "Record the structured result.", input_schema: task.schema as Anthropic.Tool.InputSchema }],
     tool_choice: { type: "tool", name: "record" },

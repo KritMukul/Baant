@@ -8,7 +8,7 @@
 #      Intel server needs this; Docker emulates the other CPU, which is slower but works)
 #   2. builds the image here
 #   3. sends it over ssh (no registry, no account needed) and loads it on the server
-#   4. copies docker-compose.yml, the Caddyfile and the database schema next to it
+#   4. copies docker-compose.yml, nginx.conf and the database schema next to it
 #   5. first time: stops and tells you to fill in .env on the server. Later: restarts the app on the new image.
 #
 # Needs here: Docker (with buildx) and ssh. Needs on the server: Docker with the compose plugin, and your ssh login.
@@ -53,11 +53,11 @@ else
   docker save "$IMAGE" | gzip | ssh_ 'gunzip | docker load'
 fi
 
-say "3/4 Copying the compose file, Caddyfile and schema"
+say "3/4 Copying the compose file, nginx.conf and schema"
 if [ "${DRY_RUN:-}" = "1" ]; then
-  echo "+ tar czf - docker-compose.yml deploy/Caddyfile supabase/schema.sql .env.example | ssh $SERVER 'mkdir -p $REMOTE_DIR && tar xzf - -C $REMOTE_DIR'"
+  echo "+ tar czf - docker-compose.yml deploy/nginx.conf supabase/schema.sql .env.example | ssh $SERVER 'mkdir -p $REMOTE_DIR && tar xzf - -C $REMOTE_DIR'"
 else
-  tar czf - docker-compose.yml deploy/Caddyfile supabase/schema.sql .env.example | ssh_ "mkdir -p '$REMOTE_DIR' && tar xzf - -C '$REMOTE_DIR'"
+  tar czf - docker-compose.yml deploy/nginx.conf supabase/schema.sql .env.example | ssh_ "mkdir -p '$REMOTE_DIR' && tar xzf - -C '$REMOTE_DIR'"
 fi
 
 say "4/4 Starting it"
