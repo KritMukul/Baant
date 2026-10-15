@@ -17,6 +17,8 @@
 #   DIBS_IMAGE=dibs:latest image name
 #   PLATFORM=linux/amd64   skip the CPU check (linux/amd64 for Intel/AMD servers, linux/arm64 for Graviton)
 #   SSH_OPTS="-i ~/.ssh/key.pem"   extra ssh options (the same ones you use to log in)
+#   BUILD_FLAGS="..."      extra flags for docker buildx build, e.g. "--network host --progress plain"
+#   SKIP_BUILD=1           do not build; send the image that is already on this machine
 #   DRY_RUN=1              only print what would run
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -44,20 +46,30 @@ fi
 echo "Building for $PLATFORM"
 
 say "1/4 Building the image here"
-run docker buildx build --platform "$PLATFORM" -t "$IMAGE" --load .
+if [ "${SKIP_BUILD:-}" = "1" ]; then
+  echo "Skipping the build: using the $IMAGE already on this machine"
+else
+  # shellcheck disable=SC2086
+  run docker buildx build --platform "$PLATFORM" ${BUILD_FLAGS:-} -t "$IMAGE" --load .
+fi
 
 say "2/4 Sending it to $SERVER (roughly 100 MB compressed)"
+PREVIOUS="${IMAGE%%:*}:previous"
 if [ "${DRY_RUN:-}" = "1" ]; then
+  echo "+ ssh $SERVER 'docker tag $IMAGE $PREVIOUS' (keeps the version now running, for a rollback)"
   echo "+ docker save $IMAGE | gzip | ssh $SERVER 'gunzip | docker load'"
 else
+  # keep whatever is running now, so it can come back with:
+  #   docker tag $PREVIOUS $IMAGE && docker compose up -d --no-build
+  ssh_ "docker image inspect '$IMAGE' >/dev/null 2>&1 && docker tag '$IMAGE' '$PREVIOUS' && echo 'Kept the current version as $PREVIOUS' || true" </dev/null
   docker save "$IMAGE" | gzip | ssh_ 'gunzip | docker load'
 fi
 
 say "3/4 Copying the compose file, nginx.conf and schema"
 if [ "${DRY_RUN:-}" = "1" ]; then
-  echo "+ tar czf - docker-compose.yml deploy/nginx.conf supabase/schema.sql .env.example | ssh $SERVER 'mkdir -p $REMOTE_DIR && tar xzf - -C $REMOTE_DIR'"
+  echo "+ tar czf - docker-compose.yml deploy/Caddyfile supabase/schema.sql .env.example | ssh $SERVER 'mkdir -p $REMOTE_DIR && tar xzf - -C $REMOTE_DIR'"
 else
-  tar czf - docker-compose.yml deploy/nginx.conf supabase/schema.sql .env.example | ssh_ "mkdir -p '$REMOTE_DIR' && tar xzf - -C '$REMOTE_DIR'"
+  tar czf - docker-compose.yml deploy/Caddyfile supabase/schema.sql .env.example | ssh_ "mkdir -p '$REMOTE_DIR' && tar xzf - -C '$REMOTE_DIR'"
 fi
 
 say "4/4 Starting it"
@@ -75,6 +87,9 @@ The image is on the server. One thing left: the server has no settings yet.
   ssh ${SSH_OPTS:+$SSH_OPTS }$SERVER
   cd $REMOTE_DIR && nano .env          # set DOMAIN, APP_URL, POSTGRES_PASSWORD and one vision key
   docker compose up -d --no-build
+
+If the server already runs nginx (or anything else) on ports 80/443, also set COMPOSE_PROFILES= (empty)
+in .env, then follow "A server that already has nginx" in docs/DEPLOY.md (it uses deploy/nginx.conf.example).
 
 Next time, just run scripts/ship.sh again: it keeps your .env and restarts the app on the new image.
 MSG

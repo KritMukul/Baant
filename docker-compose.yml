@@ -1,6 +1,9 @@
 # Dibs on one server: the app, its own Postgres, behind nginx on the host (deploy/nginx.conf).
 #   cp .env.example .env     (fill it in)
 #   docker compose up -d --build
+# Caddy is only started when COMPOSE_PROFILES=caddy (the default in .env.example). If the server already has
+# nginx or another proxy on ports 80/443, set COMPOSE_PROFILES= (empty) in .env and point that proxy at
+# 127.0.0.1:${APP_PORT} (see deploy/nginx.conf.example and docs/DEPLOY.md).
 # Nothing here needs a Supabase account. To use Supabase instead, drop the `db` service and point
 # DATABASE_URL at your Supabase connection string (see docs/DEPLOY.md).
 services:
@@ -32,6 +35,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    ports:
+      # reachable only from the server itself: for nginx (or another proxy) running outside Docker
+      - "127.0.0.1:${APP_PORT:-3000}:3000"
     environment:
       DATABASE_URL: postgres://dibs:${POSTGRES_PASSWORD}@db:5432/dibs
       APP_URL: ${APP_URL:?set APP_URL in .env, for example https://krit.website}
