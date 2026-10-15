@@ -4,8 +4,10 @@ FROM node:22-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 # the cache mount makes rebuilds on your laptop much faster (needs BuildKit, which Docker Desktop has by default)
-RUN --mount=type=cache,target=/root/.npm npm ci
+# --no-audit/--no-fund skip two extra network calls that can stall on a slow or filtered connection
+RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund --prefer-offline
 COPY . .
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
 FROM node:22-alpine AS run
