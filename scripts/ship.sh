@@ -54,9 +54,14 @@ else
 fi
 
 say "2/4 Sending it to $SERVER (roughly 100 MB compressed)"
+PREVIOUS="${IMAGE%%:*}:previous"
 if [ "${DRY_RUN:-}" = "1" ]; then
+  echo "+ ssh $SERVER 'docker tag $IMAGE $PREVIOUS' (keeps the version now running, for a rollback)"
   echo "+ docker save $IMAGE | gzip | ssh $SERVER 'gunzip | docker load'"
 else
+  # keep whatever is running now, so it can come back with:
+  #   docker tag $PREVIOUS $IMAGE && docker compose up -d --no-build
+  ssh_ "docker image inspect '$IMAGE' >/dev/null 2>&1 && docker tag '$IMAGE' '$PREVIOUS' && echo 'Kept the current version as $PREVIOUS' || true" </dev/null
   docker save "$IMAGE" | gzip | ssh_ 'gunzip | docker load'
 fi
 
