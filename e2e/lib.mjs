@@ -90,6 +90,7 @@ export async function quickBill(browser) {
   await F.waitForSelector(".mh");
   await F.locator("button.it", { hasText: "Surf N Turf" }).click();
   await H.goto(`${BASE}/b/${code}`);
+  await H.getByRole("button", { name: "Show unclaimed items" }).click(); // the leftover choices sit behind this
   await H.getByRole("button", { name: "Take them" }).click();
   await F.waitForSelector(".dock a.btn", { timeout: 12000 });
   return { code, host, friend };

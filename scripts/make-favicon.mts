@@ -19,7 +19,7 @@ function mark(px: number) {
       "g",
       { transform: "translate(-1 0)" },
       h("path", { d: "M9 8 H25 V56 L21 52 L17 56 L13 52 L9 56 Z", fill: "#ecebf8" }),
-      h("path", { d: "M30 8 H33 A24 24 0 0 1 33 56 H30 Z", fill: "#ffb59a" }),
+      h("path", { d: "M30 8 H33 A24 24 0 0 1 33 56 H30 Z", fill: "#ff6b4a" }),
     ),
   );
 }

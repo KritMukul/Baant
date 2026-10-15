@@ -17,14 +17,14 @@ export default async function OG({ params }: { params: Promise<{ code: string }>
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
           <svg width="84" height="78" viewBox="6 6 54 50">
             <path d="M9 8 H25 V56 L21 52 L17 56 L13 52 L9 56 Z" fill="#ecebf8" />
-            <path d="M30 8 H33 A24 24 0 0 1 33 56 H30 Z" fill="#ffb59a" />
+            <path d="M30 8 H33 A24 24 0 0 1 33 56 H30 Z" fill="#ff6b4a" />
           </svg>
           <div style={{ fontSize: 44, fontWeight: 700 }}>Dibs</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
           <div style={{ fontSize: 40, color: "#8e92b3" }}>{open ? "Call dibs on what you ate" : "Call dibs on what you ate"}</div>
           <div style={{ fontSize: 88, fontWeight: 700, lineHeight: 1.05 }}>{open ? d!.bill.merchant : "Split the bill"}</div>
-          {open ? <div style={{ fontSize: 64, color: "#ffb59a" }}>{formatINR(d!.bill.total)}</div> : null}
+          {open ? <div style={{ fontSize: 64, color: "#ff6b4a" }}>{formatINR(d!.bill.total)}</div> : null}
         </div>
       </div>
     ),

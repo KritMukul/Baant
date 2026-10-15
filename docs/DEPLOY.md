@@ -69,16 +69,15 @@ If something goes wrong:
 | `permission denied` talking to Docker on the server | Your user is not in the docker group yet | `sudo usermod -aG docker $USER`, log out and back in |
 | The script hangs at "Sending it" | Slow upload or an ssh prompt | It is about 100 MB; check you can `ssh` to the server without a password prompt |
 | `set POSTGRES_PASSWORD in .env` | `.env` is missing a value | Edit `.env` on the server, then `docker compose up -d --no-build` |
-| The browser tab still shows an old icon (a teal ₹ is the very first version) | Browsers cache tab icons per site, apart from the page | Hard-reload (Ctrl/Cmd+Shift+R). If it sticks, clear this site's data or open the site in a private window. Confirm the server is on the new image: `curl -sI https://krit.website/favicon.ico` should return 200, not 404 |
+| The browser tab still shows an old icon (a teal ₹ is the very first version) | Browsers cache tab icons per site, apart from the page | Hard-reload (Ctrl/Cmd+Shift+R). If it sticks, clear this site's data or open the site in a private window. Confirm the server is on the new image: `curl -sI https://dibs.krit.website/favicon.ico` should return 200, not 404 |
 
-## A server that already has nginx
+## nginx in front
 
-If nginx (or any other proxy) already owns ports 80 and 443, Caddy cannot start, and does not need to. Let your nginx do the HTTPS and forward to the app:
+nginx on the host does HTTPS (certbot) and forwards to the app, which Docker publishes only on `127.0.0.1:3000`, so nothing reaches it except through nginx. `deploy/nginx.conf` is the server's config (installed as `/etc/nginx/sites-available/dibs`): `krit.website` and `www` redirect to `dibs.krit.website`, which proxies to the app, with `client_max_body_size 20m` for bill photos.
 
-1. In the server's `.env` set `COMPOSE_PROFILES=` (empty, so Caddy stays off) and `APP_PORT=` to the port your nginx forwards to (default `3000`). Keep `APP_URL=https://krit.website`.
-2. `docker compose up -d --no-build`. The app now listens only on `127.0.0.1:APP_PORT`, so it is not reachable from outside except through nginx. Check from the server: `curl http://127.0.0.1:3000/api/health`.
-3. Point nginx at it. `deploy/nginx.conf.example` is a ready server block (it is copied to the server next to `docker-compose.yml`); the important lines are `proxy_pass http://127.0.0.1:<APP_PORT>;`, `client_max_body_size 10m;` for bill photos, a 90 s `proxy_read_timeout` for the vision model, and `X-Forwarded-For` set to `$remote_addr` so the per-IP scan limit cannot be faked. If nginx already has a block for the domain, only change its `proxy_pass` to the port above.
-4. `sudo nginx -t && sudo systemctl reload nginx`, and if the domain has no certificate yet, `sudo certbot --nginx -d krit.website`.
+- Set `APP_URL=https://dibs.krit.website` in the server's `.env` (the address people end up on; links, QR codes and cookies use it).
+- After editing the nginx config: `sudo nginx -t && sudo systemctl reload nginx`.
+- Check the app from the server, bypassing nginx: `curl http://127.0.0.1:3000/api/health`.
 
 ## Option A: Docker Compose, building on the server
 
@@ -201,13 +200,19 @@ What you find here decides whether the payment screen needs a different design.
 
 ## While you are testing publicly
 
-Anyone who finds the address can scan a bill, and every scan costs a vision API call. Dibs limits scans to 20 per IP per hour (`SCAN_LIMIT_PER_HOUR`), but while it is a test you can also put a password on the host's start page. In `deploy/nginx.conf`, inside the site block, before `reverse_proxy`:
+Anyone who finds the address can scan a bill, and every scan costs a vision API call. Dibs limits scans to 20 per IP per hour (`SCAN_LIMIT_PER_HOUR`), but while it is a test you can also put a password on the host's start page. In `deploy/nginx.conf`, inside the `dibs.krit.website` block, add (password file: `sudo apt install apache2-utils && sudo htpasswd -c /etc/nginx/dibs.htpasswd you`):
 
 ```
-	@start path /
-	basicauth @start {
-		you JDJhJDE0JC4uLg...      # from: docker compose exec caddy caddy hash-password
-	}
+    location = / {
+        auth_basic "Dibs test";
+        auth_basic_user_file /etc/nginx/dibs.htpasswd;
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
 ```
 
 Friends' links (`/b/...`) stay open. The start page and its scan request live at `/`, so the password covers both.

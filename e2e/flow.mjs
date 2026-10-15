@@ -87,7 +87,9 @@ has(await txt(H, ".empty"), "No one yet", "nobody here yet");
 const waHref = await H.locator(".dock a.btn").getAttribute("href");
 eq(decodeURIComponent(waHref.split("?text=")[1]), `Dibs · The Local Diners · ₹3,280.00\nTap what you had and pay your share:\n${BASE}/b/${code}`, "WhatsApp message");
 await H.getByRole("button", { name: "Copy link" }).click();
-has(await txt(H, ".act.done"), "Copied", "copy feedback");
+// icon-only button: the feedback is a check icon and the button's name changing to "Link copied"
+await H.waitForSelector(".act.done", { timeout: 3000 }).catch(() => {});
+eq(await H.locator(".act.done").getAttribute("aria-label").catch(() => null), "Link copied", "copy feedback");
 eq(await H.evaluate(() => navigator.clipboard.readText()), `${BASE}/b/${code}`, "clipboard holds the full link");
 await H.getByRole("button", { name: "Show QR" }).click();
 await H.waitForSelector(".sheet.on svg[data-qr]");
