@@ -6,7 +6,7 @@
 #   sudo nginx -t && sudo systemctl reload nginx
 #   sudo certbot --nginx -d krit.website        # adds the certificate and the http -> https redirect
 #
-# Change 3100 below if you changed APP_PORT, and krit.website if you use another domain.
+# Change 3000 below if you changed APP_PORT, and krit.website if you use another domain.
 server {
     listen 80;
     listen [::]:80;
@@ -16,7 +16,7 @@ server {
     client_max_body_size 10m;
 
     location / {
-        proxy_pass http://127.0.0.1:3100;
+        proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;

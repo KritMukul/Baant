@@ -35,7 +35,7 @@ services:
         condition: service_healthy
     ports:
       # reachable only from the server itself: for nginx (or another proxy) running outside Docker
-      - "127.0.0.1:${APP_PORT:-3100}:3000"
+      - "127.0.0.1:${APP_PORT:-3000}:3000"
     environment:
       DATABASE_URL: postgres://dibs:${POSTGRES_PASSWORD}@db:5432/dibs
       APP_URL: ${APP_URL:?set APP_URL in .env, for example https://krit.website}
@@ -59,7 +59,8 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      DOMAIN: ${DOMAIN:?set DOMAIN in .env, for example krit.website (or :80 to test over plain http)}
+      # only used when Caddy is on; without DOMAIN it serves plain http on :80 (fine for a first test by IP address)
+      DOMAIN: ${DOMAIN:-:80}
     volumes:
       - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddydata:/data
