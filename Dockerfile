@@ -8,7 +8,8 @@ COPY package.json package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund --prefer-offline
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npm run build
+# this app has no public/ folder today (icons come from src/app); make sure one exists so the copy below never fails
+RUN mkdir -p public && npm run build
 
 FROM node:22-alpine AS run
 WORKDIR /app
