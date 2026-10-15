@@ -68,6 +68,7 @@ If something goes wrong:
 | `permission denied` talking to Docker on the server | Your user is not in the docker group yet | `sudo usermod -aG docker $USER`, log out and back in |
 | The script hangs at "Sending it" | Slow upload or an ssh prompt | It is about 100 MB; check you can `ssh` to the server without a password prompt |
 | `set POSTGRES_PASSWORD in .env` | `.env` is missing a value | Edit `.env` on the server, then `docker compose up -d --no-build` |
+| The browser tab still shows an old icon (a teal ₹ is the very first version) | Browsers cache tab icons per site, apart from the page | Hard-reload (Ctrl/Cmd+Shift+R). If it sticks, clear this site's data or open the site in a private window. Confirm the server is on the new image: `curl -sI https://krit.website/favicon.ico` should return 200, not 404 |
 
 ## Option A: Docker Compose, building on the server
 
